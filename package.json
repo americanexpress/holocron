@@ -40,14 +40,7 @@
     "preset": "amex-jest-preset-react",
     "collectCoverageFrom": [
       "/*.{js,jsx}",
-      "packages/**/src/*.{js,jsx}"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/lib/",
-      "/build/",
-      "test-utils.js",
-      "__fixtures__"
+      "packages/*/src/*.{js,jsx}"
     ],
     "setupFiles": [
       "./test-setup.js"
