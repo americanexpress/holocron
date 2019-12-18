@@ -17,7 +17,7 @@
     "Nelly Kiboi <Nelly.J.Kiboi@aexp.com> (https://github.com/nellyk)",
     "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
   ],
-  "version": "1.0.0-15",
+  "version": "1.0.0",
   "main": "HolocronModuleRegisterPlugin.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
