@@ -1,8 +1,8 @@
 # holocron-module-route
 
-> This uses **`@americanexpress/one-app-router`** which is a fork of **`react-router@3`**. It extends its `Route` component which uses **`holocron`**'s `loadModule` to dynamically load modules for specified routes.
+> This uses **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** which is a fork of **`react-router@3`**. It extends its `Route` component which uses **`holocron`**'s `loadModule` to dynamically load modules for specified routes.
 
->In `createModuleRoute`, we check for the `moduleName` prop from the `ModuleRoute`. If `moduleName` exists, we define methods we know `@americanexpress/one-app-router` will leverage during
+>In `createModuleRoute`, we check for the `moduleName` prop from the `ModuleRoute`. If `moduleName` exists, we define methods we know **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** will leverage during
 the initialization of routes in the router.
 
 >If `moduleName` exists, `createModuleRoute` will add the methods for `getIndexRoute`, `getChildRoutes`, and `getComponent` to the that route in the route configuration.
