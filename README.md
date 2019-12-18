@@ -28,7 +28,7 @@ This codebase has the following packages:
 | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | **[holocron](./packages/holocron)**  | This is used for composing and loading your application modules.
 | **[holocron-module-register-webpack-plugin](./packages/holocron-module-register-webpack-plugin)**             | This plugin adds the module to registry once its loaded on the page. |
-| **[holocron-module-route](./packages/holocron-module-route)**     | This uses **`@americanexpress/one-app-router`** which is a fork of **`react-router@3`**. It extends its `Route` component which uses **`holocron`**'s `loadModule` to dynamically load modules for specified routes. |
+| **[holocron-module-route](./packages/holocron-module-route)**     | This uses **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** which is a fork of **`react-router@3`**. It extends its `Route` component which uses **`holocron`**'s `loadModule` to dynamically load modules for specified routes. |
 | **[iguazu-holocron](./packages/iguazu-holocron)**     | This loads holocron modules using **`iguazu`**      |
 
 ## 🏆 Contributing
