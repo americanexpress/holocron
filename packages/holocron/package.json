@@ -1,0 +1,63 @@
+{
+  "name": "holocron",
+  "version": "1.0.0-15",
+  "main": "index.js",
+  "keywords": [
+    "holocron",
+    "amex",
+    "one-app"
+  ],
+  "description": "Use this to compose and load your application modules.",
+  "contributors": [
+    "Andres Escobar <Andres.Escobar@aexp.com> (https://github.com/anescobar1991)",
+    "James Singleton <James.Singleton1@aexp.com> (https://github.com/JamesSingleton)",
+    "Jimmy King  <Jimmy.King@aexp.com> (https://github.com/10xLaCroixDrinker)",
+    "Jonathan Adshead <Jonathan.Adshead@aexp.com> (https://github.com/JAdshead)",
+    "Michael Tobia <Michael.M.Tobia@aexp.com> (https://github.com/Francois-Esquire)",
+    "Michael Tomcal <Michael.A.Tomcal@aexp.com> (https://github.com/mtomcal)",
+    "Stephanie Coates  <Stephanie.Coates1@aexp.com> (https://github.com/stephaniecoates)",
+    "Nelly Kiboi <Nelly.J.Kiboi@aexp.com> (https://github.com/nellyk)",
+    "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
+  ],
+  "scripts": {
+    "prebuild": "rimraf *.js server ducks",
+    "build": "babel src -d ./",
+    "prepublish": "npm run build",
+    "watch:build": "nodemon --watch src --ext js,jsx --exec npm run build"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@americanexpress/vitruvius": "^2.0.0",
+    "hoist-non-react-statics": "^3.3.0",
+    "immutable": "^4.0.0-rc.12",
+    "prop-types": "^15.5.10",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
+    "redux-immutable": "^4.0.0",
+    "redux-thunk": "^2.1.0",
+    "require-from-string": "^1.2.1",
+    "reselect": "^4.0.0",
+    "shallowequal": "^1.1.0",
+    "ssri": "^7.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "babel-preset-amex": "^2.1.0",
+    "jest": "^24.1.0",
+    "nodemon": "^1.10.2",
+    "rimraf": "^2.5.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/americanexpress/holocron.git",
+    "directory": "packages/holocron"
+  },
+  "homepage": "https://github.com/americanexpress/holocron",
+  "bugs": {
+    "url": "https://github.com/americanexpress/holocron/issues"
+  }
+}

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`moduleRoutePrefetch throws when no location given 1`] = `"Location must be provided to moduleRoutePrefetch"`;
+
+exports[`moduleRoutePrefetch throws when no routes given 1`] = `"Routes must be provided to moduleRoutePrefetch"`;

@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateModuleRegistry should remove modules from the registry 1`] = `
+Immutable.Map {
+  "node": Immutable.Map {
+    "url": "https://example.com/cdn/awesome-module/1.0.0/awesome-module.node.js",
+    "integrity": "47474",
+  },
+  "browser": Immutable.Map {
+    "url": "https://example.com/cdn/awesome-module/1.0.0/awesome-module.browser.js",
+    "integrity": "465345v",
+  },
+  "legacyBrowser": Immutable.Map {
+    "url": "https://example.com/cdn/awesome-module/1.0.0/awesome-module.legacy.browser.js",
+    "integrity": "4564632",
+  },
+}
+`;
+
+exports[`updateModuleRegistry should resolve with the new versions of the changed modules 1`] = `
+Object {
+  "another-module": Object {
+    "browser": Object {
+      "integrity": "7764",
+      "url": "https://example.com/cdn/another-module/2.5.6/another-module.browser.js",
+    },
+    "legacyBrowser": Object {
+      "integrity": "34566",
+      "url": "https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js",
+    },
+    "node": Object {
+      "integrity": "4556",
+      "url": "https://example.com/cdn/another-module/2.5.6/another-module.node.js",
+    },
+  },
+}
+`;
+
+exports[`updateModuleRegistry should resolve with the new versions of the changed modules if the current module registry is empty 1`] = `
+Object {
+  "another-module": Object {
+    "browser": Object {
+      "integrity": "7764",
+      "url": "https://example.com/cdn/another-module/2.5.6/another-module.browser.js",
+    },
+    "legacyBrowser": Object {
+      "integrity": "34566",
+      "url": "https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js",
+    },
+    "node": Object {
+      "integrity": "4556",
+      "url": "https://example.com/cdn/another-module/2.5.6/another-module.node.js",
+    },
+  },
+}
+`;
+
+exports[`updateModuleRegistry should throw if any of the modules fail to load 1`] = `"Failed to load module"`;
+
+exports[`updateModuleRegistry should update the modules in the registry: module map 1`] = `
+Immutable.Map {
+  "key": "key123",
+  "modules": Immutable.Map {
+    "awesome-module": Immutable.Map {
+      "node": Immutable.Map {
+        "url": "https://example.com/cdn/awesome-module/1.0.0/awesome-module.node.js",
+        "integrity": "47474",
+      },
+      "browser": Immutable.Map {
+        "url": "https://example.com/cdn/awesome-module/1.0.0/awesome-module.browser.js",
+        "integrity": "465345v",
+      },
+      "legacyBrowser": Immutable.Map {
+        "url": "https://example.com/cdn/awesome-module/1.0.0/awesome-module.legacy.browser.js",
+        "integrity": "4564632",
+      },
+    },
+    "another-module": Immutable.Map {
+      "node": Immutable.Map {
+        "url": "https://example.com/cdn/another-module/2.4.0/another-module.node.js",
+        "integrity": "123",
+      },
+      "browser": Immutable.Map {
+        "url": "https://example.com/cdn/another-module/2.4.0/another-module.browser.js",
+        "integrity": "234",
+      },
+      "legacyBrowser": Immutable.Map {
+        "url": "https://example.com/cdn/another-module/2.4.0/another-module.legacy.browser.js",
+        "integrity": "344",
+      },
+    },
+    "module-three": Immutable.Map {
+      "node": Immutable.Map {
+        "url": "https://example.com/cdn/module-three/1.0.0/module-three.node.js",
+        "integrity": "7747545",
+      },
+      "browser": Immutable.Map {
+        "url": "https://example.com/cdn/module-three/1.0.0/module-three.browser.js",
+        "integrity": "44532345",
+      },
+      "legacyBrowser": Immutable.Map {
+        "url": "https://example.com/cdn/module-three/1.0.0/module-three.legacy.browser.js",
+        "integrity": "3534536",
+      },
+    },
+  },
+}
+`;
+
+exports[`updateModuleRegistry should update the modules in the registry: modules 1`] = `
+Object {
+  "another-module": "new another-module@[object Object]",
+  "awesome-module": "initial awesome-module",
+  "module-three": "initial module-three",
+}
+`;

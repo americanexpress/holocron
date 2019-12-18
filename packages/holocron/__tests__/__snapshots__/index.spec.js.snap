@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`public API should not have anything removed 1`] = `
+Object {
+  "RenderModule": [Function],
+  "composeModules": [Function],
+  "createHolocronStore": [Function],
+  "failedToLoad": [Function],
+  "getLoadError": [Function],
+  "getLoadingPromise": [Function],
+  "getModule": [Function],
+  "getModuleMap": [Function],
+  "getModules": [Function],
+  "holocronModule": [Function],
+  "isLoaded": [Function],
+  "isLoading": [Function],
+  "loadModule": [Function],
+  "registerModule": [Function],
+  "setModuleMap": [Function],
+}
+`;

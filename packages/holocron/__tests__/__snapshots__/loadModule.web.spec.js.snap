@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadModule.web should reject with a helpful error when module data is not an object 1`] = `[Error: loadModule: moduleData must be an object]`;
+
+exports[`loadModule.web should reject with a helpful error when module name is not a string 1`] = `[Error: loadModule: moduleName must be a string]`;

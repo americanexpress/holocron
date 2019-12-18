@@ -1,0 +1,16 @@
+# node + npm + lerna
+**/node_modules
+**/*.log
+*.tgz
+
+# generated files
+test-results
+.jest-cache
+**/static
+**/build
+**/lib
+**/stats.json
+*.tgz
+
+# system
+.DS_Store

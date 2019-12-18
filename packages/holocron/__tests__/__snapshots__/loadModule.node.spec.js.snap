@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadModule.node loading a module rejects if attempting to load a module that has previously failed to load 1`] = `[Error: module at https://example.com/cdn/awesome/1.0.0/awesome.node.js previously failed to load, will not attempt to reload.]`;
+
+exports[`loadModule.node loading a module retries 1`] = `
+"Encountered error fetching module at https://example.com/cdn/awesome/1.0.0/awesome.node.js: test error, like a socket disconnect
+Retrying (1)..."
+`;
+
+exports[`loadModule.node loading a module retries 2`] = `
+"Encountered error fetching module at https://example.com/cdn/awesome/1.0.0/awesome.node.js: test error, like a socket disconnect
+Retrying (2)..."
+`;
+
+exports[`loadModule.node loading a module retries 3`] = `
+"Encountered error fetching module at https://example.com/cdn/awesome/1.0.0/awesome.node.js: test error, like a socket disconnect
+Retrying (3)..."
+`;
+
+exports[`loadModule.node throws if integrity shas dont match prior to loading the module if NODE_ENV is production 1`] = `
+"SRI for module at https://example.com/cdn/awesome/1.0.0/awesome.node.js must match SRI in module map.
+ Expected 123, received sha256-evq7fP0ACz7W6Pw88Bd/+QhKzbka11+gBAdTJKQmWpg= sha384-01XUEQX9oGXC/uWhoIoKiK7M15P55kBqx2K+He5OtvDfu+EA0N1r+ezQ3JVquFux"
+`;

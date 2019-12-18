@@ -1,0 +1,59 @@
+{
+  "name": "iguazu-holocron",
+  "version": "1.0.0-15",
+  "keywords": [
+    "holocron",
+    "amex",
+    "one-app"
+  ],
+  "description": "Loads holocron modules using iguazu",
+  "contributors": [
+    "Andres Escobar <Andres.Escobar@aexp.com> (https://github.com/anescobar1991)",
+    "James Singleton <James.Singleton1@aexp.com> (https://github.com/JamesSingleton)",
+    "Jimmy King  <Jimmy.King@aexp.com> (https://github.com/10xLaCroixDrinker)",
+    "Jonathan Adshead <Jonathan.Adshead@aexp.com> (https://github.com/JAdshead)",
+    "Michael Tobia <Michael.M.Tobia@aexp.com> (https://github.com/Francois-Esquire)",
+    "Michael Tomcal <Michael.A.Tomcal@aexp.com> (https://github.com/mtomcal)",
+    "Stephanie Coates  <Stephanie.Coates1@aexp.com> (https://github.com/stephaniecoates)",
+    "Nelly Kiboi <Nelly.J.Kiboi@aexp.com> (https://github.com/nellyk)",
+    "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "babel": "rimraf lib && babel src --out-dir lib --copy-files",
+    "build": "npm run babel",
+    "prepublish": "npm run build"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "holocron": "^1.0.0-15",
+    "iguazu": "3.0.0-3",
+    "react": "^16.0.0",
+    "react-redux": "^7.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "amex-jest-preset-react": "^4.0.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-amex": "^2.0.0",
+    "enzyme": "^3.1.0",
+    "enzyme-to-json": "^3.1.2",
+    "jest": "^24.1.0",
+    "react-dom": "^16.0.0",
+    "react-test-renderer": "^16.0.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "rimraf": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/americanexpress/holocron.git",
+    "directory": "packages/iguazu-holocron"
+  },
+  "homepage": "https://github.com/americanexpress/holocron",
+  "bugs": {
+    "url": "https://github.com/americanexpress/holocron/issues"
+  }
+}

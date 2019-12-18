@@ -1,0 +1,54 @@
+{
+  "name": "holocron-module-route",
+  "version": "1.0.0-15",
+  "keywords": [
+    "holocron",
+    "amex",
+    "one-app"
+  ],
+  "description": "This extends one-app-router's Route component to dynamically load modules for specified routes",
+  "contributors": [
+    "Andres Escobar <Andres.Escobar@aexp.com> (https://github.com/anescobar1991)",
+    "James Singleton <James.Singleton1@aexp.com> (https://github.com/JamesSingleton)",
+    "Jimmy King  <Jimmy.King@aexp.com> (https://github.com/10xLaCroixDrinker)",
+    "Jonathan Adshead <Jonathan.Adshead@aexp.com> (https://github.com/JAdshead)",
+    "Michael Tobia <Michael.M.Tobia@aexp.com> (https://github.com/Francois-Esquire)",
+    "Michael Tomcal <Michael.A.Tomcal@aexp.com> (https://github.com/mtomcal)",
+    "Stephanie Coates  <Stephanie.Coates1@aexp.com> (https://github.com/stephaniecoates)",
+    "Nelly Kiboi <Nelly.J.Kiboi@aexp.com> (https://github.com/nellyk)",
+    "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "babel": "rimraf lib && babel src --out-dir lib --copy-files",
+    "build": "npm run babel",
+    "prepublish": "npm run build"
+  },
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "holocron": "^1.0.0-4"
+  },
+  "dependencies": {
+    "@americanexpress/one-app-router": "1.0.0",
+    "prop-types": "^15.5.10",
+    "react": "^16.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "babel-loader": "^8.0.5",
+    "babel-preset-amex": "^2.0.0",
+    "holocron": "^1.0.0-15",
+    "react-addons-test-utils": "^15.4.2",
+    "rimraf": "^2.5.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/americanexpress/holocron.git",
+    "directory": "packages/holocron-module-route"
+  },
+  "homepage": "https://github.com/americanexpress/holocron",
+  "bugs": {
+    "url": "https://github.com/americanexpress/holocron/issues"
+  }
+}

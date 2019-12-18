@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 1`] = `"createHolocronStore expects immutable initial state"`;
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 2`] = `"createHolocronStore expects immutable initial state"`;
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 3`] = `"createHolocronStore expects immutable initial state"`;
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 4`] = `"createHolocronStore expects immutable initial state"`;
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 5`] = `"createHolocronStore expects immutable initial state"`;
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 6`] = `"createHolocronStore expects immutable initial state"`;
+
+exports[`createHolocronStore initialization should throw if initialState is not immutable: immutable-initial-state 7`] = `"createHolocronStore expects immutable initial state"`;

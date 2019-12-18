@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`moduleRegistry should maintain a block list 1`] = `
+Immutable.List [
+  "https://example.com/cdn/bad-module/0.2.0/module.js",
+  "https://example.com/cdn/worse-module/0.0.0-46/module.js",
+]
+`;
+
+exports[`moduleRegistry should maintain a block list 2`] = `"https://example.com/cdn/bad-module/0.2.0/module.js"`;
+
+exports[`moduleRegistry should register modules 1`] = `
+Immutable.Map {
+  "good-module": [Function],
+}
+`;

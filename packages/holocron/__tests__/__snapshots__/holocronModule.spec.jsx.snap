@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`holocronModule should gracefully handle module state missing from store 1`] = `
+<div>
+  Mock Module 
+  2
+</div>
+`;
+
+exports[`holocronModule should pass mergeProps to connect if it is specified 1`] = `
+<div>
+  3
+   * 
+  4
+   = 
+  12
+</div>
+`;
+
+exports[`holocronModule should pass the moduleLoadStatus prop as error when it failed to load 1`] = `
+<div>
+  Mock Module - 
+  loading
+</div>
+`;
+
+exports[`holocronModule should pass the moduleLoadStatus prop as loaded when loaded 1`] = `
+<div>
+  Mock Module - 
+  loaded
+</div>
+`;
+
+exports[`holocronModule should pass the moduleLoadStatus prop as loading when loading 1`] = `
+<div>
+  Mock Module - 
+  loading
+</div>
+`;
+
+exports[`holocronModule should provide the module state as a plain JS prop if a reducer is provided 1`] = `
+<div>
+  value
+</div>
+`;
+
+exports[`holocronModule should throw an error if a name is not provided 1`] = `"A name is required to create a holocron module"`;

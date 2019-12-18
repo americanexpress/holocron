@@ -1,0 +1,75 @@
+{
+  "name": "holocron-build",
+  "private": true,
+  "engines": {
+    "node": ">=6.0.0",
+    "npm": ">=3.10.0"
+  },
+  "scripts": {
+    "preinstall": "node scripts/check-versions.js",
+    "postinstall": "lerna bootstrap",
+    "clean": "git clean -d -X",
+    "lint": "eslint --ext js,jsx,snap packages",
+    "test": "NODE_ENV=development jest",
+    "test:git-history": "commitlint --from origin/master --to HEAD",
+    "posttest": "npm run lint && npm run test:git-history"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "amex-jest-preset-react": "^5.0.1",
+    "enzyme": "^3.9.0",
+    "enzyme-to-json": "^3.2.2",
+    "eslint": "^4.12.1",
+    "eslint-config-amex": "^7.1.0",
+    "husky": "^3.0.9",
+    "jest": "^24.1.0",
+    "lerna": "^2.9.0",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-test-renderer": "^16.11.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/americanexpress/holocron.git"
+  },
+  "jest": {
+    "preset": "amex-jest-preset-react",
+    "collectCoverageFrom": [
+      "/*.{js,jsx}",
+      "packages/**/src/*.{js,jsx}"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/lib/",
+      "/build/",
+      "test-utils.js",
+      "__fixtures__"
+    ],
+    "coverageThreshold": {
+      "packages": {
+        "statements": 100,
+        "branches": 100,
+        "lines": 100,
+        "functions": 100
+      }
+    },
+    "setupFiles": [
+      "./test-setup.js"
+    ],
+    "moduleNameMapper": {
+      "react$": "<rootDir>/node_modules/react",
+      "react-dom$": "<rootDir>/node_modules/react-dom",
+      "react-test-renderer$": "<rootDir>/node_modules/react-test-renderer"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
+}
