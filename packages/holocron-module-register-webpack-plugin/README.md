@@ -1,5 +1,7 @@
 # module-register-webpack-plugin
 
+[![npm](https://img.shields.io/npm/v/holocron-module-register-webpack-plugin)](https://www.npmjs.com/package/holocron-module-register-webpack-plugin)
+
 >This plugin adds the module to the registry once its loaded on the page.
 >It wraps the contents of a module in an [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) which registers the module.
 

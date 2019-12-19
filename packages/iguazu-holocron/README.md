@@ -1,5 +1,7 @@
 # Iguazu Holocron
 
+[![npm](https://img.shields.io/npm/v/iguazu-holocron)](https://www.npmjs.com/package/iguazu-holocron)
+
 >This loads holocron modules using **`iguazu`**
 >Iguazu is an asynchronous data flow solution for React/Redux applications.
 

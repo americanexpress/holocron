@@ -1,5 +1,7 @@
 # holocron
 
+[![npm](https://img.shields.io/npm/v/holocron)](https://www.npmjs.com/package/holocron)
+
 >Use this to compose and load your application modules.
 
 ## 📖 Table of Contents
