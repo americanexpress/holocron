@@ -1,4 +1,6 @@
-# holocron-module-route
+<h1 align="center">
+  <img src='https://github.com/americanexpress/holocron/raw/master/packages/holocron-module-route/holocron-module-route.png' alt="Holocron Module Route - One Amex" width='50%'/>
+</h1>
 
 [![npm](https://img.shields.io/npm/v/holocron-module-route)](https://www.npmjs.com/package/holocron-module-route)
 

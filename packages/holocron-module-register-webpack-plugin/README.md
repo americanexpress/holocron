@@ -1,4 +1,6 @@
-# module-register-webpack-plugin
+<h1 align="center">
+  <img src='https://github.com/americanexpress/holocron/raw/master/packages/holocron-module-register-webpack-plugin/holocron-module-register-webpack-plugin.png' alt="Holocron Module Register Webpack Plugin - One Amex" width='50%'/>
+</h1>
 
 [![npm](https://img.shields.io/npm/v/holocron-module-register-webpack-plugin)](https://www.npmjs.com/package/holocron-module-register-webpack-plugin)
 
