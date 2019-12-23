@@ -15,21 +15,32 @@
     "posttest": "npm run lint && npm run test:git-history"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/polyfill": "^7.2.5",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
-    "amex-jest-preset-react": "^5.0.1",
-    "enzyme": "^3.9.0",
-    "enzyme-to-json": "^3.2.2",
+    "amex-jest-preset-react": "^4.0.0",
+    "babel-loader": "^8.0.5",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-amex": "^2.0.0",
+    "enzyme": "^3.1.0",
+    "enzyme-to-json": "^3.1.2",
     "eslint": "^4.12.1",
     "eslint-config-amex": "^7.1.0",
+    "holocron": "^1.0.0",
     "husky": "^3.0.9",
     "jest": "^24.1.0",
     "lerna": "^3.19.0",
+    "nodemon": "^1.10.2",
     "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-test-renderer": "^16.11.0"
+    "react-addons-test-utils": "^15.4.2",
+    "react-dom": "^16.0.0",
+    "react-test-renderer": "^16.0.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "rimraf": "^3.0.0",
+    "webpack-merge": "^4.2.1"
   },
   "license": "Apache-2.0",
   "repository": {
@@ -56,5 +67,11 @@
       "pre-commit": "npm test",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "dependencies": {
+    "holocron": "file:packages/holocron",
+    "holocron-module-register-webpack-plugin": "file:packages/holocron-module-register-webpack-plugin",
+    "holocron-module-route": "file:packages/holocron-module-route",
+    "iguazu-holocron": "file:packages/iguazu-holocron"
   }
 }
