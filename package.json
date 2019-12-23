@@ -69,9 +69,9 @@
     }
   },
   "dependencies": {
-    "holocron": "file:packages/holocron",
-    "holocron-module-register-webpack-plugin": "file:packages/holocron-module-register-webpack-plugin",
-    "holocron-module-route": "file:packages/holocron-module-route",
-    "iguazu-holocron": "file:packages/iguazu-holocron"
+    "holocron": "^1.0.0",
+    "holocron-module-register-webpack-plugin": "^1.0.0",
+    "holocron-module-route": "^1.0.0",
+    "iguazu-holocron": "^1.0.0"
   }
 }
