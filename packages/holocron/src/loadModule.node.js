@@ -76,7 +76,7 @@ export default async function loadModule(
     let nodeModule;
 
     try {
-      await checkStatus(moduleResponse);
+      checkStatus(moduleResponse);
       const moduleString = await moduleResponse.text();
       if (process.env.NODE_ENV === 'production') {
         const actualSRI = ssri.fromData(
