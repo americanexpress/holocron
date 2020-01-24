@@ -467,9 +467,9 @@ const getModulesToUpdate = (
 );
 ```
 
-[Redux]: [https://redux.js.org]
-[Redux enhancer]: [https://redux.js.org/recipes/configuring-your-store#extending-redux-functionality]
-[Redux reducer]: [https://redux.js.org/recipes/structuring-reducers/structuring-reducers]
-[vitruvius]: [http://github.com/americanexpress/vitruvius]
-[Redux thunks]: [https://github.com/reduxjs/redux-thunk]
-[`.toJS()`]: [https://immutable-js.github.io/immutable-js/docs/#/Map/toJS]
+[Redux]: https://redux.js.org
+[Redux enhancer]: https://redux.js.org/recipes/configuring-your-store#extending-redux-functionality
+[Redux reducer]: https://redux.js.org/recipes/structuring-reducers/structuring-reducers
+[vitruvius]: http://github.com/americanexpress/vitruvius
+[Redux thunks]: https://github.com/reduxjs/redux-thunk
+[`.toJS()`]: https://immutable-js.github.io/immutable-js/docs/#/Map/toJS

@@ -4,15 +4,15 @@
 
 [![npm](https://img.shields.io/npm/v/holocron-module-route)](https://www.npmjs.com/package/holocron-module-route)
 
-> This uses **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** 
-> which is a fork of **`react-router@3`**. It extends its `Route` component which uses 
+> This uses **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)**
+> which is a fork of **`react-router@3`**. It extends its `Route` component which uses
 > **`holocron`**'s `loadModule` to dynamically load modules for specified routes.
 
-> In `createModuleRoute`, we check for the `moduleName` prop from the `ModuleRoute`. If `moduleName` 
-> exists, we define methods we know **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** 
+> In `createModuleRoute`, we check for the `moduleName` prop from the `ModuleRoute`. If `moduleName`
+> exists, we define methods we know **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)**
 > will leverage during the initialization of routes in the router.
 
-> If `moduleName` exists, `createModuleRoute` will add the methods for `getIndexRoute`, 
+> If `moduleName` exists, `createModuleRoute` will add the methods for `getIndexRoute`,
 > `getChildRoutes`, and `getComponent` to the that route in the route configuration.
 
 ## 📖 Table of Contents
@@ -51,7 +51,7 @@ export default MyModule;
 
 ### Child routes
 
-Define your child routes as either a single route, an array of routes or a function that takes the 
+Define your child routes as either a single route, an array of routes or a function that takes the
 redux store and returns a single route or an array of routes.
 
 
@@ -80,9 +80,9 @@ export default function getChildRoutes(store) {
 
 ### `ModuleRoute`
 
-`ModuleRoute` extends [`one-app-router`](https://github.com/americanexpress/one-app-router)'s 
-[`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route). It has 
-all the functionality of `Route`, with the addition of loading a 
+`ModuleRoute` extends [`one-app-router`](https://github.com/americanexpress/one-app-router)'s
+[`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route). It has
+all the functionality of `Route`, with the addition of loading a
 [holocron module](https://github.com/americanexpress/one-app#modules) instead of a component.
 
 #### Extended [`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route) Props
@@ -105,7 +105,7 @@ These are a few statics that can be attached to modules loaded as `ModuleRoute`s
 
 ##### `childRoutes`
 
-While child routes can be defined by nesting, frequently a module will need to load its own child 
+While child routes can be defined by nesting, frequently a module will need to load its own child
 routes rather than relying on its parent to define them.
 
 `childRoutes` can be an array of routes, a single route, or a function that accepts the Redux store
@@ -135,7 +135,7 @@ MyModule.childRoutes = <ModuleRoute path="some-path" moduleName="someModule" />;
 **Arguments**
 
 | name | type | value |
-|---|---|---|---|
+|---|---|---|
 | `store` | `Object` | [Redux store](https://redux.js.org/basics/store/) |
 
 **Usage:**
@@ -144,20 +144,20 @@ MyModule.childRoutes = <ModuleRoute path="some-path" moduleName="someModule" />;
 const MyModule = () => {/* jsx */};
 
 MyModule.childRoutes = (store) => (
-  <ModuleRoute 
-    path="some-path" 
-    title={store.getState().get('pageTitle')} 
+  <ModuleRoute
+    path="some-path"
+    title={store.getState().get('pageTitle')}
     onEnter={authenticate}
-    moduleName="someModule" 
+    moduleName="someModule"
   />
 );
 ```
 
 ##### `onEnterRouteHook`
 
-When setting `ModuleRoutes`, you may set an `onEnter` hook as a prop on the `<ModuleRoute />` 
+When setting `ModuleRoutes`, you may set an `onEnter` hook as a prop on the `<ModuleRoute />`
 itself. However, it is often useful for the module being loded to define its on `onEnter` hook. We
-can do so via `onEnterRouteHook`. `onEnterRouteHook` can take one, two, or three arguments, with 
+can do so via `onEnterRouteHook`. `onEnterRouteHook` can take one, two, or three arguments, with
 different behavior for each.
 
 **One Argument**
@@ -171,9 +171,9 @@ an must return an `onEnter` hook, which has the same API as [defined in `one-app
 
 **Two or Three Arguments**
 
-When using two or three arguments, the API is the same as the `onEnter` in `one-app-router`, where 
+When using two or three arguments, the API is the same as the `onEnter` in `one-app-router`, where
 the first two arguments are `nextState` and `replace` and the optional third argument is a callback,
-which, when used, will block the transition until it is called. See the 
+which, when used, will block the transition until it is called. See the
 [`one-app-router` documentation](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#onenternextstate-replace-callback)
 for more details.
 
@@ -226,15 +226,15 @@ export default connect(null, mapDispatchToProps)(PrefetchLink);
 
 ## 📜 Available Scripts
 
-To test out any changes that you've made locally, run `npm pack` then install this within your 
+To test out any changes that you've made locally, run `npm pack` then install this within your
 application.
 
 The scripts below are available to run and use:
 
 **`npm run babel`**
 
-This deletes the current JS files within the `lib` directory and compiles the ECMAScript 6 code 
-within the `src` file to a version of ECMAScript that can run in current browsers using Babel 
+This deletes the current JS files within the `lib` directory and compiles the ECMAScript 6 code
+within the `src` file to a version of ECMAScript that can run in current browsers using Babel
 afterwards it copies them to the lib folder.
 
 **`npm run build`**
