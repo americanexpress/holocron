@@ -4,8 +4,8 @@
 
 [![npm](https://img.shields.io/npm/v/iguazu-holocron)](https://www.npmjs.com/package/iguazu-holocron)
 
->This loads holocron modules using **`iguazu`**
->Iguazu is an asynchronous data flow solution for React/Redux applications.
+> This loads Holocron modules using [Iguazu](https://github.com/americanexpress/iguazu), an 
+> asynchronous data flow solution for React/Redux applications.
 
 ## 📖 Table of Contents
 
@@ -266,7 +266,11 @@ export default connectAsync({ loadDataAsProps })(MyModule);
 ### `configureIguazuSSR`
 
 `configureIguazuSSR` is a helper for loading data on the server via Iguazu. It does not need to be 
-called directly, but needs to be attached to the module along with the `loadDataAsProps`.
+called directly, but needs to be attached to the module as the static `loadModuleData` along with
+`loadDataAsProps`.
+
+> `loadModuleData` is a module lifecycle hook used by Holocron for data fetching during server 
+> side rendering.
 
 #### Usage
 
@@ -283,10 +287,7 @@ function loadDataAsProps({ store }) {
 }
 
 MyModule.loadDataAsProps = loadDataAsProps;
-
-if (!global.BROWSER) {
-  MyModule.loadModuleData = configureIguazuSSR;
-}
+MyModule.loadModuleData = configureIguazuSSR;
 
 export default connectAsync({ loadDataAsProps })(MyModule);
 ```

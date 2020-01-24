@@ -4,7 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/holocron)](https://www.npmjs.com/package/holocron)
 
->Use this to compose and load your application modules.
+> Use this to compose and load your application modules.
 
 ## 📖 Table of Contents
 
@@ -26,7 +26,7 @@ application that can have React components updated/added to it at runtime.
 #### Holocron store
 
 After the server is initialized the holocron store is created within `createHolocronStore`, this 
-extends the redux store and adds the reducers of your module to the store.
+extends the Redux store and adds the reducers of your module to the store.
 
 #### Compose modules
 

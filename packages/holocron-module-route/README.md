@@ -8,11 +8,11 @@
 > which is a fork of **`react-router@3`**. It extends its `Route` component which uses 
 > **`holocron`**'s `loadModule` to dynamically load modules for specified routes.
 
->In `createModuleRoute`, we check for the `moduleName` prop from the `ModuleRoute`. If `moduleName` 
+> In `createModuleRoute`, we check for the `moduleName` prop from the `ModuleRoute`. If `moduleName` 
 > exists, we define methods we know **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** 
 > will leverage during the initialization of routes in the router.
 
->If `moduleName` exists, `createModuleRoute` will add the methods for `getIndexRoute`, 
+> If `moduleName` exists, `createModuleRoute` will add the methods for `getIndexRoute`, 
 > `getChildRoutes`, and `getComponent` to the that route in the route configuration.
 
 ## 📖 Table of Contents
@@ -82,10 +82,10 @@ export default function getChildRoutes(store) {
 
 `ModuleRoute` extends [`one-app-router`](https://github.com/americanexpress/one-app-router)'s 
 [`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route). It has 
-all the functionality of `Route`, with the addition of loading a holocron module instead of a 
-component.
+all the functionality of `Route`, with the addition of loading a 
+[holocron module](https://github.com/americanexpress/one-app#modules) instead of a component.
 
-#### Props
+#### Extended [`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route) Props
 
 | name | type | required | value |
 |---|---|---|---|
@@ -99,9 +99,9 @@ const myRoutes = [
 ];
 ```
 
-#### Lifecycle Methods
+#### Module Lifecycle Hooks
 
-These are a few methods that can be attached to modules loaded as `ModuleRoute`s.
+These are a few statics that can be attached to modules loaded as `ModuleRoute`s.
 
 ##### `childRoutes`
 
@@ -211,7 +211,7 @@ MyModule.onEnterRouteHook = (store) => (nextState, replace, callback) => {
 #### Usage
 
 ```jsx
-const PrefetchLink = ({ routes, location }) => (
+const PrefetchLink = ({ routes, location, prefetch }) => (
   <Link to={location} onMouseOver={() => prefetch(location)}>
     { children }
   </Link>
