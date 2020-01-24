@@ -1,12 +1,44 @@
 # 🎛 API
 
+There are some functions that are available on both the client and server, and some that are only
+available on the server. We have organized them as such.
+
+- [Universal](#universal)
+- [Server](#server)
+
 ## Universal
 
-### `createHolocronStore`
+**Contents:**
+
+- [App-level Functions](#app-level-functions)
+  - [`createHolocronStore`](#createholocronstore)
+- [Module-level Functions](#module-level-functions)
+  - [`holocronModule`](#holocronmodule)
+  - [`RenderModule`](#rendermodule)
+  - [`composeModules`](#composemodules)
+  - [`loadModule`](#loadmodule)
+- [Module Registry](#module-registry)
+  - [`registerModule`](#registermodule)
+  - [`getModule`](#getmodule)
+  - [`getModules`](#getmodules)
+  - [`getModuleMap`](#getmodulemap)
+  - [`setModuleMap`](#setmodulemap)
+- [Selectors](#selectors)
+  - [`isLoaded`](#isloaded)
+  - [`failedToLoad`](#failedToLoad)
+  - [`getLoadError`](#getLoadError)
+  - [`isLoading`](#isloading)
+  - [`getLoadingPromise`](#getloadingpromise)
+
+### App-level Functions
+
+The below is intended only to be called by your app, not modules.
+
+#### `createHolocronStore`
 
 Creates the [Redux] store with Holocron compatibility.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
@@ -16,7 +48,7 @@ Creates the [Redux] store with Holocron compatibility.
 | `localsForBuildInitialState` | `Object` | `false` | Value to pass to [vitruvius]'s `buildInitialState` |
 | `extraThunkArguments` | `Object` | `false` | Additional arguments to be passed to [Redux thunks] |
 
-#### Usage
+##### Usage
 
 ```jsx
 import { createHolocronStore } from 'holocron';
@@ -38,11 +70,16 @@ hydrate(
 );
 ```
 
-### `holocronModule`
+
+### Module-level Functions
+
+While these can all be used by the app itself, they will get the most use from modules.
+
+#### `holocronModule`
 
 A [higher order component (HOC)](https://reactjs.org/docs/higher-order-components.html) for registering a load function and/or reducer with a module. This HOC is only required if the `load` or `reducer` functionality is used.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
@@ -53,7 +90,7 @@ A [higher order component (HOC)](https://reactjs.org/docs/higher-order-component
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
 | `options` | `Object` | `false` | Additional options |
 
-#### Usage
+##### Usage
 
 ```jsx
 import { holocronModule } from 'holocron';
@@ -93,11 +130,11 @@ Components using this HOC will be provided several props.
 | `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
 | `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
-### `RenderModule`
+#### `RenderModule`
 
 A React component for rendering a Holocron module.
 
-#### Props
+##### Props
 
 | name | type | required | value |
 |---|---|---|---|
@@ -105,7 +142,7 @@ A React component for rendering a Holocron module.
 | `props` | `PropTypes.object` | `false` | Props to pass the rendered Holocron module |
 | `children` | `PropTypes.node` | `false` | Childen passed to the rendered Holocron module |
 
-#### Usage
+##### Usage
 
 ```jsx
 import { RenderModule, holocronModule, composeModules } from 'holocron';
@@ -127,17 +164,17 @@ export default holocronModule({
 })(MyComponent);
 ```
 
-### `composeModules`
+#### `composeModules`
 
 An action creator that loads Holocron modules and their data.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleConfigs` | `[{ name, props }]` | `true` | An array of objects containing module names and their props |
 
-#### Usage
+##### Usage
 
 ```js
 import { composeModules } from 'holocron';
@@ -148,17 +185,17 @@ const load = (props) => (dispatch) => dispatch(composeModules([
 ]));
 ```
 
-### `loadModule`
+#### `loadModule`
 
 An action creator that fetches a Holocron module.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module being fetched |
 
-#### Usage
+##### Usage
 
 ```js
 import { loadModule } from 'holocron';
@@ -168,18 +205,22 @@ const load = () => (dispatch) => dispatch(loadModule('my-module'));
 
 > The following are low-level APIs unlikely to be needed by most users
 
-### `registerModule`
+### Module Registry
+
+These functions are all related to interactions with the module registry.
+
+#### `registerModule`
 
 Adds a Holocron module to the registry
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of your Holocron module |
 | `module` | `Function` | `true` | The Holocron module itself (a React component) |
 
-#### Usage
+##### Usage
 
 ```js
 import { registerModule } from 'holocron';
@@ -187,18 +228,18 @@ import { registerModule } from 'holocron';
 registerModule(moduleName, Module);
 ```
 
-### `getModule`
+#### `getModule`
 
 Retrives a Holocron module from the registry
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module being requested |
 | `altModules` | `Immutable.Map` | `false` | An alternative set of modules to the registry |
 
-#### Usage
+##### Usage
 
 ```js
 import { getModule } from 'holocron';
@@ -206,15 +247,15 @@ import { getModule } from 'holocron';
 const Module = getModule(moduleName, altModules);
 ```
 
-### `getModules`
+#### `getModules`
 
 Returns all modules in the registry
 
-#### Arguments
+##### Arguments
 
 _none_
 
-#### Usage
+##### Usage
 
 ```js
 import { getModules } from 'holocron';
@@ -222,15 +263,15 @@ import { getModules } from 'holocron';
 const modules = getModules();
 ```
 
-### `getModuleMap`
+#### `getModuleMap`
 
 Returns the module map
 
-#### Arguments
+##### Arguments
 
 _none_
 
-#### Usage
+##### Usage
 
 ```js
 import { getModuleMap } from 'holocron';
@@ -238,17 +279,17 @@ import { getModuleMap } from 'holocron';
 const moduleMap = getModuleMap();
 ```
 
-### `setModuleMap`
+#### `setModuleMap`
 
 Sets the module map
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `newModuleMap` | `Immutable.Map` | `true` | The new module map to replace the existing one |
 
-#### Usage
+##### Usage
 
 ```js
 import { setModuleMap } from 'holocron';
@@ -256,17 +297,22 @@ import { setModuleMap } from 'holocron';
 setModuleMap(newModuleMap);
 ```
 
-### `isLoaded`
+### Selectors
+
+These are all functions that take a module name as the only parameter and return a new function
+that accepts the [Redux] state as the only parameter which returns data about the module.
+
+#### `isLoaded`
 
 A selector to determine if a Holocron module has been loaded.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module that may be loaded |
 
-#### Usage
+##### Usage
 
 ```js
 import { isLoaded } from 'holocron';
@@ -276,17 +322,17 @@ const mapStateToProps = (state) => (
 );
 ```
 
-### `failedToLoad`
+#### `failedToLoad`
 
 A selector to determine if a Holocron module failed to load.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module that may have failed to load |
 
-#### Usage
+##### Usage
 
 ```js
 import { failedToLoad } from 'holocron';
@@ -296,17 +342,17 @@ const mapStateToProps = (state) => ({
 });
 ```
 
-### `getLoadError`
+#### `getLoadError`
 
 A selector to return the error of a Holocron module that failed to load.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module whose load error will be returned |
 
-#### Usage
+##### Usage
 
 ```js
 import { getLoadError } from 'holocron';
@@ -316,17 +362,17 @@ const mapStateToProps = (state) => ({
 });
 ```
 
-### `isLoading`
+#### `isLoading`
 
 A selector to determine if a module is loading.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module that may be loading |
 
-#### Usage
+##### Usage
 
 ```js
 import { isLoading } from 'holocron';
@@ -336,17 +382,17 @@ const mapStateToProps = (state) => ({
 });
 ```
 
-### `getLoadingPromise`
+#### `getLoadingPromise`
 
 A selector to return the promise from a Holocron module being loaded.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of the Holocron module whose loading promise will be returned |
 
-#### Usage
+##### Usage
 
 ```js
 import { getLoadingPromise } from 'holocron';
@@ -358,11 +404,16 @@ const mapStateToProps = (state) => ({
 
 ## Server
 
-### `updateModuleRegistry`
+**Contents:**
+
+- [`updateModuleRegistry`](#updatemoduleregistry)
+- [`areModuleEntriesEqual`](#aremoduleentriesequal)
+
+#### `updateModuleRegistry`
 
 Updates the module registry with a new module map.
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
@@ -372,7 +423,7 @@ Updates the module registry with a new module map.
 | `getModulesToUpdate` | `Function` | `false` | A function that returns an array of which modules should be updated |
 
 
-#### Usage
+##### Usage
 
 ```js
 import { updateModuleRegistry } from 'holocron/server';
@@ -393,18 +444,18 @@ export default async function() {
 
 ```
 
-### `areModuleEntriesEqual`
+#### `areModuleEntriesEqual`
 
 Compares two module map entries to see if they are equal. This is intended for use when providing `getModulesToUpdate` to `updateModulesRegistry`
 
-#### Arguments
+##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `firstModuleEntry` | `Object` | `false` | A module map entry |
 | `secondModuleEntry` | `Object` | `false` | Another module map entry |
 
-#### Usage
+##### Usage
 
 ```js
 import { areModuleEntriesEqual } from 'holocron/server';
@@ -416,9 +467,9 @@ const getModulesToUpdate = (
 );
 ```
 
-[Redux]: [https://redux.js.org]
-[Redux enhancer]: [https://redux.js.org/recipes/configuring-your-store#extending-redux-functionality]
-[Redux reducer]: [https://redux.js.org/recipes/structuring-reducers/structuring-reducers]
-[vitruvius]: [http://github.com/americanexpress/vitruvius]
-[Redux thunks]: [https://github.com/reduxjs/redux-thunk]
-[`.toJS()`]: [https://immutable-js.github.io/immutable-js/docs/#/Map/toJS]
+[Redux]: https://redux.js.org
+[Redux enhancer]: https://redux.js.org/recipes/configuring-your-store#extending-redux-functionality
+[Redux reducer]: https://redux.js.org/recipes/structuring-reducers/structuring-reducers
+[vitruvius]: http://github.com/americanexpress/vitruvius
+[Redux thunks]: https://github.com/reduxjs/redux-thunk
+[`.toJS()`]: https://immutable-js.github.io/immutable-js/docs/#/Map/toJS
