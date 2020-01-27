@@ -1,4 +1,8 @@
-# holocron-module-route
+<h1 align="center">
+  <img src='https://github.com/americanexpress/holocron/raw/master/packages/holocron-module-route/holocron-module-route.png' alt="Holocron Module Route - One Amex" width='50%'/>
+</h1>
+
+[![npm](https://img.shields.io/npm/v/holocron-module-route)](https://www.npmjs.com/package/holocron-module-route)
 
 > This uses **[@americanexpress/one-app-router](https://github.com/americanexpress/one-app-router)** which is a fork of **`react-router@3`**. It extends its `Route` component which uses **`holocron`**'s `loadModule` to dynamically load modules for specified routes.
 

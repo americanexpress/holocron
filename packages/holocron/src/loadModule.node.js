@@ -33,9 +33,9 @@ function fetchModuleContent(moduleUrl) {
     assert(protocol === 'https:', 'HTTPS must be used to load modules in production');
   }
 
-  const agent = protocol === 'http:' ?
-    new HttpAgent(agentOptions) :
-    new HttpsAgent(agentOptions);
+  const agent = protocol === 'http:'
+    ? new HttpAgent(agentOptions)
+    : new HttpsAgent(agentOptions);
 
   const fetchModuleContentAttempt = () => fetch(moduleUrl, { agent })
     .catch((err) => {
@@ -76,7 +76,7 @@ export default async function loadModule(
     let nodeModule;
 
     try {
-      await checkStatus(moduleResponse);
+      checkStatus(moduleResponse);
       const moduleString = await moduleResponse.text();
       if (process.env.NODE_ENV === 'production') {
         const actualSRI = ssri.fromData(

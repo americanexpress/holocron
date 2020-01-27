@@ -34,10 +34,10 @@
     "react": "^16.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.0",
-    "@babel/core": "^7.8.0",
+    "babel-loader": "^8.0.5",
     "holocron": "^1.0.0",
-    "rimraf": "^3.0.0"
+    "react-addons-test-utils": "^15.4.2",
+    "rimraf": "^2.5.4"
   },
   "repository": {
     "type": "git",

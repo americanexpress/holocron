@@ -1,4 +1,8 @@
-# holocron
+<h1 align="center">
+  <img src='https://github.com/americanexpress/holocron/raw/master/holocron.png' alt="Holocron - One Amex" width='50%'/>
+</h1>
+
+[![npm](https://img.shields.io/npm/v/holocron)](https://www.npmjs.com/package/holocron)
 
 >Use this to compose and load your application modules.
 

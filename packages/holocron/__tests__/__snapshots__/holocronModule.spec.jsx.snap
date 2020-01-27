@@ -2,7 +2,7 @@
 
 exports[`holocronModule should gracefully handle module state missing from store 1`] = `
 <div>
-  Mock Module 
+  Mock Module
   2
 </div>
 `;
@@ -10,30 +10,34 @@ exports[`holocronModule should gracefully handle module state missing from store
 exports[`holocronModule should pass mergeProps to connect if it is specified 1`] = `
 <div>
   3
-   * 
+   
+  *
+   
   4
-   = 
+   
+  =
+   
   12
 </div>
 `;
 
 exports[`holocronModule should pass the moduleLoadStatus prop as error when it failed to load 1`] = `
 <div>
-  Mock Module - 
+  Mock Module -
   loading
 </div>
 `;
 
 exports[`holocronModule should pass the moduleLoadStatus prop as loaded when loaded 1`] = `
 <div>
-  Mock Module - 
-  loaded
+  Mock Module -
+  loading
 </div>
 `;
 
 exports[`holocronModule should pass the moduleLoadStatus prop as loading when loading 1`] = `
 <div>
-  Mock Module - 
+  Mock Module -
   loading
 </div>
 `;

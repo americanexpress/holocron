@@ -32,6 +32,17 @@
     "react": "^16.0.0",
     "react-redux": "^7.1.1"
   },
+  "devDependencies": {
+    "amex-jest-preset-react": "^4.0.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "enzyme": "^3.1.0",
+    "enzyme-to-json": "^3.1.2",
+    "react-dom": "^16.0.0",
+    "react-test-renderer": "^16.0.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "rimraf": "^3.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/americanexpress/holocron.git",
@@ -40,10 +51,5 @@
   "homepage": "https://github.com/americanexpress/holocron",
   "bugs": {
     "url": "https://github.com/americanexpress/holocron/issues"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.8.0",
-    "@babel/core": "^7.8.0",
-    "rimraf": "^3.0.0"
   }
 }

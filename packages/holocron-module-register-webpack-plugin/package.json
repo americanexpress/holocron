@@ -35,5 +35,8 @@
   "homepage": "https://github.com/americanexpress/holocron",
   "bugs": {
     "url": "https://github.com/americanexpress/holocron/issues"
+  },
+  "devDependencies": {
+    "webpack-merge": "^4.2.1"
   }
 }

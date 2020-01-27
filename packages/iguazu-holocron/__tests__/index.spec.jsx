@@ -17,7 +17,7 @@ import {
   queryModuleWithData,
   isEmpty,
   anyAreEmpty,
-} from '../src/index';
+} from '../src';
 
 describe('public API', () => {
   it('should expose the public API methods', () => {
@@ -27,4 +27,3 @@ describe('public API', () => {
     expect(anyAreEmpty).toBeDefined();
   });
 });
-

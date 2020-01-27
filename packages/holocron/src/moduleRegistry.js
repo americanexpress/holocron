@@ -23,7 +23,7 @@ function addToModuleBlockList(moduleUrl) {
 }
 
 function isModuleInBlockList(moduleUrl) {
-  return moduleBlockList.find(value => value === moduleUrl);
+  return moduleBlockList.find((value) => value === moduleUrl);
 }
 
 function getModuleBlockList() {

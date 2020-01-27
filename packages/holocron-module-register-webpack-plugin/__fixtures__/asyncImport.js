@@ -12,4 +12,5 @@
  * under the License.
  */
 
-export default () => 'Hello, world';
+const helloWorld = () => 'Hello, world';
+export default helloWorld();

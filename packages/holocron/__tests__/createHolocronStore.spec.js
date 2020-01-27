@@ -26,7 +26,7 @@ jest.mock('../src/moduleRegistry', () => {
   const createModuleReducer = (moduleName) => {
     const moduleReducer = (state = immutable.fromJS({ moduleName })) => state;
     if (moduleName !== 'moduleWithoutVitruvius') {
-      moduleReducer.buildInitialState = data => data;
+      moduleReducer.buildInitialState = (data) => data;
     }
     return moduleReducer;
   };
@@ -47,12 +47,12 @@ describe('createHolocronStore', () => {
   const defaultAppState = 'app state';
   const defaultAppReducer = (state = { app: defaultAppState }) => state;
   const helpers = (function helpers() {
-    const getStateFromSource = cb => ({ store, state } = {}) =>
-      cb(state || store ? store.getState() : iMap());
+    const getStateFromSource = (cb) => (
+      { store, state } = {}) => cb(state || store ? store.getState() : iMap());
 
     return {
-      getState: getStateFromSource(state => state),
-      getModules: getStateFromSource(state => state.get('modules')),
+      getState: getStateFromSource((state) => state),
+      getModules: getStateFromSource((state) => state.get('modules')),
     };
   }());
 
@@ -61,7 +61,7 @@ describe('createHolocronStore', () => {
     it('should throw if initialState is not immutable', () => {
       expect.assertions(7);
 
-      const create = initialState => createHolocronStore({
+      const create = (initialState) => createHolocronStore({
         reducer: defaultAppReducer,
         initialState,
       });
@@ -85,7 +85,7 @@ describe('createHolocronStore', () => {
         create({ ...defaultAppReducer(), holocron: fromJS({}) });
       }).toThrowErrorMatchingSnapshot(initialStateLabel);
       expect(() => {
-        create(Object.assign({ '@@__IMMUTABLE_ITERABLE__@@': false }, iMap()));
+        create({ '@@__IMMUTABLE_ITERABLE__@@': false, ...iMap() });
       }).toThrowErrorMatchingSnapshot(initialStateLabel);
     });
   });
@@ -271,7 +271,7 @@ describe('createHolocronStore', () => {
   it('should apply the given enhancer to the store', () => {
     global.BROWSER = false;
     const fakeFetch = jest.fn();
-    const myEnhancer = jest.fn(createReduxStore => (appReducer, preloadedState, enhancer) => {
+    const myEnhancer = jest.fn((createReduxStore) => (appReducer, preloadedState, enhancer) => {
       const store = createReduxStore(appReducer, preloadedState, enhancer);
       return {
         ...store,

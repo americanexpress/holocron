@@ -42,6 +42,11 @@
     "shallowequal": "^1.1.0",
     "ssri": "^7.0.1"
   },
+  "devDependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "nodemon": "^1.10.2",
+    "rimraf": "^2.5.4"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/americanexpress/holocron.git",
@@ -50,11 +55,5 @@
   "homepage": "https://github.com/americanexpress/holocron",
   "bugs": {
     "url": "https://github.com/americanexpress/holocron/issues"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.8.0",
-    "@babel/core": "^7.8.0",
-    "nodemon": "^2.0.2",
-    "rimraf": "^3.0.0"
   }
 }
