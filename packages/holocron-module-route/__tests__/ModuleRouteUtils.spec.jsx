@@ -35,7 +35,7 @@ jest.mock('holocron', () => ({
         }],
       },
       'store-hook-module': {
-        onEnterRouteHook: store => (nextState, replace) => {
+        onEnterRouteHook: (store) => (nextState, replace) => {
           store.dispatch({ type: 'NEXT_STATE', nextState });
           replace('/test-store-hook');
         },
@@ -87,7 +87,7 @@ describe('ModuleRouteUtils', () => {
 
     it('should pass the store to a function that creates routes', () => {
       const getState = () => 'Hello world';
-      const createRoutes = store => ({ props: { state: store.getState() } });
+      const createRoutes = (store) => ({ props: { state: store.getState() } });
       const newProps = { store: { getState } };
       expect(passChildrenProps(createRoutes, newProps)).toMatchSnapshot();
     });

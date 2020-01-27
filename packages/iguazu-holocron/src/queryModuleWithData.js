@@ -17,8 +17,8 @@ import { iguazuReduce } from 'iguazu';
 import queryModule from './queryModule';
 
 function reduceModuleDataLoad(store, module, ownProps) {
-  return module.loadDataAsProps ?
-    iguazuReduce(module.loadDataAsProps)({ store, ownProps }) : { status: 'complete' };
+  return module.loadDataAsProps
+    ? iguazuReduce(module.loadDataAsProps)({ store, ownProps }) : { status: 'complete' };
 }
 
 export default function queryModuleWithData(moduleName, moduleProps) {
@@ -35,11 +35,11 @@ export default function queryModuleWithData(moduleName, moduleProps) {
     if (bundleError) { return moduleBundleLoad; }
 
     const promise = bundlePromise.then(
-      module => (reduceModuleDataLoad(store, module, moduleProps).promise || Promise.resolve())
+      (module) => (reduceModuleDataLoad(store, module, moduleProps).promise || Promise.resolve())
     );
 
-    const { status, error } = bundleStatus === 'complete' ?
-      reduceModuleDataLoad(store, data, moduleProps) : { status: 'loading' };
+    const { status, error } = bundleStatus === 'complete'
+      ? reduceModuleDataLoad(store, data, moduleProps) : { status: 'loading' };
 
     return {
       status,

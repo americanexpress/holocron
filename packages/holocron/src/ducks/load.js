@@ -14,14 +14,10 @@
 
 import { Map as iMap, Set as iSet } from 'immutable';
 import { getModule, getModuleMap } from '../moduleRegistry';
-import { HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY } from '../constants';
-
-export const REGISTER_MODULE_REDUCER = '@@holocron/REGISTER_MODULE_REDUCER';
-export const MODULE_LOADED = '@@holocron/MODULE_LOADED';
-export const MODULE_LOAD_FAILED = '@@holocron/MODULE_LOAD_FAILED';
-export const MODULE_LOADING = '@@holocron/MODULE_LOADING';
-export const MODULE_REDUCER_ADDED = '@@holocron/MODULE_REDUCER_ADDED';
-export const INIT_MODULE_STATE = '@@holocron/INIT_MODULE_STATE';
+import {
+  HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY, REGISTER_MODULE_REDUCER,
+  MODULE_LOADED, MODULE_LOAD_FAILED, MODULE_LOADING, MODULE_REDUCER_ADDED,
+} from '../constants';
 
 const initialState = iMap({
   withReducers: iSet(),
@@ -34,27 +30,27 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
     case REGISTER_MODULE_REDUCER: {
       const { moduleName } = action;
-      return state.update('withReducers', iSet(), withReducers => withReducers.add(moduleName));
+      return state.update('withReducers', iSet(), (withReducers) => withReducers.add(moduleName));
     }
     case MODULE_LOADED: {
       const { moduleName } = action;
       return state.withMutations((holocronState) => {
         holocronState
-          .update('loaded', iSet(), loaded => loaded.add(moduleName))
-          .update('loading', iMap(), loading => loading.delete(moduleName));
+          .update('loaded', iSet(), (loaded) => loaded.add(moduleName))
+          .update('loading', iMap(), (loading) => loading.delete(moduleName));
       });
     }
     case MODULE_LOAD_FAILED: {
       const { moduleName, error } = action;
       return state.withMutations((holocronState) => {
         holocronState
-          .update('failed', iMap(), failed => failed.set(moduleName, error))
-          .update('loading', iMap(), loading => loading.delete(moduleName));
+          .update('failed', iMap(), (failed) => failed.set(moduleName, error))
+          .update('loading', iMap(), (loading) => loading.delete(moduleName));
       });
     }
     case MODULE_LOADING: {
       const { moduleName, promise } = action;
-      return state.update('loading', iMap(), loading => loading.set(moduleName, promise));
+      return state.update('loading', iMap(), (loading) => loading.set(moduleName, promise));
     }
 
     default:
@@ -93,23 +89,23 @@ function moduleLoading(moduleName, promise) {
 }
 
 export function isLoaded(moduleName) {
-  return state => state.hasIn([HOLOCRON_STORE_KEY, 'loaded', moduleName]);
+  return (state) => state.hasIn([HOLOCRON_STORE_KEY, 'loaded', moduleName]);
 }
 
 export function failedToLoad(moduleName) {
-  return state => state.hasIn([HOLOCRON_STORE_KEY, 'failed', moduleName]);
+  return (state) => state.hasIn([HOLOCRON_STORE_KEY, 'failed', moduleName]);
 }
 
 export function getLoadError(moduleName) {
-  return state => state.getIn([HOLOCRON_STORE_KEY, 'failed', moduleName]);
+  return (state) => state.getIn([HOLOCRON_STORE_KEY, 'failed', moduleName]);
 }
 
 export function isLoading(moduleName) {
-  return state => !!state.getIn([HOLOCRON_STORE_KEY, 'loading', moduleName]);
+  return (state) => !!state.getIn([HOLOCRON_STORE_KEY, 'loading', moduleName]);
 }
 
 export function getLoadingPromise(moduleName) {
-  return state => state.getIn([HOLOCRON_STORE_KEY, 'loading', moduleName]);
+  return (state) => state.getIn([HOLOCRON_STORE_KEY, 'loading', moduleName]);
 }
 
 /* eslint-disable global-require */

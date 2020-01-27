@@ -43,7 +43,7 @@ describe('composeModules', () => {
     loadModule.mockImplementationOnce(() => Promise.resolve(subModuleA))
       .mockImplementationOnce(() => Promise.resolve(subModuleB));
 
-    const dispatch = x => x;
+    const dispatch = (x) => x;
 
     return thunk(dispatch)
       .then(() => {
@@ -61,7 +61,7 @@ describe('composeModules', () => {
 
     const moduleLoadError = new Error('Failed to load Module');
     loadModule.mockImplementationOnce(() => Promise.reject(moduleLoadError));
-    const dispatch = x => x;
+    const dispatch = (x) => x;
 
     return thunk(dispatch)
       .then(([error]) => {
@@ -75,7 +75,7 @@ describe('composeModules', () => {
     require('../../src/ducks/load').loadModule // eslint-disable-line global-require
       .mockImplementationOnce(() => Promise.resolve(fakeModule));
 
-    const dispatch = x => x;
+    const dispatch = (x) => x;
     const getState = () => null;
     const store = { dispatch, getState };
     const thunk = composeModules([{ name: 'my-submodule', props: { some: 'props' } }]);

@@ -55,11 +55,16 @@ export default function holocronModule({
         }
       }
 
-      componentWillReceiveProps(nextProps) {
-        if (shouldModuleReload && shouldModuleReload(this.props, nextProps)) {
-          const newLoadCount = this.state.loadCount + 1;
+      // ignoring to support deprecated componentWillReceiveProps.
+      // This needs to be removed to support React17
+      // eslint-disable-next-line camelcase
+      UNSAFE_componentWillReceiveProps(nextProps) {
+        const { loadCount } = this.state;
+        const { props } = this;
+        if (shouldModuleReload && shouldModuleReload(props, nextProps)) {
+          const newLoadCount = loadCount + 1;
           this.setState({ status: 'loading', loadCount: newLoadCount });
-          this.initiateLoad(newLoadCount, nextProps);
+          this.initiateLoad(newLoadCount, nextProps, loadCount);
         }
       }
 
@@ -69,15 +74,17 @@ export default function holocronModule({
         this.mounted = false;
       }
 
-      initiateLoad(loadCount, props) {
-        const loadResult = this.props.load(props);
+      initiateLoad(newLoadCount, nextProps, loadCount) {
+        // ignoring this as destructuring this causes this to behave different
+        // eslint-disable-next-line react/destructuring-assignment
+        const loadResult = this.props.load(nextProps);
         const loadPromise = loadResult instanceof Promise ? loadResult : Promise.resolve();
         loadPromise
           .then(() => {
             // Ignoring else on these two safety checks as they are not testable
             // and most likely unnecessary.
             /* istanbul ignore else */
-            if (this.mounted && this.state.loadCount <= loadCount) {
+            if (this.mounted && loadCount <= newLoadCount) {
               this.setState({ status: 'loaded' });
             }
           })
@@ -91,7 +98,9 @@ export default function holocronModule({
       }
 
       render() {
-        return <WrappedComponent {...this.props} moduleLoadStatus={this.state.status} />;
+        const { status } = this.state;
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        return <WrappedComponent {...this.props} moduleLoadStatus={status} />;
       }
     }
 
@@ -114,11 +123,11 @@ export default function holocronModule({
     hoistStatics(HolocronModuleWrapper, WrappedComponent);
 
     const getModuleState = createSelector(
-      state => state.getIn(
+      (state) => state.getIn(
         [MODULES_STORE_KEY, name],
         reducer(undefined, { type: INIT_MODULE_STATE })
       ),
-      moduleState => moduleState.toJS()
+      (moduleState) => moduleState.toJS()
     );
 
     const mapModuleStateToProps = reducer && ((state) => {

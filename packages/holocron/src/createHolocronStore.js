@@ -17,9 +17,11 @@ import immutableCombineReducers from '@americanexpress/vitruvius/immutable';
 import thunk from 'redux-thunk';
 import { Map as iMap, Set as iSet, isImmutable } from 'immutable';
 
-import holocronReducer, { MODULE_REDUCER_ADDED } from './ducks/load';
+import holocronReducer from './ducks/load';
 import { getModule, getModules } from './moduleRegistry';
-import { HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY } from './constants';
+import {
+  HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY, MODULE_REDUCER_ADDED,
+} from './constants';
 
 function immutableCombineReducersWithNewModules(moduleReducerMap, newModuleState) {
   if (Object.keys(moduleReducerMap).length === 0) {
@@ -85,41 +87,40 @@ function createReducer({ appReducer, state, localsForBuildInitialState }) {
   };
 }
 
-const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) =>
-  createReduxStore => (appReducer, preloadedState, enhancer) => {
-    const reducer = createReducer({
-      appReducer,
-      state: preloadedState,
-      localsForBuildInitialState,
-    });
-    const store = createReduxStore(reducer, preloadedState, enhancer);
-    const { getState } = store;
-    const rebuildReducer = () =>
-      store.replaceReducer(createReducer({
-        appReducer,
-        state: getState(),
-        localsForBuildInitialState,
-      }));
-    store.rebuildReducer = rebuildReducer;
-    let { dispatch } = store;
+const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) => (
+  createReduxStore) => (appReducer, preloadedState, enhancer) => {
+  const reducer = createReducer({
+    appReducer,
+    state: preloadedState,
+    localsForBuildInitialState,
+  });
+  const store = createReduxStore(reducer, preloadedState, enhancer);
+  const { getState } = store;
+  const rebuildReducer = () => store.replaceReducer(createReducer({
+    appReducer,
+    state: getState(),
+    localsForBuildInitialState,
+  }));
+  store.rebuildReducer = rebuildReducer;
+  let { dispatch } = store;
 
-    if (!global.BROWSER) { store.modules = getModules(); }
+  if (!global.BROWSER) { store.modules = getModules(); }
 
-    const middlewareAPI = {
-      getState: store.getState,
-      dispatch: action => dispatch(action),
-    };
-    dispatch = thunk.withExtraArgument({
-      ...extraThunkArguments,
-      rebuildReducer,
-      modules: store.modules,
-    })(middlewareAPI)(store.dispatch);
-
-    return {
-      ...store,
-      dispatch,
-    };
+  const middlewareAPI = {
+    getState: store.getState,
+    dispatch: (action) => dispatch(action),
   };
+  dispatch = thunk.withExtraArgument({
+    ...extraThunkArguments,
+    rebuildReducer,
+    modules: store.modules,
+  })(middlewareAPI)(store.dispatch);
+
+  return {
+    ...store,
+    dispatch,
+  };
+};
 
 export default function createHolocronStore({
   reducer,
@@ -132,9 +133,9 @@ export default function createHolocronStore({
     throw new Error('createHolocronStore expects immutable initial state');
   }
 
-  const enhancedEnhancer = enhancer ?
-    compose(holocronEnhancer(localsForBuildInitialState, extraThunkArguments), enhancer) :
-    holocronEnhancer(localsForBuildInitialState, extraThunkArguments);
+  const enhancedEnhancer = enhancer
+    ? compose(holocronEnhancer(localsForBuildInitialState, extraThunkArguments), enhancer)
+    : holocronEnhancer(localsForBuildInitialState, extraThunkArguments);
 
   return createStore(reducer, initialState, enhancedEnhancer);
 }

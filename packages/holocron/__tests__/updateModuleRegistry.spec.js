@@ -21,20 +21,18 @@ import {
 } from '../src/moduleRegistry';
 
 jest.mock('../src/loadModule.node', () => {
-  const createTimeoutPromise = (resolveWith, time) =>
-    new Promise(res => setTimeout(() => res(resolveWith), time));
-  return jest.fn((moduleName, moduleVersion) =>
-    createTimeoutPromise(() => `new ${moduleName}@${moduleVersion}`, 100));
+  const createTimeoutPromise = (
+    resolveWith, time) => new Promise((res) => setTimeout(() => res(resolveWith), time));
+  return jest.fn((moduleName, moduleVersion) => createTimeoutPromise(() => `new ${moduleName}@${moduleVersion}`, 100));
 });
 
 describe('updateModuleRegistry', () => {
   const onModuleLoad = jest.fn();
 
-  const getModuleOutputs = modules =>
-    modules.reduce((acc, module, moduleName) => ({
-      ...acc,
-      [moduleName]: module(),
-    }), {});
+  const getModuleOutputs = (modules) => modules.reduce((acc, module, moduleName) => ({
+    ...acc,
+    [moduleName]: module(),
+  }), {});
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -119,7 +117,7 @@ describe('updateModuleRegistry', () => {
         'another-module': updatedModuleData,
       },
     };
-    const batchModulesToUpdate = x => [x];
+    const batchModulesToUpdate = (x) => [x];
     await updateModuleRegistry({
       moduleMap: newModuleMap,
       onModuleLoad,
@@ -226,7 +224,7 @@ describe('updateModuleRegistry', () => {
       },
     };
 
-    const batchModulesToUpdate = moduleNames => moduleNames.reduce((acc, moduleName) => {
+    const batchModulesToUpdate = (moduleNames) => moduleNames.reduce((acc, moduleName) => {
       const lastArr = acc[acc.length - 1];
       if (lastArr.length < 2) lastArr.push(moduleName);
       else acc.push([moduleName]);
@@ -344,7 +342,7 @@ describe('updateModuleRegistry', () => {
         },
       },
     };
-    const batchModulesToUpdate = x => [x];
+    const batchModulesToUpdate = (x) => [x];
 
     await updateModuleRegistry({
       moduleMap: newModuleMap,
@@ -380,7 +378,7 @@ describe('updateModuleRegistry', () => {
         },
       },
     };
-    const batchModulesToUpdate = x => [x];
+    const batchModulesToUpdate = (x) => [x];
 
     await updateModuleRegistry({
       moduleMap: newModuleMap,
@@ -414,7 +412,7 @@ describe('updateModuleRegistry', () => {
       },
     };
 
-    const batchModulesToUpdate = x => [x];
+    const batchModulesToUpdate = (x) => [x];
     const updatedModules = await updateModuleRegistry({
       moduleMap: newModuleMap,
       onModuleLoad,
@@ -451,7 +449,7 @@ describe('updateModuleRegistry', () => {
       },
     };
 
-    const batchModulesToUpdate = x => [x];
+    const batchModulesToUpdate = (x) => [x];
     const updatedModules = await updateModuleRegistry({
       moduleMap: newModuleMap,
       onModuleLoad,
@@ -503,7 +501,7 @@ describe('updateModuleRegistry', () => {
         },
       },
     };
-    const batchModulesToUpdate = x => x.map(i => [i]);
+    const batchModulesToUpdate = (x) => x.map((i) => [i]);
     await expect(updateModuleRegistry({
       moduleMap: newModuleMap,
       onModuleLoad,

@@ -13,15 +13,16 @@
  */
 
 import { fromJS, Set as iSet, Map as iMap } from 'immutable';
-import { REDUCER_KEY } from '../../src/constants';
-import { getModuleMap } from '../../src/moduleRegistry';
-
-import reducer, {
-  REGISTER_MODULE_REDUCER,
+import {
+  REDUCER_KEY, REGISTER_MODULE_REDUCER,
   MODULE_LOADED,
   MODULE_LOAD_FAILED,
   MODULE_LOADING,
   MODULE_REDUCER_ADDED,
+} from '../../src/constants';
+import { getModuleMap } from '../../src/moduleRegistry';
+
+import reducer, {
   loadModule,
 } from '../../src/ducks/load';
 
@@ -132,7 +133,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({ holocron: { loaded: iSet(['my-module']), moduleVersions: {} } });
     await expect(thunk(dispatch, getState, {})).resolves.toBe('Cached MockModule');
     expect(dispatch).not.toHaveBeenCalled();
@@ -144,7 +145,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const error = new Error('load failure');
     const getState = () => fromJS({ holocron: { loaded: iSet(), failed: { 'my-module': error }, moduleVersions: {} } });
     await expect(thunk(dispatch, getState, {})).rejects.toBe(error);
@@ -157,7 +158,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -176,7 +177,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -196,7 +197,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -218,7 +219,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -240,7 +241,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -259,7 +260,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -282,7 +283,7 @@ describe('loadModule', () => {
     );
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),
@@ -308,7 +309,7 @@ describe('loadModule', () => {
     require('../../src/loadModule.web').default.mockImplementationOnce(() => Promise.reject(loadModuleError)); // eslint-disable-line global-require
 
     const thunk = loadModule('my-module');
-    const dispatch = jest.fn(x => x);
+    const dispatch = jest.fn((x) => x);
     const getState = () => fromJS({
       holocron: {
         loaded: iSet(),

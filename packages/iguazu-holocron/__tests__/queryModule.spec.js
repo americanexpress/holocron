@@ -25,7 +25,7 @@ jest.mock('holocron', () => ({
   getLoadError: jest.fn(() => () => undefined),
 }));
 
-const dispatch = jest.fn(x => x);
+const dispatch = jest.fn((x) => x);
 const getState = jest.fn();
 
 describe('queryModule', () => {

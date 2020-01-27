@@ -33,14 +33,10 @@
     "react-redux": "^7.1.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
     "amex-jest-preset-react": "^4.0.0",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-amex": "^2.0.0",
     "enzyme": "^3.1.0",
     "enzyme-to-json": "^3.1.2",
-    "jest": "^24.1.0",
     "react-dom": "^16.0.0",
     "react-test-renderer": "^16.0.0",
     "redux": "^3.7.2",
