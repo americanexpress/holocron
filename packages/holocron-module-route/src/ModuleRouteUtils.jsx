@@ -26,8 +26,9 @@ export const passChildrenProps = (givenRoutes = [], newProps) => {
     : [addToRouteProps(routes, newProps)];
 };
 
-export const getRouteIndex = (
-  routes, props) => (routes && createRoutes(passChildrenProps(routes, props))[0].indexRoute);
+export const getRouteIndex = (routes, props) => (
+  routes && createRoutes(passChildrenProps(routes, props))[0].indexRoute
+);
 
 export const createModuleRoute = (defaultProps, props) => {
   const { moduleName, store } = props;
@@ -97,7 +98,6 @@ export function createModuleRouteFromElement({ type, props }) {
     const children = passChildrenProps(route.children, { store });
     const childRoutes = createRoutesFromReactChildren(children, route);
 
-    // eslint-disable-next-line unicorn/explicit-length-check
     if (childRoutes.length > 0) {
       route.childRoutes = childRoutes;
     }

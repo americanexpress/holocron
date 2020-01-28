@@ -19,8 +19,6 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-// disabling this eslint warning as this is being reported erroneously as a dependency
-// eslint-disable-next-line import/no-extraneous-dependencies
 const merge = require('webpack-merge');
 const HolocronModuleRegisterPlugin = require('../HolocronModuleRegisterPlugin');
 

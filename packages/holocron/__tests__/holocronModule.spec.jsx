@@ -201,7 +201,7 @@ Mock Module -
       load,
     })(({ moduleLoadStatus }) => (
       <div>
-Mock Module -
+        Mock Module -
         {moduleLoadStatus}
       </div>
     ));
@@ -225,7 +225,7 @@ Mock Module -
       load,
     })(({ moduleLoadStatus }) => (
       <div>
-Mock Module -
+        Mock Module -
         {moduleLoadStatus}
       </div>
     ));
@@ -252,7 +252,7 @@ Mock Module -
       load,
     })(({ moduleLoadStatus }) => (
       <div>
-Mock Module -
+        Mock Module -
         {moduleLoadStatus}
       </div>
     ));
@@ -281,7 +281,7 @@ Mock Module -
       load,
     })(({ moduleLoadStatus }) => (
       <div>
-Mock Module -
+        Mock Module -
         {moduleLoadStatus}
       </div>
     ));
@@ -378,7 +378,6 @@ Mock Module -
         {x}
         {' '}
 *
-        {' '}
         {y}
         {' '}
 =
@@ -403,7 +402,7 @@ Mock Module -
       reducer,
     })(({ moduleState }) => (
       <div>
-Mock Module
+        Mock Module
         {moduleState.x}
       </div>
     ));

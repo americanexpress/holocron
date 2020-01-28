@@ -13,4 +13,4 @@
  */
 
 const helloWorld = () => 'Hello, world';
-export default helloWorld();
+export default helloWorld;

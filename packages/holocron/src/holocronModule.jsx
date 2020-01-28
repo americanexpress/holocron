@@ -17,13 +17,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import hoistStatics from 'hoist-non-react-statics';
+import { INIT_MODULE_STATE } from './ducks/load';
 
 import {
   LOAD_KEY,
   REDUCER_KEY,
   MODULES_STORE_KEY,
-  INIT_MODULE_STATE,
 } from './constants';
+
 
 export default function holocronModule({
   name,
@@ -64,7 +65,7 @@ export default function holocronModule({
         if (shouldModuleReload && shouldModuleReload(props, nextProps)) {
           const newLoadCount = loadCount + 1;
           this.setState({ status: 'loading', loadCount: newLoadCount });
-          this.initiateLoad(newLoadCount, nextProps, loadCount);
+          this.initiateLoad(newLoadCount, nextProps);
         }
       }
 
@@ -74,17 +75,18 @@ export default function holocronModule({
         this.mounted = false;
       }
 
-      initiateLoad(newLoadCount, nextProps, loadCount) {
+      initiateLoad(loadCount, props) {
         // ignoring this as destructuring this causes this to behave different
         // eslint-disable-next-line react/destructuring-assignment
-        const loadResult = this.props.load(nextProps);
+        const loadResult = this.props.load(props);
         const loadPromise = loadResult instanceof Promise ? loadResult : Promise.resolve();
         loadPromise
           .then(() => {
             // Ignoring else on these two safety checks as they are not testable
             // and most likely unnecessary.
             /* istanbul ignore else */
-            if (this.mounted && loadCount <= newLoadCount) {
+            // eslint-disable-next-line react/destructuring-assignment
+            if (this.mounted && this.state.loadCount <= loadCount) {
               this.setState({ status: 'loaded' });
             }
           })

@@ -16,8 +16,8 @@ import { fromJS } from 'immutable';
 import loadModule from '../src/loadModule.web';
 import { resetModuleRegistry } from '../src/moduleRegistry';
 
-const map = {};
 let mockElement;
+let map;
 
 jest.spyOn(document, 'createElement').mockImplementation(() => mockElement);
 jest.spyOn(document, 'getElementsByTagName').mockImplementation(() => [{ appendChild: () => null }]);
@@ -26,6 +26,7 @@ window.__holocron_module_bundle_type__ = 'browser';
 
 describe('loadModule.web', () => {
   beforeEach(() => {
+    map = {};
     mockElement = {
       addEventListener: jest.fn((event, cb) => {
         map[event] = cb;
@@ -149,6 +150,7 @@ describe('loadModule.web', () => {
       })
     );
     const loadError = new Error('failed to load module');
+    expect(mockElement.addEventListener.mock.calls[0][0]).toBe('error');
     expect(mockElement.addEventListener.mock.calls[0][1](loadError)).toBeUndefined();
     return expect(loadPromise).rejects.toBe(loadError.message);
   });
@@ -196,6 +198,7 @@ describe('loadModule.web', () => {
         },
       })
     );
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
     expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     return expect(loadPromise).resolves.toBe(LoadingModule);
   });
@@ -244,6 +247,7 @@ describe('loadModule.web', () => {
         },
       })
     );
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
     expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?key=key123');
     expect(new URL(mockElement.src).search).toBe('?key=key123');
@@ -293,6 +297,7 @@ describe('loadModule.web', () => {
         },
       })
     );
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
     expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
     expect(new URL(mockElement.src).search).toBe('');

@@ -14,7 +14,8 @@
 
 import { Map as iMap, Set as iSet, fromJS } from 'immutable';
 
-import { REGISTER_MODULE_REDUCER, MODULE_REDUCER_ADDED, REDUCER_KEY } from '../src/constants';
+import { REDUCER_KEY } from '../src/constants';
+import { REGISTER_MODULE_REDUCER, MODULE_REDUCER_ADDED } from '../src/ducks/load';
 
 import createHolocronStore from '../src/createHolocronStore';
 
@@ -47,8 +48,9 @@ describe('createHolocronStore', () => {
   const defaultAppState = 'app state';
   const defaultAppReducer = (state = { app: defaultAppState }) => state;
   const helpers = (function helpers() {
-    const getStateFromSource = (cb) => (
-      { store, state } = {}) => cb(state || store ? store.getState() : iMap());
+    const getStateFromSource = (cb) => ({ store, state } = {}) => cb(
+      state || store ? store.getState() : iMap()
+    );
 
     return {
       getState: getStateFromSource((state) => state),

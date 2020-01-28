@@ -13,17 +13,16 @@
  */
 
 import { fromJS, Set as iSet, Map as iMap } from 'immutable';
-import {
-  REDUCER_KEY, REGISTER_MODULE_REDUCER,
-  MODULE_LOADED,
-  MODULE_LOAD_FAILED,
-  MODULE_LOADING,
-  MODULE_REDUCER_ADDED,
-} from '../../src/constants';
+import { REDUCER_KEY } from '../../src/constants';
 import { getModuleMap } from '../../src/moduleRegistry';
 
 import reducer, {
   loadModule,
+  REGISTER_MODULE_REDUCER,
+  MODULE_LOADED,
+  MODULE_LOAD_FAILED,
+  MODULE_LOADING,
+  MODULE_REDUCER_ADDED,
 } from '../../src/ducks/load';
 
 const mockModule = () => 'a mock module';

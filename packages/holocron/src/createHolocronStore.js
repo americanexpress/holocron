@@ -17,10 +17,10 @@ import immutableCombineReducers from '@americanexpress/vitruvius/immutable';
 import thunk from 'redux-thunk';
 import { Map as iMap, Set as iSet, isImmutable } from 'immutable';
 
-import holocronReducer from './ducks/load';
+import holocronReducer, { MODULE_REDUCER_ADDED } from './ducks/load';
 import { getModule, getModules } from './moduleRegistry';
 import {
-  HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY, MODULE_REDUCER_ADDED,
+  HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY,
 } from './constants';
 
 function immutableCombineReducersWithNewModules(moduleReducerMap, newModuleState) {
