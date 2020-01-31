@@ -35,7 +35,7 @@ modules, this data is needed for rendering.
 
 ## 🎛️ API
 
-Click [here](./API.md) for the API reference guide.
+Check out the [API reference guide](./API.md).
 
 ## 📜 Available Scripts
 
