@@ -17,8 +17,13 @@ import { createRoutes } from '@americanexpress/one-app-router';
 // holocron is a peer dependency
 import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
 
-export const addToRouteProps = (
-  route, newProps) => ({ ...route, props: { ...route.props, ...newProps } });
+export const addToRouteProps = (route, newProps) => ({
+  ...route,
+  props: {
+    ...route.props,
+    ...newProps,
+  },
+});
 
 export const passChildrenProps = (givenRoutes = [], newProps) => {
   const routes = typeof givenRoutes === 'function' ? givenRoutes(newProps.store) : givenRoutes;

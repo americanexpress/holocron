@@ -366,7 +366,10 @@ Mock Module -
     const mergeProps = (stateProps, dispatchProps, ownProps) => {
       const xy = stateProps.moduleState.x * ownProps.y;
       return {
-        ...stateProps, ...dispatchProps, ...ownProps, xy,
+        ...stateProps,
+        ...dispatchProps,
+        ...ownProps,
+        xy,
       };
     };
     const Module = holocronModule({

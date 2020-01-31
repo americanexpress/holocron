@@ -88,7 +88,12 @@ function createReducer({ appReducer, state, localsForBuildInitialState }) {
 }
 
 const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) => (
-  createReduxStore) => (appReducer, preloadedState, enhancer) => {
+  createReduxStore
+) => (
+  appReducer,
+  preloadedState,
+  enhancer
+) => {
   const reducer = createReducer({
     appReducer,
     state: preloadedState,

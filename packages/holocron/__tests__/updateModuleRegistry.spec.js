@@ -22,7 +22,11 @@ import {
 
 jest.mock('../src/loadModule.node', () => {
   const createTimeoutPromise = (
-    resolveWith, time) => new Promise((res) => setTimeout(() => res(resolveWith), time));
+    resolveWith,
+    time
+  ) => new Promise(
+    (res) => setTimeout(() => res(resolveWith), time)
+  );
   return jest.fn((moduleName, moduleVersion) => createTimeoutPromise(() => `new ${moduleName}@${moduleVersion}`, 100));
 });
 
