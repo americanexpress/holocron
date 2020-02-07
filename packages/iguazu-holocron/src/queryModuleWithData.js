@@ -35,7 +35,7 @@ export default function queryModuleWithData(moduleName, moduleProps) {
     if (bundleError) { return moduleBundleLoad; }
 
     const promise = bundlePromise.then(
-      (module) => (reduceModuleDataLoad(store, module, moduleProps).promise || Promise.resolve())
+      (module) => reduceModuleDataLoad(store, module, moduleProps).promise || Promise.resolve()
     );
 
     const { status, error } = bundleStatus === 'complete'

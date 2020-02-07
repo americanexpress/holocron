@@ -31,10 +31,9 @@ export const passChildrenProps = (givenRoutes = [], newProps) => {
     : [addToRouteProps(routes, newProps)];
 };
 
-export const getRouteIndex = (routes, props) => (
-  routes && createRoutes(passChildrenProps(routes, props))[0].indexRoute
-);
-
+export const getRouteIndex = (
+  routes, props
+) => routes && createRoutes(passChildrenProps(routes, props))[0].indexRoute;
 export const createModuleRoute = (defaultProps, props) => {
   const { moduleName, store } = props;
 

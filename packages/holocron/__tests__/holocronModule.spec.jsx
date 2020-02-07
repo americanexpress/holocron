@@ -58,7 +58,7 @@ describe('holocronModule', () => {
       name: 'mock-module',
       reducer: moduleReducer,
     })(InnerModule);
-    const appReducer = (state, action) => (action.type === 'MOCK_ACTION_TYPE' ? action.newState : (state || {}));
+    const appReducer = (state, action) => (action.type === 'MOCK_ACTION_TYPE' ? action.newState : state || {});
     const reducer = immutableCombineReducers({
       app: appReducer,
       modules: immutableCombineReducers({
@@ -76,7 +76,7 @@ describe('holocronModule', () => {
 
   it('should dispatch the module\'s load action on componentDidMount with no preloaded state', () => {
     global.INITIAL_STATE = undefined;
-    const load = jest.fn(() => (() => Promise.resolve()));
+    const load = jest.fn(() => () => Promise.resolve());
     const Module = holocronModule({
       name: 'mock-module',
       load,
@@ -97,7 +97,7 @@ describe('holocronModule', () => {
 
   it('should not dispatch the module\'s load action on client takeover of a server render', () => {
     global.INITIAL_STATE = { some: 'state' };
-    const load = jest.fn(() => (() => Promise.resolve()));
+    const load = jest.fn(() => () => Promise.resolve());
     const Module = holocronModule({
       name: 'mock-module',
       load,
@@ -116,12 +116,7 @@ describe('holocronModule', () => {
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => (
-      <div>
-Mock Module -
-        {moduleLoadStatus}
-      </div>
-    ));
+    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
     const mockStore = createStore((state) => state);
     renderer.create(
       <Provider store={mockStore}>
@@ -132,7 +127,7 @@ Mock Module -
   });
 
   it('should dispatch the module\'s load action if it receives new props that pass shouldModuleReload', () => {
-    const load = jest.fn(() => (() => Promise.resolve()));
+    const load = jest.fn(() => () => Promise.resolve());
     const Module = connect((state) => state)(holocronModule({
       name: 'mock-module',
       load,
@@ -195,16 +190,11 @@ Mock Module -
   it('should pass the moduleLoadStatus prop as loading when loading', () => {
     global.INITIAL_STATE = undefined;
     const loadPromise = Promise.resolve();
-    const load = jest.fn(() => (() => loadPromise));
+    const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => (
-      <div>
-        Mock Module -
-        {moduleLoadStatus}
-      </div>
-    ));
+    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
     const tree = renderer.create(
       <Provider store={mockStore}>
@@ -219,16 +209,11 @@ Mock Module -
   it('should pass the moduleLoadStatus prop as loaded when loaded', () => {
     global.INITIAL_STATE = undefined;
     const loadPromise = Promise.resolve();
-    const load = jest.fn(() => (() => loadPromise));
+    const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => (
-      <div>
-        Mock Module -
-        {moduleLoadStatus}
-      </div>
-    ));
+    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
     const tree = renderer.create(
       <Provider store={mockStore}>
@@ -246,16 +231,11 @@ Mock Module -
   it('should pass the moduleLoadStatus prop as error when it failed to load', () => {
     global.INITIAL_STATE = undefined;
     const loadPromise = Promise.reject();
-    const load = jest.fn(() => (() => loadPromise));
+    const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => (
-      <div>
-        Mock Module -
-        {moduleLoadStatus}
-      </div>
-    ));
+    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
     const tree = renderer.create(
       <Provider store={mockStore}>
@@ -275,16 +255,11 @@ Mock Module -
 
   it('should gracefully handle load not returning a Promise', () => {
     global.INITIAL_STATE = undefined;
-    const load = jest.fn(() => (() => 'not a promise'));
+    const load = jest.fn(() => () => 'not a promise');
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => (
-      <div>
-        Mock Module -
-        {moduleLoadStatus}
-      </div>
-    ));
+    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
     renderer.create(
       <Provider store={mockStore}>
@@ -376,18 +351,7 @@ Mock Module -
       name: 'mock-module',
       reducer,
       mergeProps,
-    })(({ moduleState: { x }, y, xy }) => (
-      <div>
-        {x}
-        {' '}
-*
-        {y}
-        {' '}
-=
-        {' '}
-        {xy}
-      </div>
-    ));
+    })(({ moduleState: { x }, y, xy }) => <div>{x} * {y} = {xy}</div>);
     const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { x: 3 } } }));
     const component = renderer.create(
       <Provider store={mockStore}>
@@ -403,12 +367,7 @@ Mock Module -
     const Module = holocronModule({
       name: 'mock-module',
       reducer,
-    })(({ moduleState }) => (
-      <div>
-        Mock Module
-        {moduleState.x}
-      </div>
-    ));
+    })(({ moduleState }) => <div>Mock Module {moduleState.x}</div>);
     const mockStore = createStore((state) => state, fromJS({ modules: {} }));
     const render = () => renderer.create(
       <Provider store={mockStore}>

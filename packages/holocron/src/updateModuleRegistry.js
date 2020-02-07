@@ -40,7 +40,8 @@ export default async function updateModuleRegistry({
 }) {
   const currentModuleMap = getModuleMap().toJS();
   const modulesToUpdate = batchModulesToUpdate(
-    getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules));
+    getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules)
+  );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
 
   let updatedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
@@ -51,11 +52,13 @@ export default async function updateModuleRegistry({
     return [...loadedModules, ...nextModules];
   }, []);
   updatedModules = updatedModules.reduce((
-    acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
+    acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {}
+  );
   const newModules = getModules().merge(updatedModules);
 
   resetModuleRegistry(newModules, newModuleMap);
 
   return flatModulesToUpdate.reduce((
-    acc, moduleName) => ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {});
+    acc, moduleName) => ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {}
+  );
 }
