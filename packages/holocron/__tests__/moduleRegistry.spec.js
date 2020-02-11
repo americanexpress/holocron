@@ -38,7 +38,7 @@ describe('moduleRegistry', () => {
     const GoodModule = () => null;
     registerModule('good-module', GoodModule);
     expect(getModules()).toMatchSnapshot();
-    expect(getModule('good-module')).toBe(GoodModule);
+    expect(getModule('good-module').displayName).toBe('WithHolocronErrorBoundary(GoodModule)');
   });
 
   it('should set the module map', () => {
@@ -71,7 +71,7 @@ describe('moduleRegistry', () => {
     const AltModule = () => null;
     const altModules = fromJS({ 'good-module': AltModule });
     registerModule('good-module', GoodModule);
-    expect(getModule('good-module')).toBe(GoodModule);
+    expect(getModule('good-module').displayName).toBe('WithHolocronErrorBoundary(GoodModule)');
     expect(getModule('good-module', altModules)).toBe(AltModule);
   });
 

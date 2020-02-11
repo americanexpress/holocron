@@ -13,6 +13,7 @@
  */
 
 import { fromJS, List } from 'immutable';
+import { withHolocronErrorBoundary } from './HolocronErrorBoundary';
 
 let modules = fromJS({});
 let moduleMap = fromJS({});
@@ -31,7 +32,7 @@ function getModuleBlockList() {
 }
 
 function registerModule(moduleName, module) {
-  modules = modules.set(moduleName, module);
+  modules = modules.set(moduleName, withHolocronErrorBoundary(module));
 }
 
 function getModule(moduleName, altModules) {
