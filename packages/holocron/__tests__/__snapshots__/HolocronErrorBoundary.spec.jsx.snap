@@ -11,7 +11,7 @@ exports[`HolocronErrorBoundary Sets its state to an error state and renders the 
       }
     }
   >
-    These are not the droids you are looking for.
+    You have encountered an error!
   </div>
 </HolocronErrorBoundary>
 `;

@@ -8,7 +8,7 @@ describe('HolocronErrorBoundary', () => {
 
   const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   const mockError = new Error(
-    'These are not the droids you are looking for.'
+    'You have encountered an error!'
   );
 
     // eslint-disable-next-line react/prop-types
