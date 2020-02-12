@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HolocronErrorBoundary Sets its state to an error state and renders null in production 1`] = `<HolocronErrorBoundary />`;
+
+exports[`HolocronErrorBoundary Sets its state to an error state and renders the error message 1`] = `
+<HolocronErrorBoundary>
+  <div
+    style={
+      Object {
+        "color": "red",
+      }
+    }
+  >
+    These are not the droids you are looking for.
+  </div>
+</HolocronErrorBoundary>
+`;

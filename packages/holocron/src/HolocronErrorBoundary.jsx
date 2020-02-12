@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { node } from 'prop-types';
+import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 
 class HolocronErrorBoundary extends Component {
@@ -12,10 +12,8 @@ class HolocronErrorBoundary extends Component {
     return { error };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   componentDidCatch(error, errorInfo) {
-    this.setState({
-      error,
-    });
     console.error(error);
     console.error(errorInfo);
   }
@@ -33,7 +31,7 @@ class HolocronErrorBoundary extends Component {
 }
 
 HolocronErrorBoundary.propTypes = {
-  children: node,
+  children: PropTypes.node,
 };
 
 HolocronErrorBoundary.defaultProps = {

@@ -76,7 +76,7 @@ describe('HolocronErrorBoundary', () => {
     ).toBe(true);
   });
 
-  it('Sets its state t an error state and renders the error message', () => {
+  it('Sets its state to an error state and renders the error message', () => {
     const wrapper = mount(
       <HolocronErrorBoundary>
         <CharacterWelcome name="R2-D2" />
@@ -92,9 +92,17 @@ describe('HolocronErrorBoundary', () => {
     expect(
       wrapperWithHolocronErrorBoundary.find(HolocronErrorBoundary).instance().state.error
     ).toEqual(expect.objectContaining(mockError));
+    expect(
+      wrapper.containsMatchingElement(
+        <div>
+          {mockError.message}
+        </div>
+      )
+    );
+    expect(wrapper).toMatchSnapshot();
   });
 
-  it('Sets its state t an error state and renders null in production', () => {
+  it('Sets its state to an error state and renders null in production', () => {
     process.env.NODE_ENV = 'production';
     const wrapper = mount(
       <HolocronErrorBoundary>
@@ -111,6 +119,12 @@ describe('HolocronErrorBoundary', () => {
     expect(
       wrapperWithHolocronErrorBoundary.find(HolocronErrorBoundary).instance().state.error
     ).toEqual(expect.objectContaining(mockError));
+    expect(
+      wrapper.containsMatchingElement(
+        <HolocronErrorBoundary />
+      )
+    );
+    expect(wrapper).toMatchSnapshot();
   });
 
   it('Sets the correct displayName for the wrapped component', () => {
