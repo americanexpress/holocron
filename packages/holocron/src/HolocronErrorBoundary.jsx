@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 
@@ -26,7 +26,11 @@ class HolocronErrorBoundary extends Component {
       return <div style={{ color: 'red' }}>{error.message}</div>;
     }
 
-    return children;
+    return (
+      <Fragment>
+        {children}
+      </Fragment>
+    );
   }
 }
 
