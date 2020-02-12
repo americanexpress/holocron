@@ -4,41 +4,28 @@ import { mount } from 'enzyme';
 import HolocronErrorBoundary, { withHolocronErrorBoundary } from '../src/HolocronErrorBoundary';
 
 describe('HolocronErrorBoundary', () => {
-  let consoleErrorSpy;
-  let mockError;
-  let CharacterWelcome;
-  let Character;
-
   const { NODE_ENV } = process.env;
 
-  beforeAll(() => {
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    mockError = new Error(
-      'These are not the droids you are looking for.'
-    );
+  const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const mockError = new Error(
+    'These are not the droids you are looking for.'
+  );
 
     // eslint-disable-next-line react/prop-types
-    Character = ({ name }) => {
-      switch (name) {
-        case 'R2-D2':
-        case 'C-3PO':
-        case 'BB-8':
-          throw mockError;
-
-        default:
-          return <p>{`Welcome ${name}`}</p>;
-      }
-    };
+  const ChildOfModule = ({ throwError }) => {
+    if (throwError) {
+      throw mockError;
+    }
+    return <p>Error Free</p>;
+  };
 
     // eslint-disable-next-line react/prop-types
-    CharacterWelcome = ({ name }) => (
-      <div>
-        <p>{`Looking up character ${name}`}</p>
-        <Character name={name} />
-      </div>
-    );
-  });
-
+  const Module = ({ throwError }) => (
+    <div>
+      <p>{`Should throw error: ${throwError}`}</p>
+      <ChildOfModule throwError={throwError} />
+    </div>
+  );
   afterAll(() => {
     consoleErrorSpy.mockRestore();
   });
@@ -50,19 +37,19 @@ describe('HolocronErrorBoundary', () => {
   it('Renders the child component if there is no error', () => {
     const wrapper = mount(
       <HolocronErrorBoundary>
-        <CharacterWelcome name="Chewbacca" />
+        <Module throwError={false} />
       </HolocronErrorBoundary>
     );
 
-    const CharacterWelcomeWithHolocronErrorBoundary = withHolocronErrorBoundary(CharacterWelcome);
+    const ModuleWithHolocronErrorBoundary = withHolocronErrorBoundary(Module);
     const wrapperWithHolocronErrorBoundary = mount(
-      <CharacterWelcomeWithHolocronErrorBoundary name="Chewbacca" />
+      <ModuleWithHolocronErrorBoundary throwError={false} />
     );
 
     expect(wrapper.state().error).toBe(null);
 
     expect(
-      wrapper.contains(<CharacterWelcome name="Chewbacca" />)
+      wrapper.contains(<Module throwError={false} />)
     ).toBe(true);
 
     expect(
@@ -71,7 +58,7 @@ describe('HolocronErrorBoundary', () => {
 
     expect(
       wrapperWithHolocronErrorBoundary.contains(
-        <CharacterWelcome name="Chewbacca" />
+        <Module throwError={false} />
       )
     ).toBe(true);
   });
@@ -79,13 +66,13 @@ describe('HolocronErrorBoundary', () => {
   it('Sets its state to an error state and renders the error message', () => {
     const wrapper = mount(
       <HolocronErrorBoundary>
-        <CharacterWelcome name="R2-D2" />
+        <Module throwError={true} />
       </HolocronErrorBoundary>
     );
 
-    const CharacterWelcomeWithHolocronErrorBoundary = withHolocronErrorBoundary(CharacterWelcome);
+    const ModuleWithHolocronErrorBoundary = withHolocronErrorBoundary(Module);
     const wrapperWithHolocronErrorBoundary = mount(
-      <CharacterWelcomeWithHolocronErrorBoundary name="R2-D2" />
+      <ModuleWithHolocronErrorBoundary throwError={true} />
     );
 
     expect(wrapper.state().error).toEqual(expect.objectContaining(mockError));
@@ -106,13 +93,13 @@ describe('HolocronErrorBoundary', () => {
     process.env.NODE_ENV = 'production';
     const wrapper = mount(
       <HolocronErrorBoundary>
-        <CharacterWelcome name="C-3PO" />
+        <Module throwError={true} />
       </HolocronErrorBoundary>
     );
 
-    const CharacterWelcomeWithHolocronErrorBoundary = withHolocronErrorBoundary(CharacterWelcome);
+    const ModuleWithHolocronErrorBoundary = withHolocronErrorBoundary(Module);
     const wrapperWithHolocronErrorBoundary = mount(
-      <CharacterWelcomeWithHolocronErrorBoundary name="C-3PO" />
+      <ModuleWithHolocronErrorBoundary throwError={true} />
     );
 
     expect(wrapper.state().error).toEqual(expect.objectContaining(mockError));
