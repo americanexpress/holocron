@@ -12,7 +12,8 @@
     "lint": "eslint --ext js,jsx,snap packages",
     "test": "NODE_ENV=development jest",
     "test:git-history": "commitlint --from origin/master --to HEAD",
-    "posttest": "npm run lint && npm run test:git-history"
+    "test:lockfile": "node lockFileLint.js",
+    "posttest": "npm run lint && npm run test:git-history && npm run test:lockfile"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.3",
@@ -32,7 +33,8 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-test-renderer": "^16.12.0",
-    "regenerator-runtime": "^0.13.3"
+    "regenerator-runtime": "^0.13.3",
+    "lockfile-lint": "^3.0.8"
   },
   "license": "Apache-2.0",
   "repository": {

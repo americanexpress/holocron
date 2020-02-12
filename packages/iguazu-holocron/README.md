@@ -4,12 +4,13 @@
 
 [![npm](https://img.shields.io/npm/v/iguazu-holocron)](https://www.npmjs.com/package/iguazu-holocron)
 
->This loads holocron modules using **`iguazu`**
->Iguazu is an asynchronous data flow solution for React/Redux applications.
+> This loads Holocron modules using [Iguazu](https://github.com/americanexpress/iguazu), an 
+> asynchronous data flow solution for React/Redux applications.
 
 ## 📖 Table of Contents
 
 * [Usage](#-usage)
+* [API](#%EF%B8%8F-api)
 * [Further Reading](#-further-reading)
 * [Available Scripts](#-available-scripts)
 
@@ -116,6 +117,177 @@ const loadDataAsProps = ({ store: { dispatch } }) => ({
   SubModuleA: () => dispatch(queryModule('sub-module-a')),
   SubModuleB: () => dispatch(queryModule('sub-module-b')),
 });
+
+export default connectAsync({ loadDataAsProps })(MyModule);
+```
+
+
+## 🎛️ API
+
+### `queryModule`
+
+An Iguazu adapter for loading a Holocron module.
+
+#### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `moduleName` | `String` | `true` | The name of the Holocron module to load |
+
+#### Usage
+
+```js
+import { connectAsync } from 'iguazu';
+import { queryModule } from 'iguazu-holocron';
+
+const MyModule = ({ MyOtherModule }) => (
+  <>
+    {/* some jsx */}
+    <MyOtherModule />
+  </>
+)
+
+function loadDataAsProps({ store }) {
+  return {
+    MyOtherModule: () => store.dispatch(queryModule('my-module')),
+  };
+}
+
+export default connectAsync({ loadDataAsProps })(MyModule);
+```
+
+### `queryModuleWithData`
+
+An Iguazu adapter for loading a Holocron module and its data (from the loaded module's own 
+`loadDataAsProps`).
+
+#### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `moduleName` | `String` | `true` | The name of the Holocron module to load |
+| `moduleProps` | `Object` | `true` | Initial props to pass the module when loading |
+
+#### Usage
+
+```js
+import { connectAsync } from 'iguazu';
+import { queryModuleWithData } from 'iguazu-holocron';
+
+const MyModule = ({ MyOtherModule, someData }) => (
+  <>
+    {/* some jsx */}
+    <MyOtherModule someData={someData} />
+  </>
+)
+
+function loadDataAsProps({ store, ownProps }) {
+  return {
+    MyOtherModule: () => store.dispatch(
+      queryModuleWithData('my-module', { someData: ownProps.someData })
+    ),
+  };
+}
+
+export default connectAsync({ loadDataAsProps })(MyModule);
+```
+
+### `isEmpty`
+
+`isEmpty` checks to see if the module queried has been loaded or if the module received in props is
+still the default empty component.
+
+#### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `module` | `Function` | `true` | A module that has been loaded by one of the above Iguazu adapters |
+
+#### Usage
+
+```js
+import { connectAsync } from 'iguazu';
+import { queryModule, isEmpty } from 'iguazu-holocron';
+
+const MyModule = ({ MyOtherModule }) => (
+  <>
+    {/* some jsx */}
+    {isEmpty(MyOtherModule) ? <Spinner /> : <MyOtherModule />}
+  </>
+)
+
+function loadDataAsProps({ store }) {
+  return {
+    MyOtherModule: () => store.dispatch(queryModule('my-module')),
+  };
+}
+
+export default connectAsync({ loadDataAsProps })(MyModule);
+```
+
+### `anyAreEmpty`
+
+`anyAreEmpty` taks `n` arguments, all of which are Holocron modules loaded with one of the above
+Iguazu adapters. It is used to check if any modules in the argument list are still the default empty
+module.
+
+#### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `module` | `Function` | `true` | A module that has been loaded by one of the above Iguazu adapters |
+
+#### Usage
+
+```js
+import { connectAsync } from 'iguazu';
+import { queryModule, anyAreEmpty } from 'iguazu-holocron';
+
+const MyModule = ({ MyOtherModule, ThirdModule }) => (
+  <>
+    {/* some jsx */}
+    { anyAreEmpty(MyOtherModule, ThirdModule) ? 
+      <Spinner /> :
+      <MyOtherModule><ThirdModule/></MyOtherModule>
+    }
+  </>
+)
+
+function loadDataAsProps({ store }) {
+  return {
+    MyOtherModule: () => store.dispatch(queryModule('my-module')),
+    ThirdModule: () => store.dispatch(queryModule('third-module')),
+  };
+}
+
+export default connectAsync({ loadDataAsProps })(MyModule);
+```
+
+### `configureIguazuSSR`
+
+`configureIguazuSSR` is a helper for loading data on the server via Iguazu. It does not need to be 
+called directly, but needs to be attached to the module as the static `loadModuleData` along with
+`loadDataAsProps`.
+
+> `loadModuleData` is a module lifecycle hook used by Holocron for data fetching during server 
+> side rendering.
+
+#### Usage
+
+```js
+import { connectAsync } from 'iguazu';
+import { queryModule } from 'iguazu-holocron';
+
+const MyModule = ({ data }) => <p>{`Data: ${data}`}</p>)
+
+function loadDataAsProps({ store }) {
+  return {
+    data: () => store.dispatch(queryData()),
+  };
+}
+
+MyModule.loadDataAsProps = loadDataAsProps;
+MyModule.loadModuleData = configureIguazuSSR;
 
 export default connectAsync({ loadDataAsProps })(MyModule);
 ```
