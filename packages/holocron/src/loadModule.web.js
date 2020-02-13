@@ -48,7 +48,8 @@ export default function loadModule(moduleName, moduleData) {
     if (isProduction) {
       script.integrity = integrity;
     }
-    script.src = isProduction ? `${url}?key=${getModuleMap().get('key')}` : url;
+    const key = getModuleMap().get('key');
+    script.src = isProduction && key ? `${url}?key=${key}` : url;
     const timeout = setTimeout(onScriptComplete, 120000);
     script.onerror = (err) => {
       script.onerror = null;
