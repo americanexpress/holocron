@@ -291,4 +291,52 @@ describe('loadModule.web', () => {
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
     expect(new URL(mockElement.src).search).toBe('');
   });
+
+  it('does not add the module map key to the script tag src for cache busting purposes when no key', async () => {
+    process.env.NODE_ENV = 'production';
+    const LoadingModule = () => 'hello';
+    resetModuleRegistry(
+      {
+        'loading-module': LoadingModule,
+      },
+      {
+        modules: {
+          'loading-module': {
+            node: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.node.js',
+              integrity: '123',
+            },
+            browser: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js',
+              integrity: '234',
+            },
+            legacyBrowser: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.legacy.browser.js',
+              integrity: '344',
+            },
+          },
+        },
+      }
+    );
+    loadModule(
+      'loading-module',
+      fromJS({
+        node: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.node.js',
+          integrity: '123',
+        },
+        browser: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js',
+          integrity: '234',
+        },
+        legacyBrowser: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.legacy.browser.js',
+          integrity: '344',
+        },
+      })
+    );
+    mockElement.onload();
+    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
+    expect(new URL(mockElement.src).search).toBe('');
+  });
 });
