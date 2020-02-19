@@ -346,7 +346,8 @@ describe('loadModule.web', () => {
         },
       })
     );
-    mockElement.onload();
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
     expect(new URL(mockElement.src).search).toBe('');
   });
