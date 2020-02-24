@@ -14,6 +14,8 @@
 
 ## ✨ Features
 
+* Adds an ErrorBoundary around every Module to prevent a single Module from taking down a page once an error occurs in the module
+
 ### How it works
 
 #### Module Registry
