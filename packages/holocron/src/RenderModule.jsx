@@ -29,6 +29,8 @@ export default function RenderModule({ children, moduleName, props }) {
 
   const propsWithChildren = typeof children !== 'undefined' ? { children, ...props } : props;
 
+  // propsWithChildren is computed and passed down to this prop
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return <Module {...propsWithChildren} />;
 }
 

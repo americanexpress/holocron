@@ -14,15 +14,5 @@
 
 export const HOLOCRON_STORE_KEY = 'holocron';
 export const MODULES_STORE_KEY = 'modules';
-
 export const REDUCER_KEY = '@@holocron-module-reducer';
 export const LOAD_KEY = '@@holocron-module-load-action';
-
-export {
-  REGISTER_MODULE_REDUCER,
-  MODULE_LOADED,
-  MODULE_LOAD_FAILED,
-  MODULE_LOADING,
-  MODULE_REDUCER_ADDED,
-  INIT_MODULE_STATE,
-} from './ducks/load';

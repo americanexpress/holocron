@@ -17,14 +17,21 @@ import loadModule from '../src/loadModule.web';
 import { resetModuleRegistry } from '../src/moduleRegistry';
 
 let mockElement;
-global.document.createElement = () => mockElement;
-global.document.getElementsByTagName = () => [{ appendChild: () => null }];
+let map;
+
+jest.spyOn(document, 'createElement').mockImplementation(() => mockElement);
+jest.spyOn(document, 'getElementsByTagName').mockImplementation(() => [{ appendChild: () => null }]);
 // eslint-disable-next-line no-underscore-dangle
 window.__holocron_module_bundle_type__ = 'browser';
 
 describe('loadModule.web', () => {
   beforeEach(() => {
-    mockElement = {};
+    map = {};
+    mockElement = {
+      addEventListener: jest.fn((event, cb) => {
+        map[event] = cb;
+      }),
+    };
   });
 
   it('should add crossorigin to scripts', () => {
@@ -124,7 +131,7 @@ describe('loadModule.web', () => {
     ).rejects.toMatchSnapshot();
   });
 
-  it('should reject with the error on error', async () => {
+  it('should reject with the error on error', () => {
     const loadPromise = loadModule(
       'erroring-module',
       fromJS({
@@ -143,11 +150,12 @@ describe('loadModule.web', () => {
       })
     );
     const loadError = new Error('failed to load module');
-    mockElement.onerror(loadError);
-    await expect(loadPromise).rejects.toBe(loadError);
+    expect(mockElement.addEventListener.mock.calls[0][0]).toBe('error');
+    expect(mockElement.addEventListener.mock.calls[0][1](loadError)).toBeUndefined();
+    return expect(loadPromise).rejects.toBe(loadError.message);
   });
 
-  it('should resolve with the module on load', async () => {
+  it('should resolve with the module on load', () => {
     const LoadingModule = () => 'hello';
     resetModuleRegistry(
       {
@@ -190,8 +198,9 @@ describe('loadModule.web', () => {
         },
       })
     );
-    mockElement.onload();
-    await expect(loadPromise).resolves.toBe(LoadingModule);
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
+    return expect(loadPromise).resolves.toBe(LoadingModule);
   });
 
   it('should add the module map key to the script tag src for cache busting purposes if NODE_ENV is production', async () => {
@@ -238,7 +247,8 @@ describe('loadModule.web', () => {
         },
       })
     );
-    mockElement.onload();
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?key=key123');
     expect(new URL(mockElement.src).search).toBe('?key=key123');
   });
@@ -287,7 +297,8 @@ describe('loadModule.web', () => {
         },
       })
     );
-    mockElement.onload();
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
     expect(new URL(mockElement.src).search).toBe('');
   });
@@ -335,7 +346,8 @@ describe('loadModule.web', () => {
         },
       })
     );
-    mockElement.onload();
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
     expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
     expect(new URL(mockElement.src).search).toBe('');
   });

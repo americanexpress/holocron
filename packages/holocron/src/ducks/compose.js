@@ -39,7 +39,7 @@ export function composeModules(moduleConfigs) {
 
           return Promise.resolve();
         })
-        .catch(error => error);
+        .catch((error) => error);
     });
     return Promise.all(modulePromises);
   };

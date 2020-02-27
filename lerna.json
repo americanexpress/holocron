@@ -1,7 +1,12 @@
 {
-  "lerna": "2.9.0",
   "version": "1.0.0",
   "packages": [
     "packages/*"
-  ]
+  ],
+  "command": {
+    "version": {
+      "conventionalCommits": true,
+      "allowBranch": "master"
+  }
+}
 }

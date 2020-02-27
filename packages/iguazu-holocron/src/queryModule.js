@@ -25,7 +25,7 @@ export default function queryModule(moduleName) {
   return (dispatch, getState) => {
     const state = getState();
     const error = getLoadError(moduleName)(state);
-    const status = (isLoaded(moduleName)(state) || error) ? 'complete' : 'loading';
+    const status = isLoaded(moduleName)(state) || error ? 'complete' : 'loading';
     const promise = dispatch(loadModule(moduleName));
     const data = getModule(moduleName) || EmptyModule;
 

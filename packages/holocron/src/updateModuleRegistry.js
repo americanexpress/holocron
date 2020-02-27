@@ -18,44 +18,45 @@ import loadModule from './loadModule.node';
 
 export function areModuleEntriesEqual(firstModuleEntry, secondModuleEntry) {
   return !!(
-    firstModuleEntry &&
-    secondModuleEntry &&
-    shallowEqual(firstModuleEntry.browser, secondModuleEntry.browser) &&
-    shallowEqual(firstModuleEntry.legacyBrowser, secondModuleEntry.legacyBrowser) &&
-    shallowEqual(firstModuleEntry.node, secondModuleEntry.node)
+    firstModuleEntry
+    && secondModuleEntry
+    && shallowEqual(firstModuleEntry.browser, secondModuleEntry.browser)
+    && shallowEqual(firstModuleEntry.legacyBrowser, secondModuleEntry.legacyBrowser)
+    && shallowEqual(firstModuleEntry.node, secondModuleEntry.node)
   );
 }
 
 function defaultGetModulesToUpdate(curr, next) {
   return Object
     .keys(next)
-    .filter(moduleName => !areModuleEntriesEqual(curr[moduleName], next[moduleName]));
+    .filter((moduleName) => !areModuleEntriesEqual(curr[moduleName], next[moduleName]));
 }
 
 export default async function updateModuleRegistry({
   moduleMap: newModuleMap,
   onModuleLoad = () => null,
-  batchModulesToUpdate = x => [x],
+  batchModulesToUpdate = (x) => [x],
   getModulesToUpdate = defaultGetModulesToUpdate,
 }) {
   const currentModuleMap = getModuleMap().toJS();
-  const modulesToUpdate =
-    batchModulesToUpdate(getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules));
+  const modulesToUpdate = batchModulesToUpdate(
+    getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules)
+  );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
 
   let updatedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
     const loadedModules = await acc;
     const nextModules = await Promise.all(moduleBatch.map(
-      moduleName => loadModule(moduleName, newModuleMap.modules[moduleName], onModuleLoad)
+      (moduleName) => loadModule(moduleName, newModuleMap.modules[moduleName], onModuleLoad)
     ));
     return [...loadedModules, ...nextModules];
   }, []);
-  updatedModules = updatedModules.reduce((acc, module, i) =>
-    ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
+  updatedModules = updatedModules.reduce((
+    acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
   const newModules = getModules().merge(updatedModules);
 
   resetModuleRegistry(newModules, newModuleMap);
 
-  return flatModulesToUpdate.reduce((acc, moduleName) =>
-    ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {});
+  return flatModulesToUpdate.reduce((
+    acc, moduleName) => ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {});
 }

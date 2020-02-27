@@ -23,11 +23,11 @@ function onScriptComplete() {
 export default function loadModule(moduleName, moduleData) {
   return new Promise((resolve, reject) => {
     if (typeof moduleName !== 'string') {
-      throw new Error('loadModule: moduleName must be a string');
+      throw new TypeError('loadModule: moduleName must be a string');
     }
 
     if (typeof moduleData !== 'object') {
-      throw new Error('loadModule: moduleData must be an object');
+      throw new TypeError('loadModule: moduleData must be an object');
     }
 
     // eslint-disable-next-line no-underscore-dangle
@@ -51,16 +51,15 @@ export default function loadModule(moduleName, moduleData) {
     const key = getModuleMap().get('key');
     script.src = isProduction && key ? `${url}?key=${key}` : url;
     const timeout = setTimeout(onScriptComplete, 120000);
-    script.onerror = (err) => {
-      script.onerror = null;
+    script.addEventListener('error', (event) => {
       clearTimeout(timeout);
-      reject(err);
-    };
-    script.onload = () => {
-      script.onload = null;
+      reject(event.message);
+    });
+
+    script.addEventListener('load', () => {
       clearTimeout(timeout);
       resolve(getModule(moduleName));
-    };
+    });
 
     head.appendChild(script);
   });
