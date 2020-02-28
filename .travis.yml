@@ -21,4 +21,4 @@ jobs:
           provider: script
           skip_cleanup: true
           script:
-           - npm run lerna:deploy -- $TRAVIS_COMMIT_MESSAGE
+            - npm run lerna:deploy -- "${TRAVIS_COMMIT_MESSAGE}
