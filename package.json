@@ -16,7 +16,7 @@
     "posttest": "npm run lint && npm run test:git-history && npm run test:lockfile",
     "lerna:version": "lerna version",
     "lerna:publish": "lerna publish from-package --yes",
-    "lerna:deploy":"node lernaDeploy.js"
+    "lerna:deploy": "node lernaDeploy.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.3",
