@@ -43,7 +43,7 @@ This project adheres to the American Express [Code of Conduct](./CODE_OF_CONDUCT
 1. Run `npm run lerna:version` locally from your release branch. This would push your release changes(changelog and tags) to the branch on github.
 2. Create a pull request from your branch to the `master` branch with your changes.
 3. Once the changes are approved ensure you merge the changes and provide the commit message for the merge as
-   `chore(release) : 1.9.7`
+   `chore(release): <semantic-release-version>`
    ensure you follow this convention otherwise the deployment will not be executed.
 4. Once this is merged to master a deployment would be initiated on the master branch and all packages that changed would be released to npm.
 
