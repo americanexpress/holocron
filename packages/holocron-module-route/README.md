@@ -59,7 +59,7 @@ redux store and returns a single route or an array of routes.
 
 ``` javascript
 import React from 'react';
-import { ModuleRoute } from 'holocron-module-route';
+import ModuleRoute from 'holocron-module-route';
 
 export default function getChildRoutes(store) {
   return (
