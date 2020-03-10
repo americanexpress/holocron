@@ -31,13 +31,13 @@
     "eslint": "^6.8.0",
     "eslint-config-amex": "^11.2.0",
     "husky": "^4.0.10",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "lerna": "^3.20.2",
+    "lockfile-lint": "^4.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-test-renderer": "^16.12.0",
-    "regenerator-runtime": "^0.13.3",
-    "lockfile-lint": "^3.0.8"
+    "regenerator-runtime": "^0.13.3"
   },
   "license": "Apache-2.0",
   "repository": {
