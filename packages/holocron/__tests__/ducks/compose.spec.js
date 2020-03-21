@@ -12,7 +12,7 @@
  * under the License.
  */
 
-import { LOAD_KEY } from '../../src/constants';
+import { LOAD_KEY } from '../../src/ducks/constants';
 
 import { composeModules } from '../../src/ducks/compose';
 

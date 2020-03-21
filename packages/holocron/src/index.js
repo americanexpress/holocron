@@ -13,7 +13,6 @@
  */
 
 import createHolocronStore from './createHolocronStore';
-import holocronModule from './holocronModule';
 import {
   registerModule,
   getModule,
@@ -35,7 +34,6 @@ import RenderModule from './RenderModule';
 // Public API
 export {
   createHolocronStore,
-  holocronModule,
   registerModule,
   getModule,
   getModules,

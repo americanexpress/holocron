@@ -23,7 +23,11 @@ import renderer from 'react-test-renderer';
 import _ from 'lodash';
 
 import holocronModule from '../src/holocronModule';
-import { REDUCER_KEY, LOAD_KEY } from '../src/constants';
+import { REDUCER_KEY, LOAD_KEY } from '../src/ducks/constants';
+
+const sleep = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
 
 describe('holocronModule', () => {
   afterEach(() => {
@@ -206,7 +210,7 @@ describe('holocronModule', () => {
   });
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
-  it('should pass the moduleLoadStatus prop as loaded when loaded', () => {
+  it('should pass the moduleLoadStatus prop as loaded when loaded', async () => {
     global.INITIAL_STATE = undefined;
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
@@ -220,6 +224,9 @@ describe('holocronModule', () => {
         <Module />
       </Provider>
     );
+
+    // Wait one cycle of the event loop since we can't retrieve a promise from initiateLoad
+    await sleep(1);
 
     return loadPromise
       .then(() => {

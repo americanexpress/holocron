@@ -15,8 +15,11 @@
 import { iguazuReduce } from 'iguazu';
 
 export default function configureIguazuSSR({ store, module, ownProps }) {
-  return iguazuReduce(module.loadDataAsProps)({
-    store,
-    ownProps,
-  }).promise;
+  if (!global.BROWSER) {
+    return iguazuReduce(module.loadDataAsProps)({
+      store,
+      ownProps,
+    }).promise;
+  }
+  return Promise.resolve();
 }

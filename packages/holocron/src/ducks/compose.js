@@ -13,7 +13,7 @@
  */
 
 import { loadModule } from './load';
-import { LOAD_KEY } from '../constants';
+import { LOAD_KEY } from './constants';
 
 // This duck does not have a reducer
 export default null;
