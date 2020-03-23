@@ -44,4 +44,8 @@ exports[`holocronModule should provide the module state as a plain JS prop if a 
 </div>
 `;
 
-exports[`holocronModule should throw an error if a name is not provided 1`] = `"A name is required to create a holocron module"`;
+exports[`holocronModule should wrap module if no arguments are provided 1`] = `
+<div>
+  Mock Module
+</div>
+`;

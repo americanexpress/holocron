@@ -34,12 +34,12 @@ describe('holocronModule', () => {
     global.BROWSER = false;
   });
 
-  it('should throw an error if a name is not provided', () => {
-    function createHolocronModule() {
-      holocronModule({})(() => <div>Mock Module</div>);
-    }
+  it('should wrap module if no arguments are provided', () => {
+    const MyModuleComponent = holocronModule({})(() => <div>Mock Module</div>);
+    const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { key: 'value' } } }));
+    const tree = renderer.create(<MyModuleComponent store={mockStore} />);
 
-    expect(createHolocronModule).toThrowErrorMatchingSnapshot();
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should provide the module state as a plain JS prop if a reducer is provided', () => {

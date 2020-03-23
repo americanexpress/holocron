@@ -109,8 +109,26 @@ Immutable.Map {
 
 exports[`updateModuleRegistry should update the modules in the registry: modules 1`] = `
 Object {
-  "another-module": "new another-module@[object Object]",
-  "awesome-module": "initial awesome-module",
-  "module-three": "initial module-three",
+  "another-module": Object {
+    "$$typeof": Symbol(react.memo),
+    "WrappedComponent": [Function],
+    "compare": null,
+    "displayName": "Connect(HolocronModule(UpdatedModule))",
+    "type": [Function],
+  },
+  "awesome-module": Immutable.Map {
+    "$$typeof": Symbol(react.memo),
+    "type": [Function],
+    "compare": null,
+    "WrappedComponent": [Function],
+    "displayName": "Connect(HolocronModule(AwesomeModule))",
+  },
+  "module-three": Immutable.Map {
+    "$$typeof": Symbol(react.memo),
+    "type": [Function],
+    "compare": null,
+    "WrappedComponent": [Function],
+    "displayName": "Connect(HolocronModule(ModuleThree))",
+  },
 }
 `;

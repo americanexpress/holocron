@@ -12,7 +12,7 @@
  * under the License.
  */
 
-import { fromJS, is } from 'immutable';
+import { Map as iMap, fromJS, is } from 'immutable';
 import {
   addToModuleBlockList,
   getModuleBlockList,
@@ -23,6 +23,7 @@ import {
   getModuleMap,
   resetModuleRegistry,
   setModuleMap,
+  addHigherOrderComponent,
 } from '../src/moduleRegistry';
 
 describe('moduleRegistry', () => {
@@ -38,7 +39,7 @@ describe('moduleRegistry', () => {
     const GoodModule = () => null;
     registerModule('good-module', GoodModule);
     expect(getModules()).toMatchSnapshot();
-    expect(getModule('good-module')).toBe(GoodModule);
+    expect(getModule('good-module')).toMatchSnapshot();
   });
 
   it('should set the module map', () => {
@@ -69,10 +70,11 @@ describe('moduleRegistry', () => {
   it('should use alternative modules when provided', () => {
     const GoodModule = () => null;
     const AltModule = () => null;
-    const altModules = fromJS({ 'good-module': AltModule });
+    const AltModuleHoC = addHigherOrderComponent(AltModule);
+    const altModules = iMap({ 'good-module': AltModuleHoC });
     registerModule('good-module', GoodModule);
-    expect(getModule('good-module')).toBe(GoodModule);
-    expect(getModule('good-module', altModules)).toBe(AltModule);
+    expect(getModule('good-module').displayName).toEqual('Connect(HolocronModule(GoodModule))');
+    expect(getModule('good-module', altModules).displayName).toEqual('Connect(HolocronModule(AltModule))');
   });
 
   it('should reset the whole registry', () => {

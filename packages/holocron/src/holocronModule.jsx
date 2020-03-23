@@ -25,6 +25,7 @@ import {
   INIT_MODULE_STATE,
 } from './ducks/constants';
 
+// Redux action creator to use thunk to fulfill loadModuleData API
 export function loadModuleDataAction(Component, props) {
   return async (dispatch, getState, { fetchClient }) => Component.loadModuleData({
     store: { dispatch, getState },
@@ -34,17 +35,19 @@ export function loadModuleDataAction(Component, props) {
   });
 }
 
-export function executeLoad(load, props) {
-  if (load) {
+// Execute deprecated load function and provide deprecation message
+export function executeLoad(props) {
+  if (props.load) {
     console.warn('The \'load\' function in holocron has been deprecated. Please use \'loadModuleData\' instead.');
-    return load(props);
+    return props.load(props);
   }
   return undefined;
 }
 
-export function executeLoadModuleData(WrappedComponent, dispatch, props) {
-  if (WrappedComponent.loadModuleData) {
-    return dispatch(loadModuleDataAction(WrappedComponent, props));
+// Dispatch loadModuleData if it exists
+export function executeLoadModuleData(loadModuleData, props) {
+  if (loadModuleData) {
+    return props.dispatch(loadModuleDataAction(loadModuleData, props));
   }
   return undefined;
 }
@@ -57,11 +60,44 @@ export function getDisplayName(name) {
   return `HolocronModule(${name})`;
 }
 
+export async function executeLoadingFunctions({
+  // Provide loadModuleData to be called if exists
+  loadModuleData,
+  // Frozen props as of when called
+  frozenProps,
+  // Provide loadCount to limit state changes
+  loadCount,
+  // Provide componentName for error messages
+  componentName,
+  // Provide component instance for getting current state of component post async
+  hocInstance,
+}) {
+  try {
+    // Run both operations in parallel if one or both exist
+    await Promise.all([
+      // Call deprecated load function
+      executeLoad(frozenProps),
+      // Call loadModuleData
+      executeLoadModuleData(loadModuleData, frozenProps),
+    ]);
+    // Modify state only when mounted and current loadCount is less or equal than previous loadCount
+    if (hocInstance.mounted && hocInstance.state.loadCount <= loadCount) {
+      hocInstance.setState({ status: 'loaded' });
+    }
+  } catch (error) {
+    console.error(`Error while attempting to call 'load' or 'loadModuleData' inside Holocron module ${componentName}.`, error);
+    if (hocInstance.mounted) {
+      hocInstance.setState({ status: 'error' });
+    }
+  }
+}
+
 export default function holocronModule({
   name,
   reducer,
   load,
   shouldModuleReload,
+  loadModuleData,
   mergeProps,
   options = {},
 } = {}) {
@@ -102,29 +138,14 @@ export default function holocronModule({
         this.mounted = false;
       }
 
-      async initiateLoad(loadCount, props) {
-        try {
-          const { dispatch } = this.props;
-          await Promise.all([
-            // eslint-disable-next-line react/destructuring-assignment
-            executeLoad(this.props.load, props),
-            executeLoadModuleData(WrappedComponent, dispatch, props),
-          ]);
-          // Ignoring else on these two safety checks as they are not testable
-          // and most likely unnecessary.
-          /* istanbul ignore else */
-          // ignoring this as destructuring this causes this to behave different
-          // eslint-disable-next-line react/destructuring-assignment
-          if (this.mounted && this.state.loadCount <= loadCount) {
-            this.setState({ status: 'loaded' });
-          }
-        } catch (error) {
-          console.error(`Error while attempting to load Holocron module ${getName(WrappedComponent, name)}.`, error);
-          /* istanbul ignore else */
-          if (this.mounted) {
-            this.setState({ status: 'error' });
-          }
-        }
+      initiateLoad(loadCount, frozenProps) {
+        return executeLoadingFunctions({
+          loadModuleData,
+          frozenProps,
+          loadCount,
+          hocName: getName(WrappedComponent, name),
+          hocInstance: this,
+        });
       }
 
       render() {
@@ -148,7 +169,6 @@ export default function holocronModule({
     if (load && (options.ssr || global.BROWSER)) {
       HolocronModuleWrapper[LOAD_KEY] = load;
     }
-
 
     let mapModuleStateToProps;
 
