@@ -22,7 +22,11 @@ import { fromJS } from 'immutable';
 import renderer from 'react-test-renderer';
 import _ from 'lodash';
 
-import holocronModule from '../src/holocronModule';
+import holocronModule, {
+  executeLoad,
+  executeLoadModuleData,
+  executeLoadingFunctions,
+} from '../src/holocronModule';
 import { REDUCER_KEY, LOAD_KEY } from '../src/ducks/constants';
 
 const sleep = (ms) => new Promise((resolve) => {
@@ -30,8 +34,133 @@ const sleep = (ms) => new Promise((resolve) => {
 });
 
 describe('holocronModule', () => {
+  let fakeLoadModuleData;
+  let FakeComponent;
+  let fakeDispatch;
+  let fakeGetState;
+  let fakeFetchClient;
+  let fakeProps;
+  let fakeSetState;
+  let fakeInstance;
+  let fakeLoad;
+  beforeEach(() => {
+    FakeComponent = {
+      displayName: 'FakeComponent',
+    };
+    fakeLoadModuleData = jest.fn(async () => undefined);
+    fakeFetchClient = jest.fn();
+    fakeGetState = jest.fn();
+    fakeDispatch = jest.fn(
+      (func) => func(fakeDispatch, fakeGetState, { fetchClient: fakeFetchClient })
+    );
+    fakeSetState = jest.fn();
+    fakeProps = {
+      dispatch: fakeDispatch,
+      load: fakeLoad,
+    };
+    fakeInstance = {
+      setState: fakeSetState,
+      mounted: true,
+      state: {
+        loadCount: 0,
+      },
+    };
+  });
   afterEach(() => {
     global.BROWSER = false;
+  });
+
+  describe('executeLoad', () => {
+    it('should return undefined if load is undefined', () => {
+      expect(executeLoad()).toEqual(undefined);
+    });
+    it('should call load if present with props', () => {
+      fakeProps = {
+        load: jest.fn(),
+        myFakeProp: true,
+      };
+      executeLoad(fakeProps);
+      expect(fakeProps.load.mock.calls).toMatchSnapshot();
+    });
+  });
+
+  describe('executeLoadModuleData', () => {
+    it('should call loadModuleData if dispatch and loadModuleData are present', async () => {
+      expect.assertions(2);
+      await executeLoadModuleData(
+        fakeLoadModuleData,
+        FakeComponent,
+        { dispatch: fakeDispatch }
+      );
+      expect(fakeLoadModuleData.mock.calls).toMatchSnapshot();
+      expect(fakeProps.dispatch).toHaveBeenCalled();
+    });
+  });
+
+  describe('executeLoadingFunctions', () => {
+    it('should have setState called with loaded when successful', async () => {
+      expect.assertions(1);
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: fakeInstance,
+      });
+      expect(fakeSetState).toHaveBeenCalledWith({ status: 'loaded' });
+    });
+    it('should not have setState called if successful but over loadCount', async () => {
+      expect.assertions(1);
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: {
+          ...fakeInstance,
+          mounted: false,
+          state: {
+            loadCount: 9999,
+          },
+        },
+      });
+      expect(fakeSetState).not.toHaveBeenCalled();
+    });
+    it('should have setState called with error when failure occurs', async () => {
+      expect.assertions(1);
+      fakeLoadModuleData = () => {
+        throw new Error('Failed');
+      };
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: fakeInstance,
+      });
+      expect(fakeSetState).toHaveBeenCalledWith({ status: 'error' });
+    });
+    it('should not have setState called with error if mounted is false', async () => {
+      expect.assertions(1);
+      fakeLoadModuleData = () => {
+        throw new Error('Failed');
+      };
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: {
+          ...fakeInstance,
+          mounted: false,
+        },
+      });
+      expect(fakeSetState).not.toHaveBeenCalled();
+    });
   });
 
   it('should wrap module if no arguments are provided', () => {
@@ -218,7 +347,9 @@ describe('holocronModule', () => {
       name: 'mock-module',
       load,
     })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
-    const mockStore = createStore((state) => state, applyMiddleware(thunk));
+    const mockStore = createStore(
+      (state) => state, applyMiddleware(thunk.withExtraArgument({ fetchClient: jest.fn() }))
+    );
     const tree = renderer.create(
       <Provider store={mockStore}>
         <Module />

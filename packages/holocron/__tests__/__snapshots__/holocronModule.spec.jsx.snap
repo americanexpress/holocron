@@ -1,5 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`holocronModule executeLoad should call load if present with props 1`] = `
+Array [
+  Array [
+    Object {
+      "myFakeProp": true,
+    },
+  ],
+]
+`;
+
+exports[`holocronModule executeLoadModuleData should call loadModuleData if dispatch and loadModuleData are present 1`] = `
+Array [
+  Array [
+    Object {
+      "fetchClient": [MockFunction],
+      "module": Object {
+        "displayName": "FakeComponent",
+      },
+      "ownProps": Object {},
+      "store": Object {
+        "dispatch": [MockFunction] {
+          "calls": Array [
+            Array [
+              [Function],
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": Promise {},
+            },
+          ],
+        },
+        "getState": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
 exports[`holocronModule should gracefully handle module state missing from store 1`] = `
 <div>
   Mock Module 

@@ -25,29 +25,25 @@ import {
   INIT_MODULE_STATE,
 } from './ducks/constants';
 
-// Redux action creator to use thunk to fulfill loadModuleData API
-export function loadModuleDataAction(Component, props) {
-  return async (dispatch, getState, { fetchClient }) => Component.loadModuleData({
-    store: { dispatch, getState },
-    fetchClient,
-    ownProps: props,
-    module: Component,
-  });
-}
-
 // Execute deprecated load function and provide deprecation message
-export function executeLoad(props) {
-  if (props.load) {
+export function executeLoad({ load, ...restProps } = { }) {
+  if (load) {
     console.warn('The \'load\' function in holocron has been deprecated. Please use \'loadModuleData\' instead.');
-    return props.load(props);
+    return load(restProps);
   }
   return undefined;
 }
 
-// Dispatch loadModuleData if it exists
-export function executeLoadModuleData(loadModuleData, props) {
-  if (loadModuleData) {
-    return props.dispatch(loadModuleDataAction(loadModuleData, props));
+// Dispatch loadModuleData inside a thunk if it exists
+export function executeLoadModuleData(loadModuleData, WrappedComponent, props) {
+  const { dispatch, ...restProps } = props;
+  if (dispatch && loadModuleData) {
+    return dispatch(async (_, getState, { fetchClient }) => loadModuleData({
+      store: { dispatch, getState },
+      fetchClient,
+      ownProps: restProps,
+      module: WrappedComponent,
+    }));
   }
   return undefined;
 }
@@ -61,8 +57,10 @@ export function getDisplayName(name) {
 }
 
 export async function executeLoadingFunctions({
-  // Provide loadModuleData to be called if exists
+  // Provide loadModuleData function
   loadModuleData,
+  // Provide WrappedComponent for loadModuleData
+  WrappedComponent,
   // Frozen props as of when called
   frozenProps,
   // Provide loadCount to limit state changes
@@ -78,7 +76,7 @@ export async function executeLoadingFunctions({
       // Call deprecated load function
       executeLoad(frozenProps),
       // Call loadModuleData
-      executeLoadModuleData(loadModuleData, frozenProps),
+      executeLoadModuleData(loadModuleData, WrappedComponent, frozenProps),
     ]);
     // Modify state only when mounted and current loadCount is less or equal than previous loadCount
     if (hocInstance.mounted && hocInstance.state.loadCount <= loadCount) {
@@ -114,7 +112,7 @@ export default function holocronModule({
 
       componentDidMount() {
         this.mounted = true;
-        if ((WrappedComponent.loadModuleData || load) && !global.INITIAL_STATE) {
+        if ((loadModuleData || load) && !global.INITIAL_STATE) {
           this.initiateLoad(0, this.props);
         }
       }
@@ -141,6 +139,7 @@ export default function holocronModule({
       initiateLoad(loadCount, frozenProps) {
         return executeLoadingFunctions({
           loadModuleData,
+          WrappedComponent,
           frozenProps,
           loadCount,
           hocName: getName(WrappedComponent, name),
