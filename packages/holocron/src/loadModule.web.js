@@ -48,8 +48,8 @@ export default function loadModule(moduleName, moduleData) {
     if (isProduction) {
       script.integrity = integrity;
     }
-    const key = getModuleMap().get('key');
-    script.src = isProduction && key ? `${url}?key=${key}` : url;
+    const clientCacheRevision = getModuleMap().get('clientCacheRevision', getModuleMap().get('key'));
+    script.src = isProduction && clientCacheRevision ? `${url}?clientCacheRevision=${clientCacheRevision}` : url;
     const timeout = setTimeout(onScriptComplete, 120000);
     script.addEventListener('error', (event) => {
       clearTimeout(timeout);
