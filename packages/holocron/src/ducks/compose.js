@@ -28,8 +28,10 @@ export function composeModules(moduleConfigs) {
             return dispatch(module[LOAD_KEY](config.props));
           }
 
-          if (module.loadModuleData) {
-            return module.loadModuleData({
+          const loadModuleData = module && module.holocron && module.holocron.loadModuleData;
+
+          if (loadModuleData) {
+            return loadModuleData({
               store: { dispatch, getState },
               module,
               ownProps: config.props,
