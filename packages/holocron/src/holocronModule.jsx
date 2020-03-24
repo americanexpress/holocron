@@ -171,6 +171,10 @@ export default function holocronModule({
 
     let mapModuleStateToProps;
 
+    if (reducer && !name) {
+      console.warn(`Holocron configuration requires a 'name' when a 'reducer' is set for Module: ${getDisplayName(getName(WrappedComponent, name))}`);
+    }
+
     if (reducer && name) {
       HolocronModuleWrapper[REDUCER_KEY] = reducer;
       const getModuleState = createSelector(
@@ -181,7 +185,7 @@ export default function holocronModule({
         (moduleState) => moduleState.toJS()
       );
 
-      mapModuleStateToProps = reducer && ((state) => {
+      mapModuleStateToProps = ((state) => {
         const moduleState = getModuleState(state);
         return { moduleState };
       });

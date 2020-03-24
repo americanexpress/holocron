@@ -33,6 +33,9 @@ const sleep = (ms) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
 
+const warn = jest.spyOn(console, 'warn');
+const error = jest.spyOn(console, 'error');
+
 describe('holocronModule', () => {
   let fakeLoadModuleData;
   let FakeComponent;
@@ -44,6 +47,7 @@ describe('holocronModule', () => {
   let fakeInstance;
   let fakeLoad;
   beforeEach(() => {
+    jest.resetAllMocks();
     FakeComponent = {
       displayName: 'FakeComponent',
     };
@@ -80,6 +84,7 @@ describe('holocronModule', () => {
         myFakeProp: true,
       };
       executeLoad(fakeProps);
+      expect(warn.mock.calls).toMatchSnapshot();
       expect(fakeProps.load.mock.calls).toMatchSnapshot();
     });
   });
@@ -129,7 +134,7 @@ describe('holocronModule', () => {
       expect(fakeSetState).not.toHaveBeenCalled();
     });
     it('should have setState called with error when failure occurs', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
       };
@@ -141,10 +146,11 @@ describe('holocronModule', () => {
         componentName: 'FakeComponent',
         hocInstance: fakeInstance,
       });
+      expect(error.mock.calls[0][0]).toMatchSnapshot();
       expect(fakeSetState).toHaveBeenCalledWith({ status: 'error' });
     });
     it('should not have setState called with error if mounted is false', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
       };
@@ -159,6 +165,7 @@ describe('holocronModule', () => {
           mounted: false,
         },
       });
+      expect(error.mock.calls[0][0]).toMatchSnapshot();
       expect(fakeSetState).not.toHaveBeenCalled();
     });
   });
@@ -514,5 +521,18 @@ describe('holocronModule', () => {
     );
     expect(render).not.toThrowError();
     expect(render().toJSON()).toMatchSnapshot();
+  });
+  it('should warn if a reducer is set but no name', () => {
+    const reducer = () => {};
+    const Module = holocronModule({
+      reducer,
+    })(() => <div>Mock Module</div>);
+    const mockStore = createStore((state) => state, fromJS({}));
+    renderer.create(
+      <Provider store={mockStore}>
+        <Module />
+      </Provider>
+    );
+    expect(warn.mock.calls).toMatchSnapshot();
   });
 });
