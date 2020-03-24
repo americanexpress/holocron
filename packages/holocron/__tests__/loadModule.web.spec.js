@@ -162,7 +162,6 @@ describe('loadModule.web', () => {
         'loading-module': LoadingModule,
       },
       {
-        key: 'key123',
         modules: {
           'loading-module': {
             node: {
@@ -203,7 +202,7 @@ describe('loadModule.web', () => {
     return expect(loadPromise).resolves.toBe(LoadingModule);
   });
 
-  it('should add the module map key to the script tag src for cache busting purposes if NODE_ENV is production', async () => {
+  it('should add the module map clientCacheRevision to the script tag src for cache busting purposes if NODE_ENV is production', async () => {
     process.env.NODE_ENV = 'production';
     const LoadingModule = () => 'hello';
     resetModuleRegistry(
@@ -211,7 +210,7 @@ describe('loadModule.web', () => {
         'loading-module': LoadingModule,
       },
       {
-        key: 'key123',
+        clientCacheRevision: 'key123',
         modules: {
           'loading-module': {
             node: {
@@ -249,11 +248,112 @@ describe('loadModule.web', () => {
     );
     expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
     expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?key=key123');
-    expect(new URL(mockElement.src).search).toBe('?key=key123');
+    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=key123');
+    expect(new URL(mockElement.src).search).toBe('?clientCacheRevision=key123');
   });
 
-  it('should not add the module map key to the script tag src for cache busting purposes if NODE_ENV is development', async () => {
+  it('should fallback to module map key if it is provided in place of clientCacheRevision', async () => {
+    process.env.NODE_ENV = 'production';
+    const LoadingModule = () => 'hello';
+    resetModuleRegistry(
+      {
+        'loading-module': LoadingModule,
+      },
+      {
+        key: 'key456',
+        modules: {
+          'loading-module': {
+            node: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.node.js',
+              integrity: '123',
+            },
+            browser: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js',
+              integrity: '234',
+            },
+            legacyBrowser: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.legacy.browser.js',
+              integrity: '344',
+            },
+          },
+        },
+      }
+    );
+    loadModule(
+      'loading-module',
+      fromJS({
+        node: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.node.js',
+          integrity: '123',
+        },
+        browser: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js',
+          integrity: '234',
+        },
+        legacyBrowser: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.legacy.browser.js',
+          integrity: '344',
+        },
+      })
+    );
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
+    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=key456');
+    expect(new URL(mockElement.src).search).toBe('?clientCacheRevision=key456');
+  });
+
+  it('should use clientCacheRevision if key is also provided', async () => {
+    process.env.NODE_ENV = 'production';
+    const LoadingModule = () => 'hello';
+    resetModuleRegistry(
+      {
+        'loading-module': LoadingModule,
+      },
+      {
+        key: 'key456',
+        clientCacheRevision: 'abc',
+        modules: {
+          'loading-module': {
+            node: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.node.js',
+              integrity: '123',
+            },
+            browser: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js',
+              integrity: '234',
+            },
+            legacyBrowser: {
+              url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.legacy.browser.js',
+              integrity: '344',
+            },
+          },
+        },
+      }
+    );
+    loadModule(
+      'loading-module',
+      fromJS({
+        node: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.node.js',
+          integrity: '123',
+        },
+        browser: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js',
+          integrity: '234',
+        },
+        legacyBrowser: {
+          url: 'https://example.com/cdn/loading-module/1.0.0/loading-module.legacy.browser.js',
+          integrity: '344',
+        },
+      })
+    );
+    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
+    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
+    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=abc');
+    expect(new URL(mockElement.src).search).toBe('?clientCacheRevision=abc');
+  });
+
+  it('should not add the module map clientCacheRevision to the script tag src for cache busting purposes if NODE_ENV is development', async () => {
     process.env.NODE_ENV = 'development';
     const LoadingModule = () => 'hello';
     resetModuleRegistry(
@@ -261,7 +361,7 @@ describe('loadModule.web', () => {
         'loading-module': LoadingModule,
       },
       {
-        key: 'key123',
+        clientCacheRevision: 'key123',
         modules: {
           'loading-module': {
             node: {
@@ -303,7 +403,7 @@ describe('loadModule.web', () => {
     expect(new URL(mockElement.src).search).toBe('');
   });
 
-  it('does not add the module map key to the script tag src for cache busting purposes when no key', async () => {
+  it('does not add the module map clientCacheRevision to the script tag src for cache busting purposes when no clientCacheRevision', async () => {
     process.env.NODE_ENV = 'production';
     const LoadingModule = () => 'hello';
     resetModuleRegistry(
