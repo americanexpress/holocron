@@ -71,13 +71,10 @@ export async function executeLoadingFunctions({
   hocInstance,
 }) {
   try {
-    // Run both operations in parallel if one or both exist
-    await Promise.all([
-      // Call deprecated load function
-      executeLoad(frozenProps),
-      // Call loadModuleData
-      executeLoadModuleData(loadModuleData, WrappedComponent, frozenProps),
-    ]);
+    // Call deprecated load function if exists
+    await executeLoad(frozenProps);
+    // Call loadModuleData if it exists
+    await executeLoadModuleData(loadModuleData, WrappedComponent, frozenProps);
     // Modify state only when mounted and current loadCount is less or equal than previous loadCount
     if (hocInstance.mounted && hocInstance.state.loadCount <= loadCount) {
       hocInstance.setState({ status: 'loaded' });
@@ -172,7 +169,7 @@ export default function holocronModule({
     let mapModuleStateToProps;
 
     if (reducer && !name) {
-      console.warn(`Holocron configuration requires a 'name' when a 'reducer' is set for Module: ${getDisplayName(getName(WrappedComponent, name))}`);
+      console.warn(`Holocron Config API requires a 'name' when a 'reducer' is set for Module ${getDisplayName(getName(WrappedComponent, name))}.`);
     }
 
     if (reducer && name) {

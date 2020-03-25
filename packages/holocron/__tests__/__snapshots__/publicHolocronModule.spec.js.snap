@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`publicHolocronModule should add empty holocron config to wrapped component if no args are passed 1`] = `
+Object {
+  "displayName": "FakeComponent",
+  "holocron": Object {},
+  "name": "FakeComponent",
+}
+`;
+
+exports[`publicHolocronModule should add holocron config properties as a static to wrapped component 1`] = `
+Object {
+  "displayName": "FakeComponent",
+  "holocron": Object {
+    "load": [Function],
+    "loadModuleData": [Function],
+    "mergeProps": [Function],
+    "name": "MyModule",
+    "options": [Function],
+    "reducer": [Function],
+    "shouldModuleReload": [Function],
+  },
+  "name": "FakeComponent",
+}
+`;
+
+exports[`publicHolocronModule should send a deprecation warning if this publicHolocronModule is used 1`] = `"'holocronModule' has been deprecated in favor of the Holocron Config API. Please migrate to Holocron Config API in FakeComponent."`;

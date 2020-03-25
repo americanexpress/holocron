@@ -11,6 +11,7 @@ Object {
   "getModule": [Function],
   "getModuleMap": [Function],
   "getModules": [Function],
+  "holocronModule": [Function],
   "isLoaded": [Function],
   "isLoading": [Function],
   "loadModule": [Function],

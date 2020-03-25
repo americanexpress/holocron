@@ -30,6 +30,7 @@ import {
 } from './ducks/load';
 import { composeModules } from './ducks/compose';
 import RenderModule from './RenderModule';
+import holocronModule from './publicHolocronModule';
 
 // Public API
 export {
@@ -47,4 +48,5 @@ export {
   isLoading,
   getLoadingPromise,
   RenderModule,
+  holocronModule,
 };
