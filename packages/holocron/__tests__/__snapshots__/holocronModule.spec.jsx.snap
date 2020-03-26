@@ -1,24 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`holocronModule executeLoad should call load if present with props 1`] = `
-Array [
-  Array [
-    "The 'load' function in holocron has been deprecated. Please use 'loadModuleData' instead.",
-  ],
-]
-`;
-
-exports[`holocronModule executeLoad should call load if present with props 2`] = `
-Array [
-  Array [
-    Object {
-      "myFakeProp": true,
-    },
-  ],
-]
-`;
-
-exports[`holocronModule executeLoadModuleData should call loadModuleData if dispatch and loadModuleData are present 1`] = `
+exports[`holocronModule executeLoadModuleData should call loadModuleData with correct args 1`] = `
 Array [
   Array [
     Object {
@@ -47,10 +29,6 @@ Array [
   ],
 ]
 `;
-
-exports[`holocronModule executeLoadingFunctions should have setState called with error when failure occurs 1`] = `"Error while attempting to call 'load' or 'loadModuleData' inside Holocron module FakeComponent."`;
-
-exports[`holocronModule executeLoadingFunctions should not have setState called with error if mounted is false 1`] = `"Error while attempting to call 'load' or 'loadModuleData' inside Holocron module FakeComponent."`;
 
 exports[`holocronModule should gracefully handle module state missing from store 1`] = `
 <div>
@@ -99,12 +77,13 @@ exports[`holocronModule should provide the module state as a plain JS prop if a 
 exports[`holocronModule should warn if a reducer is set but no name 1`] = `
 Array [
   Array [
-    "Holocron Config API requires a 'name' when a 'reducer' is set for Module HolocronModule(undefined).",
+    "The Holocron Config in 'HolocronModule(undefined)' requires a 'name' when passing a 'reducer'.
+The 'reducer' will not be added to the Redux Store without a 'name'.",
   ],
 ]
 `;
 
-exports[`holocronModule should wrap module if no arguments are provided 1`] = `
+exports[`holocronModule should wrap module with no arguments 1`] = `
 <div>
   Mock Module
 </div>

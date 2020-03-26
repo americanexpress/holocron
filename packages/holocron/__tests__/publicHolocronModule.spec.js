@@ -13,7 +13,7 @@ const holocronProperties = {
 };
 
 describe('publicHolocronModule', () => {
-  it('should add holocron config properties as a static to wrapped component', () => {
+  it('should add holocron config properties to component', () => {
     const FakeComponent = {
       name: 'FakeComponent',
       displayName: 'FakeComponent',
@@ -22,19 +22,21 @@ describe('publicHolocronModule', () => {
       ...holocronProperties,
     })(FakeComponent)).toMatchSnapshot();
   });
-  it('should add empty holocron config to wrapped component if no args are passed', () => {
+
+  it('should attach empty holocron config to component without args', () => {
     const FakeComponent = {
       name: 'FakeComponent',
       displayName: 'FakeComponent',
     };
     expect(publicHolocronModule()(FakeComponent)).toMatchSnapshot();
   });
-  it('should send a deprecation warning if this publicHolocronModule is used', () => {
+
+  it('should send a deprecation warning', () => {
     const FakeComponent = {
       name: 'FakeComponent',
       displayName: 'FakeComponent',
     };
     publicHolocronModule()(FakeComponent);
-    expect(warn.mock.calls[0][0]).toMatchSnapshot();
+    expect(warn).toHaveBeenCalled();
   });
 });

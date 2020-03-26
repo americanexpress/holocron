@@ -169,7 +169,7 @@ export default function holocronModule({
     let mapModuleStateToProps;
 
     if (reducer && !name) {
-      console.warn(`Holocron Config API requires a 'name' when a 'reducer' is set for Module ${getDisplayName(getName(WrappedComponent, name))}.`);
+      console.warn(`The Holocron Config in '${getDisplayName(getName(WrappedComponent, name))}' requires a 'name' when passing a 'reducer'.\nThe 'reducer' will not be added to the Redux Store without a 'name'.`);
     }
 
     if (reducer && name) {

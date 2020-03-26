@@ -75,23 +75,24 @@ describe('holocronModule', () => {
   });
 
   describe('executeLoad', () => {
-    it('should return undefined if load is undefined', () => {
+    it('should return undefined with no args', () => {
       expect(executeLoad()).toEqual(undefined);
     });
-    it('should call load if present with props', () => {
+
+    it('should call load with props', () => {
       fakeProps = {
         dispatch: jest.fn(),
         load: jest.fn((arg) => arg),
         myFakeProp: true,
       };
       executeLoad(fakeProps);
-      expect(warn.mock.calls).toMatchSnapshot();
-      expect(fakeProps.load.mock.calls).toMatchSnapshot();
+      expect(warn).toHaveBeenCalled();
+      expect(fakeProps.load).toHaveBeenCalledWith({ myFakeProp: true });
     });
   });
 
   describe('executeLoadModuleData', () => {
-    it('should call loadModuleData if dispatch and loadModuleData are present', async () => {
+    it('should call loadModuleData with correct args', async () => {
       expect.assertions(2);
       await executeLoadModuleData(
         fakeLoadModuleData,
@@ -104,7 +105,7 @@ describe('holocronModule', () => {
   });
 
   describe('executeLoadingFunctions', () => {
-    it('should have setState called with loaded when successful', async () => {
+    it('should call setState with success', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
@@ -116,7 +117,8 @@ describe('holocronModule', () => {
       });
       expect(fakeSetState).toHaveBeenCalledWith({ status: 'loaded' });
     });
-    it('should not have setState called if successful but over loadCount', async () => {
+
+    it('should not call setState if over loadCount', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
@@ -134,8 +136,9 @@ describe('holocronModule', () => {
       });
       expect(fakeSetState).not.toHaveBeenCalled();
     });
-    it('should have setState called with error when failure occurs', async () => {
-      expect.assertions(2);
+
+    it('should call setState with error on failure', async () => {
+      expect.assertions(1);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
       };
@@ -147,10 +150,10 @@ describe('holocronModule', () => {
         componentName: 'FakeComponent',
         hocInstance: fakeInstance,
       });
-      expect(error.mock.calls[0][0]).toMatchSnapshot();
       expect(fakeSetState).toHaveBeenCalledWith({ status: 'error' });
     });
-    it('should not have setState called with error if mounted is false', async () => {
+
+    it('should not call setState if unmounted on failure', async () => {
       expect.assertions(2);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
@@ -166,12 +169,12 @@ describe('holocronModule', () => {
           mounted: false,
         },
       });
-      expect(error.mock.calls[0][0]).toMatchSnapshot();
+      expect(error).toHaveBeenCalled();
       expect(fakeSetState).not.toHaveBeenCalled();
     });
   });
 
-  it('should wrap module if no arguments are provided', () => {
+  it('should wrap module with no arguments', () => {
     const MyModuleComponent = holocronModule()(() => <div>Mock Module</div>);
     const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { key: 'value' } } }));
     const tree = renderer.create(<MyModuleComponent store={mockStore} />);
