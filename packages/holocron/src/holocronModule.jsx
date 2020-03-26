@@ -26,10 +26,10 @@ import {
 } from './ducks/constants';
 
 // Execute deprecated load function and provide deprecation message
-export function executeLoad({ load, ...restProps } = { }) {
+export function executeLoad({ dispatch, load, ...restProps } = { }) {
   if (load) {
     console.warn('The \'load\' function in holocron has been deprecated. Please use \'loadModuleData\' instead.');
-    return load(restProps);
+    return dispatch(load(restProps));
   }
   return undefined;
 }
@@ -37,7 +37,7 @@ export function executeLoad({ load, ...restProps } = { }) {
 // Dispatch loadModuleData inside a thunk if it exists
 export function executeLoadModuleData(loadModuleData, WrappedComponent, props) {
   const { dispatch, ...restProps } = props;
-  if (dispatch && loadModuleData) {
+  if (loadModuleData) {
     return dispatch(async (_, getState, { fetchClient }) => loadModuleData({
       store: { dispatch, getState },
       fetchClient,
@@ -200,10 +200,14 @@ export default function holocronModule({
 
     hoistStatics(HolocronModuleWrapper, WrappedComponent);
 
-    return connect(
+    const DerivedComponent = connect(
       mapModuleStateToProps,
       mapDispatchToProps,
       mergeProps
     )(HolocronModuleWrapper);
+
+    hoistStatics(DerivedComponent, HolocronModuleWrapper);
+
+    return DerivedComponent;
   };
 }

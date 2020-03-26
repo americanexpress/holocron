@@ -80,7 +80,8 @@ describe('holocronModule', () => {
     });
     it('should call load if present with props', () => {
       fakeProps = {
-        load: jest.fn(),
+        dispatch: jest.fn(),
+        load: jest.fn((arg) => arg),
         myFakeProp: true,
       };
       executeLoad(fakeProps);
@@ -171,7 +172,7 @@ describe('holocronModule', () => {
   });
 
   it('should wrap module if no arguments are provided', () => {
-    const MyModuleComponent = holocronModule({})(() => <div>Mock Module</div>);
+    const MyModuleComponent = holocronModule()(() => <div>Mock Module</div>);
     const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { key: 'value' } } }));
     const tree = renderer.create(<MyModuleComponent store={mockStore} />);
 

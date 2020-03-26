@@ -32,7 +32,7 @@ function getModuleBlockList() {
 }
 
 function addHigherOrderComponent(module) {
-  return holocronModule(module.holocron)(module);
+  return holocronModule({ loadModuleData: module.loadModuleData, ...module.holocron })(module);
 }
 
 function registerModule(moduleName, module) {

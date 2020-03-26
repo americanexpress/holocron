@@ -18,6 +18,16 @@ import { LOAD_KEY } from './constants';
 // This duck does not have a reducer
 export default null;
 
+function selectLoadModuleData(module) {
+  if (module && module.loadModuleData) {
+    return module.loadModuleData;
+  }
+  if (module && module.holocron && module.holocron.loadModuleData) {
+    return module.holocron.loadModuleData;
+  }
+  return undefined;
+}
+
 export function composeModules(moduleConfigs) {
   return (dispatch, getState, { fetchClient } = {}) => {
     const modulePromises = moduleConfigs.map((config) => {
@@ -28,7 +38,7 @@ export function composeModules(moduleConfigs) {
             return dispatch(module[LOAD_KEY](config.props));
           }
 
-          const loadModuleData = module && module.holocron && module.holocron.loadModuleData;
+          const loadModuleData = selectLoadModuleData(module);
 
           if (loadModuleData) {
             return loadModuleData({

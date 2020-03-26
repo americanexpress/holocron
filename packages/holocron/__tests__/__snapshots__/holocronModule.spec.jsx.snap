@@ -72,7 +72,7 @@ exports[`holocronModule should pass mergeProps to connect if it is specified 1`]
 exports[`holocronModule should pass the moduleLoadStatus prop as error when it failed to load 1`] = `
 <div>
   Mock Module - 
-  loading
+  error
 </div>
 `;
 
