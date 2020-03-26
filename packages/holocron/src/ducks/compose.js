@@ -19,6 +19,7 @@ import { LOAD_KEY } from './constants';
 export default null;
 
 function selectLoadModuleData(module) {
+  // TODO remove module.loadModuleData in next major version
   if (module && module.loadModuleData) {
     return module.loadModuleData;
   }

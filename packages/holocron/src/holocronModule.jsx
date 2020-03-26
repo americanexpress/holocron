@@ -90,7 +90,7 @@ export async function executeLoadingFunctions({
 export default function holocronModule({
   name,
   reducer,
-  load,
+  load, // TODO remove in next major version
   shouldModuleReload,
   loadModuleData,
   mergeProps,
