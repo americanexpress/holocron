@@ -88,7 +88,7 @@ The optional `holocron` object set to the parent React Component inside a Holocr
 | `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
 | `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
 | `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
-| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `load` function should be called again |
+| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
 | `options` | `Object` | `false` | Additional options |
 
@@ -111,7 +111,7 @@ HelloWorld.propTypes = {
   }).isRequired,
 };
 
-const loadModuleData = ({ store: { dispatch } }) => dispatch(fetchData(props.input));
+const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(fetchData(ownProps.input));
 const shouldModuleReload = (oldProps, newProps) => oldProps.input !== newProps.input;
 
 HelloWorld.holocron = {
@@ -152,7 +152,7 @@ A [higher order component (HOC)] for registering a load function and/or reducer 
 | `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
 | `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
 | `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
-| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `load` function should be called again |
+| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
 | `options` | `Object` | `false` | Additional options |
 
@@ -285,24 +285,6 @@ Adds a Holocron module to the registry
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of your Holocron module |
 | `module` | `Function` | `true` | The Holocron module itself (a React component) |
-
-#### `addHigherOrderComponent`
-
-Adds private `holocronModule` [higher order component (HOC)] to Holocron Module and returns another React Component.
-
-##### Arguments
-
-| name | type | required | value |
-|---|---|---|---|
-| `module` | `Function` | `true` | The Holocron module itself (a React component) |
-
-##### Usage
-
-```js
-import { addHigherOrderComponent } from 'holocron';
-
-addHigherOrderComponent(Module);
-```
 
 #### `getModule`
 

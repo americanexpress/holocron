@@ -48,11 +48,11 @@ export function executeLoadModuleData(loadModuleData, WrappedComponent, props) {
   return undefined;
 }
 
-export function getName(WrappedComponent, name) {
+export function getModuleName(WrappedComponent, name) {
   return WrappedComponent && (WrappedComponent.displayName || WrappedComponent.name || name);
 }
 
-export function getDisplayName(name) {
+export function getModuleDisplayName(name) {
   return `HolocronModule(${name})`;
 }
 
@@ -139,7 +139,7 @@ export default function holocronModule({
           WrappedComponent,
           frozenProps,
           loadCount,
-          hocName: getName(WrappedComponent, name),
+          hocName: getModuleName(WrappedComponent, name),
           hocInstance: this,
         });
       }
@@ -160,7 +160,7 @@ export default function holocronModule({
       load: undefined,
     };
 
-    HolocronModuleWrapper.displayName = getDisplayName(getName(WrappedComponent, name));
+    HolocronModuleWrapper.displayName = getModuleDisplayName(getModuleName(WrappedComponent, name));
 
     if (load && (options.ssr || global.BROWSER)) {
       HolocronModuleWrapper[LOAD_KEY] = load;
@@ -169,7 +169,7 @@ export default function holocronModule({
     let mapModuleStateToProps;
 
     if (reducer && !name) {
-      console.warn(`The Holocron Config in '${getDisplayName(getName(WrappedComponent, name))}' requires a 'name' when passing a 'reducer'.\nThe 'reducer' will not be added to the Redux Store without a 'name'.`);
+      console.warn(`The Holocron Config in '${getModuleDisplayName(getModuleName(WrappedComponent, name))}' requires a 'name' when passing a 'reducer'.\nThe 'reducer' will not be added to the Redux Store without a 'name'.`);
     }
 
     if (reducer && name) {

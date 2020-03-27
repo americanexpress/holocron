@@ -3,7 +3,6 @@
 exports[`public API should not have anything removed 1`] = `
 Object {
   "RenderModule": [Function],
-  "addHigherOrderComponent": [Function],
   "composeModules": [Function],
   "createHolocronStore": [Function],
   "failedToLoad": [Function],

@@ -19,7 +19,6 @@ import {
   getModules,
   getModuleMap,
   setModuleMap,
-  addHigherOrderComponent,
 } from './moduleRegistry';
 import {
   loadModule,
@@ -41,7 +40,6 @@ export {
   getModules,
   getModuleMap,
   setModuleMap,
-  addHigherOrderComponent,
   composeModules,
   loadModule,
   isLoaded,
