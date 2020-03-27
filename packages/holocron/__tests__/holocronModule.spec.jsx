@@ -22,20 +22,164 @@ import { fromJS } from 'immutable';
 import renderer from 'react-test-renderer';
 import _ from 'lodash';
 
-import holocronModule from '../src/holocronModule';
-import { REDUCER_KEY, LOAD_KEY } from '../src/constants';
+import holocronModule, {
+  executeLoad,
+  executeLoadModuleData,
+  executeLoadingFunctions,
+} from '../src/holocronModule';
+import { REDUCER_KEY, LOAD_KEY } from '../src/ducks/constants';
+
+const sleep = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
+
+const warn = jest.spyOn(console, 'warn');
+const error = jest.spyOn(console, 'error');
 
 describe('holocronModule', () => {
+  let fakeLoadModuleData;
+  let FakeComponent;
+  let fakeDispatch;
+  let fakeGetState;
+  let fakeFetchClient;
+  let fakeProps;
+  let fakeSetState;
+  let fakeInstance;
+  let fakeLoad;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    FakeComponent = {
+      displayName: 'FakeComponent',
+    };
+    fakeLoadModuleData = jest.fn(async () => undefined);
+    fakeFetchClient = jest.fn();
+    fakeGetState = jest.fn();
+    fakeDispatch = jest.fn(
+      (func) => func(fakeDispatch, fakeGetState, { fetchClient: fakeFetchClient })
+    );
+    fakeSetState = jest.fn();
+    fakeProps = {
+      dispatch: fakeDispatch,
+      load: fakeLoad,
+    };
+    fakeInstance = {
+      setState: fakeSetState,
+      mounted: true,
+      state: {
+        loadCount: 0,
+      },
+    };
+  });
   afterEach(() => {
     global.BROWSER = false;
   });
 
-  it('should throw an error if a name is not provided', () => {
-    function createHolocronModule() {
-      holocronModule({})(() => <div>Mock Module</div>);
-    }
+  describe('executeLoad', () => {
+    it('should return undefined with no args', () => {
+      expect(executeLoad()).toEqual(undefined);
+    });
 
-    expect(createHolocronModule).toThrowErrorMatchingSnapshot();
+    it('should call load with props', () => {
+      fakeProps = {
+        dispatch: jest.fn(),
+        load: jest.fn((arg) => arg),
+        myFakeProp: true,
+      };
+      executeLoad(fakeProps);
+      expect(warn).toHaveBeenCalled();
+      expect(fakeProps.load).toHaveBeenCalledWith({ myFakeProp: true });
+    });
+  });
+
+  describe('executeLoadModuleData', () => {
+    it('should call loadModuleData with correct args', async () => {
+      expect.assertions(2);
+      await executeLoadModuleData(
+        fakeLoadModuleData,
+        FakeComponent,
+        { dispatch: fakeDispatch }
+      );
+      expect(fakeLoadModuleData.mock.calls).toMatchSnapshot();
+      expect(fakeProps.dispatch).toHaveBeenCalled();
+    });
+  });
+
+  describe('executeLoadingFunctions', () => {
+    it('should call setState with success', async () => {
+      expect.assertions(1);
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: fakeInstance,
+      });
+      expect(fakeSetState).toHaveBeenCalledWith({ status: 'loaded' });
+    });
+
+    it('should not call setState if over loadCount', async () => {
+      expect.assertions(1);
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: {
+          ...fakeInstance,
+          mounted: false,
+          state: {
+            loadCount: 9999,
+          },
+        },
+      });
+      expect(fakeSetState).not.toHaveBeenCalled();
+    });
+
+    it('should call setState with error on failure', async () => {
+      expect.assertions(1);
+      fakeLoadModuleData = () => {
+        throw new Error('Failed');
+      };
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: fakeInstance,
+      });
+      expect(fakeSetState).toHaveBeenCalledWith({ status: 'error' });
+    });
+
+    it('should not call setState if unmounted on failure', async () => {
+      expect.assertions(2);
+      fakeLoadModuleData = () => {
+        throw new Error('Failed');
+      };
+      await executeLoadingFunctions({
+        loadModuleData: fakeLoadModuleData,
+        WrappedComponent: FakeComponent,
+        frozenProps: fakeProps,
+        loadCount: 0,
+        componentName: 'FakeComponent',
+        hocInstance: {
+          ...fakeInstance,
+          mounted: false,
+        },
+      });
+      expect(error).toHaveBeenCalled();
+      expect(fakeSetState).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should wrap module with no arguments', () => {
+    const MyModuleComponent = holocronModule()(() => <div>Mock Module</div>);
+    const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { key: 'value' } } }));
+    const tree = renderer.create(<MyModuleComponent store={mockStore} />);
+
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should provide the module state as a plain JS prop if a reducer is provided', () => {
@@ -206,7 +350,7 @@ describe('holocronModule', () => {
   });
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
-  it('should pass the moduleLoadStatus prop as loaded when loaded', () => {
+  it('should pass the moduleLoadStatus prop as loaded when loaded', async () => {
     global.INITIAL_STATE = undefined;
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
@@ -214,12 +358,17 @@ describe('holocronModule', () => {
       name: 'mock-module',
       load,
     })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
-    const mockStore = createStore((state) => state, applyMiddleware(thunk));
+    const mockStore = createStore(
+      (state) => state, applyMiddleware(thunk.withExtraArgument({ fetchClient: jest.fn() }))
+    );
     const tree = renderer.create(
       <Provider store={mockStore}>
         <Module />
       </Provider>
     );
+
+    // Wait one cycle of the event loop since we can't retrieve a promise from initiateLoad
+    await sleep(1);
 
     return loadPromise
       .then(() => {
@@ -376,5 +525,18 @@ describe('holocronModule', () => {
     );
     expect(render).not.toThrowError();
     expect(render().toJSON()).toMatchSnapshot();
+  });
+  it('should warn if a reducer is set but no name', () => {
+    const reducer = () => {};
+    const Module = holocronModule({
+      reducer,
+    })(() => <div>Mock Module</div>);
+    const mockStore = createStore((state) => state, fromJS({}));
+    renderer.create(
+      <Provider store={mockStore}>
+        <Module />
+      </Provider>
+    );
+    expect(warn.mock.calls).toMatchSnapshot();
   });
 });

@@ -14,8 +14,7 @@
 
 import { Map as iMap, Set as iSet, fromJS } from 'immutable';
 
-import { REDUCER_KEY } from '../src/constants';
-import { REGISTER_MODULE_REDUCER, MODULE_REDUCER_ADDED } from '../src/ducks/load';
+import { REDUCER_KEY, REGISTER_MODULE_REDUCER, MODULE_REDUCER_ADDED } from '../src/ducks/constants';
 
 import createHolocronStore from '../src/createHolocronStore';
 

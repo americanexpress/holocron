@@ -12,6 +12,8 @@ available on the server. We have organized them as such.
 
 - [App-level Functions](#app-level-functions)
   - [`createHolocronStore`](#createholocronstore)
+- [Holocron Module Configuration](#holocron-module-configuration)
+  - [`Module.holocron`](#holocron)
 - [Module-level Functions](#module-level-functions)
   - [`holocronModule`](#holocronmodule)
   - [`RenderModule`](#rendermodule)
@@ -70,6 +72,65 @@ hydrate(
 );
 ```
 
+### Holocron Module Configuration
+
+#### `Module.holocron`
+
+The optional `holocron` object set to the parent React Component inside a Holocron Module determines behavior of state management, data loading, and React prop management. 
+
+> A `name` property is required if a `reducer` is set otherwise the `reducer` will not be added to the Redux Store.
+
+##### Properties
+
+| name | type | required | value |
+|---|---|---|---|
+| `name` | `String` | `true` | The name of your Holocron module |
+| `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
+| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
+| `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
+| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
+| `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
+| `options` | `Object` | `false` | Additional options |
+
+#### Usage
+
+```jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+import { reducer, fetchData } from '../duck';
+
+const HelloWorld = ({ moduleState: { myData } }) => (
+  <h1>
+Hello,
+    {myData.name}
+  </h1>
+);
+HelloWorld.propTypes = {
+  moduleState: PropTypes.shape({
+    myData: PropTypes.string,
+  }).isRequired,
+};
+
+const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(fetchData(ownProps.input));
+const shouldModuleReload = (oldProps, newProps) => oldProps.input !== newProps.input;
+
+HelloWorld.holocron = {
+  name: 'hello-world',
+  reducer,
+  loadModuleData,
+  shouldModuleReload,
+  options,
+}
+
+export default HelloWorld;
+```
+
+The Holocron Module parent React Components will be provided several props automatically.
+
+| prop name | type | value |
+|---|---|---|
+| `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
+| `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
 ### Module-level Functions
 
@@ -77,16 +138,21 @@ While these can all be used by the app itself, they will get the most use from m
 
 #### `holocronModule`
 
-A [higher order component (HOC)](https://reactjs.org/docs/higher-order-components.html) for registering a load function and/or reducer with a module. This HOC is only required if the `load` or `reducer` functionality is used.
+> ☠️ Deprecated in favor of [Holocron Module Configuration](#holocron-module-configuration)
+
+A [higher order component (HOC)] for registering a load function and/or reducer with a module. This HOC is only required if the `load` or `reducer` functionality is used.
+
+> A `name` property is required if a `reducer` is set otherwise the `reducer` will not be added to the Redux Store.
 
 ##### Arguments
 
 | name | type | required | value |
 |---|---|---|---|
 | `name` | `String` | `true` | The name of your Holocron module |
-| `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded |
-| `load` | `(props) => Promise` | `false` | A function that fetches data required by your module |
-| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `load` function should be called again |
+| `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
+| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
+| `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
+| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
 | `options` | `Object` | `false` | Additional options |
 
@@ -219,14 +285,6 @@ Adds a Holocron module to the registry
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of your Holocron module |
 | `module` | `Function` | `true` | The Holocron module itself (a React component) |
-
-##### Usage
-
-```js
-import { registerModule } from 'holocron';
-
-registerModule(moduleName, Module);
-```
 
 #### `getModule`
 
@@ -473,3 +531,4 @@ const getModulesToUpdate = (
 [vitruvius]: http://github.com/americanexpress/vitruvius
 [Redux thunks]: https://github.com/reduxjs/redux-thunk
 [`.toJS()`]: https://immutable-js.github.io/immutable-js/docs/#/Map/toJS
+[higher order component (HOC)]: https://reactjs.org/docs/higher-order-components.html

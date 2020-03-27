@@ -1,5 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`holocronModule executeLoadModuleData should call loadModuleData with correct args 1`] = `
+Array [
+  Array [
+    Object {
+      "fetchClient": [MockFunction],
+      "module": Object {
+        "displayName": "FakeComponent",
+      },
+      "ownProps": Object {},
+      "store": Object {
+        "dispatch": [MockFunction] {
+          "calls": Array [
+            Array [
+              [Function],
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": Promise {},
+            },
+          ],
+        },
+        "getState": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
 exports[`holocronModule should gracefully handle module state missing from store 1`] = `
 <div>
   Mock Module 
@@ -20,7 +50,7 @@ exports[`holocronModule should pass mergeProps to connect if it is specified 1`]
 exports[`holocronModule should pass the moduleLoadStatus prop as error when it failed to load 1`] = `
 <div>
   Mock Module - 
-  loading
+  error
 </div>
 `;
 
@@ -44,4 +74,17 @@ exports[`holocronModule should provide the module state as a plain JS prop if a 
 </div>
 `;
 
-exports[`holocronModule should throw an error if a name is not provided 1`] = `"A name is required to create a holocron module"`;
+exports[`holocronModule should warn if a reducer is set but no name 1`] = `
+Array [
+  Array [
+    "The Holocron Config in 'HolocronModule(undefined)' requires a 'name' when passing a 'reducer'.
+The 'reducer' will not be added to the Redux Store without a 'name'.",
+  ],
+]
+`;
+
+exports[`holocronModule should wrap module with no arguments 1`] = `
+<div>
+  Mock Module
+</div>
+`;

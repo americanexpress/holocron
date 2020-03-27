@@ -13,7 +13,6 @@
  */
 
 import createHolocronStore from './createHolocronStore';
-import holocronModule from './holocronModule';
 import {
   registerModule,
   getModule,
@@ -31,11 +30,11 @@ import {
 } from './ducks/load';
 import { composeModules } from './ducks/compose';
 import RenderModule from './RenderModule';
+import holocronModule from './publicHolocronModule';
 
 // Public API
 export {
   createHolocronStore,
-  holocronModule,
   registerModule,
   getModule,
   getModules,
@@ -49,4 +48,5 @@ export {
   isLoading,
   getLoadingPromise,
   RenderModule,
+  holocronModule,
 };

@@ -13,6 +13,7 @@
  */
 
 import { fromJS, List } from 'immutable';
+import holocronModule from './holocronModule';
 
 let modules = fromJS({});
 let moduleMap = fromJS({});
@@ -30,8 +31,12 @@ function getModuleBlockList() {
   return moduleBlockList;
 }
 
+function addHigherOrderComponent(module) {
+  return holocronModule({ loadModuleData: module.loadModuleData, ...module.holocron })(module);
+}
+
 function registerModule(moduleName, module) {
-  modules = modules.set(moduleName, module);
+  modules = modules.set(moduleName, addHigherOrderComponent(module));
 }
 
 function getModule(moduleName, altModules) {
@@ -69,4 +74,5 @@ export {
   getModuleMap,
   setModuleMap,
   resetModuleRegistry,
+  addHigherOrderComponent,
 };

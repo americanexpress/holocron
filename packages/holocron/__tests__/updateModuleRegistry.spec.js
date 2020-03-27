@@ -18,7 +18,18 @@ import {
   getModules,
   getModuleMap,
   resetModuleRegistry,
+  addHigherOrderComponent,
 } from '../src/moduleRegistry';
+
+function AwesomeModule() {
+  return 'initial awesome-module';
+}
+function AnotherModule() {
+  return 'initial awesome-module';
+}
+function ModuleThree() {
+  return 'initial awesome-module';
+}
 
 jest.mock('../src/loadModule.node', () => {
   const createTimeoutPromise = (
@@ -27,7 +38,15 @@ jest.mock('../src/loadModule.node', () => {
   ) => new Promise(
     (res) => setTimeout(() => res(resolveWith), time)
   );
-  return jest.fn((moduleName, moduleVersion) => createTimeoutPromise(() => `new ${moduleName}@${moduleVersion}`, 100));
+
+  const makeUpdatedModule = (moduleName, moduleVersion) => function UpdatedModule() {
+    return `new ${moduleName}@${moduleVersion}`;
+  };
+
+  return jest.fn((moduleName, moduleVersion) => createTimeoutPromise(
+    makeUpdatedModule(moduleName, moduleVersion),
+    100
+  ));
 });
 
 describe('updateModuleRegistry', () => {
@@ -35,16 +54,16 @@ describe('updateModuleRegistry', () => {
 
   const getModuleOutputs = (modules) => modules.reduce((acc, module, moduleName) => ({
     ...acc,
-    [moduleName]: module(),
+    [moduleName]: module,
   }), {});
 
   beforeEach(() => {
     jest.clearAllMocks();
     resetModuleRegistry(
       {
-        'awesome-module': () => 'initial awesome-module',
-        'another-module': () => 'initial another-module',
-        'module-three': () => 'initial module-three',
+        'awesome-module': addHigherOrderComponent(AwesomeModule),
+        'another-module': addHigherOrderComponent(AnotherModule),
+        'module-three': addHigherOrderComponent(ModuleThree),
       },
       {
         key: 'key123',
@@ -361,7 +380,7 @@ describe('updateModuleRegistry', () => {
   it('should remove modules from the registry', async () => {
     expect.assertions(3);
     expect(getModuleMap().getIn(['modules', 'awesome-module'])).toMatchSnapshot();
-    expect(getModules().get('awesome-module')()).toBe('initial awesome-module');
+    expect(getModules().getIn(['awesome-module', 'displayName'])).toBe('Connect(HolocronModule(AwesomeModule))');
 
     const newModuleMap = {
       key: 'key-123',

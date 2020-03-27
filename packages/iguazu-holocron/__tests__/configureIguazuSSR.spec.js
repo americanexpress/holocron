@@ -33,4 +33,9 @@ describe('configureIguazuSSR', () => {
     configureIguazuSSR({ store, module: fakeModule, ownProps: {} });
     expect(iguazuReduce).toHaveBeenCalled();
   });
+  it('should not call iguazuReduce if global.BROWSER', () => {
+    global.BROWSER = true;
+    configureIguazuSSR({ store, module: fakeModule, ownProps: {} });
+    expect(iguazuReduce).not.toHaveBeenCalled();
+  });
 });

@@ -12,7 +12,7 @@
  * under the License.
  */
 
-import { LOAD_KEY } from '../../src/constants';
+import { LOAD_KEY } from '../../src/ducks/constants';
 
 import { composeModules } from '../../src/ducks/compose';
 
@@ -71,7 +71,7 @@ describe('composeModules', () => {
 
   it('should work with modules that use loadModuleData', () => {
     const loadModuleData = jest.fn(() => Promise.resolve('loadModuleData resolve'));
-    const fakeModule = { loadModuleData };
+    const fakeModule = { holocron: { loadModuleData } };
     require('../../src/ducks/load').loadModule // eslint-disable-line global-require
       .mockImplementationOnce(() => Promise.resolve(fakeModule));
 

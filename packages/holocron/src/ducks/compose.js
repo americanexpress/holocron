@@ -13,10 +13,21 @@
  */
 
 import { loadModule } from './load';
-import { LOAD_KEY } from '../constants';
+import { LOAD_KEY } from './constants';
 
 // This duck does not have a reducer
 export default null;
+
+function selectLoadModuleData(module) {
+  // TODO remove module.loadModuleData in next major version
+  if (module && module.loadModuleData) {
+    return module.loadModuleData;
+  }
+  if (module && module.holocron && module.holocron.loadModuleData) {
+    return module.holocron.loadModuleData;
+  }
+  return undefined;
+}
 
 export function composeModules(moduleConfigs) {
   return (dispatch, getState, { fetchClient } = {}) => {
@@ -28,8 +39,10 @@ export function composeModules(moduleConfigs) {
             return dispatch(module[LOAD_KEY](config.props));
           }
 
-          if (module.loadModuleData) {
-            return module.loadModuleData({
+          const loadModuleData = selectLoadModuleData(module);
+
+          if (loadModuleData) {
+            return loadModuleData({
               store: { dispatch, getState },
               module,
               ownProps: config.props,
