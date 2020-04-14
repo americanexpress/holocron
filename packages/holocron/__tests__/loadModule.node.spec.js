@@ -103,6 +103,36 @@ describe('loadModule.node', () => {
     });
   });
 
+  describe('development ', () => {
+    const { NODE_ENV } = process.env;
+
+    beforeAll(() => {
+      process.env.NODE_ENV = 'development';
+    });
+    afterAll(() => {
+      process.env.NODE_ENV = NODE_ENV;
+    });
+
+    it('reloads faulty module in development and does not add to black list', () => {
+      expect.assertions(2);
+
+      const moduleName = 'bad-dev-module';
+      const moduleUrl = 'https://example.com/cdn/awesome/1.0.0/awesome.node.js';
+      const requireError = new Error(`err... ${moduleName} failed to load`);
+
+      const loadModule = load();
+
+      requireFromString.mockImplementation(() => Promise.reject(requireError));
+
+      return loadModule(moduleName, { node: { integrity: '123', url: moduleUrl } })
+        .catch((error) => {
+          console.log(error);
+          expect(fetch).toHaveBeenCalledTimes(1);
+          expect(!!moduleRegistry.isModuleInBlockList(moduleUrl)).toBe(false);
+        });
+    });
+  });
+
   describe('agent', () => {
     describe('maxSockets', () => {
       afterEach(() => {

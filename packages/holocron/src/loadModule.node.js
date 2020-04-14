@@ -88,7 +88,7 @@ export default async function loadModule(
       }
       nodeModule = requireFromString(moduleString, url);
     } catch (err) {
-      if (err.shouldBlockModuleReload !== false) {
+      if (err.shouldBlockModuleReload !== false || process.env.NODE_ENV !== 'development') {
         addToModuleBlockList(url);
         console.warn(`Holocron module at ${url} added to blocklist: ${err.message}`);
       }
