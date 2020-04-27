@@ -15,10 +15,10 @@ available on the server. We have organized them as such.
 - [Holocron Module Configuration](#holocron-module-configuration)
   - [`Module.holocron`](#holocron)
 - [Module-level Functions](#module-level-functions)
-  - [`holocronModule`](#holocronmodule)
   - [`RenderModule`](#rendermodule)
   - [`composeModules`](#composemodules)
   - [`loadModule`](#loadmodule)
+  - [`holocronModule (Deprecated)`](#holocronmodule)
 - [Module Registry](#module-registry)
   - [`registerModule`](#registermodule)
   - [`getModule`](#getmodule)
@@ -86,11 +86,11 @@ The optional `holocron` object set to the parent React Component inside a Holocr
 |---|---|---|---|
 | `name` | `String` | `true` | The name of your Holocron module |
 | `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
-| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
 | `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
 | `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
 | `options` | `Object` | `false` | Additional options |
+| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead.
 
 #### Usage
 
@@ -136,7 +136,84 @@ The Holocron Module parent React Components will be provided several props autom
 
 While these can all be used by the app itself, they will get the most use from modules.
 
-#### `holocronModule`
+#### `RenderModule`
+
+A React component for rendering a Holocron module.
+
+##### Props
+
+| name | type | required | value |
+|---|---|---|---|
+| `moduleName` | `PropTypes.string` | `true` | The name of the Holocron module to be rendered |
+| `props` | `PropTypes.object` | `false` | Props to pass the rendered Holocron module |
+| `children` | `PropTypes.node` | `false` | Childen passed to the rendered Holocron module |
+
+##### Usage
+
+```jsx
+import { RenderModule, holocronModule, composeModules } from 'holocron';
+
+const MyModule = ({ data }) => (
+  <div>
+    {/* some more JSX */}
+    <RenderModule moduleName="sub-module" props={{ data }}>
+      <p>Hello, world</p>
+    </RenderModule>
+  </div>
+);
+
+const loadModuleData = ({ store: { dispatch } }) => dispatch(composeModules([
+  { name: 'sub-module' },
+]));
+
+MyModule.holocron = {
+  name: 'my-module',
+  loadModuleData,
+}
+
+export default MyModule;
+```
+
+#### `composeModules`
+
+An action creator that loads Holocron modules and their data.
+
+##### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `moduleConfigs` | `[{ name, props }]` | `true` | An array of objects containing module names and their props |
+
+##### Usage
+
+```js
+import { composeModules } from 'holocron';
+
+const loadModuleData = (props) => (dispatch) => dispatch(composeModules([
+  { name: 'some-module', props: { someProp: props.anyProp } },
+  { name: 'another-module' },
+]));
+```
+
+#### `loadModule`
+
+An action creator that fetches a Holocron module.
+
+##### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `moduleName` | `String` | `true` | The name of the Holocron module being fetched |
+
+##### Usage
+
+```js
+import { loadModule } from 'holocron';
+
+const loadModuleData = () => (dispatch) => dispatch(loadModule('my-module'));
+```
+
+#### `holocronModule (Deprecated)`
 
 > ☠️ Deprecated in favor of [Holocron Module Configuration](#holocron-module-configuration)
 
@@ -196,78 +273,6 @@ Components using this HOC will be provided several props.
 | `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
 | `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
-#### `RenderModule`
-
-A React component for rendering a Holocron module.
-
-##### Props
-
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `PropTypes.string` | `true` | The name of the Holocron module to be rendered |
-| `props` | `PropTypes.object` | `false` | Props to pass the rendered Holocron module |
-| `children` | `PropTypes.node` | `false` | Childen passed to the rendered Holocron module |
-
-##### Usage
-
-```jsx
-import { RenderModule, holocronModule, composeModules } from 'holocron';
-
-const MyComponent = ({ data }) => (
-  <div>
-    {/* some more JSX */}
-    <RenderModule moduleName="sub-module" props={{ data }}>
-      <p>Hello, world</p>
-    </RenderModule>
-  </div>
-);
-
-const load = ({ data }) => (dispatch) => dispatch(composeModules([{ name: 'sub-module', props: { data } }]));
-
-export default holocronModule({
-  name: 'my-module',
-  load,
-})(MyComponent);
-```
-
-#### `composeModules`
-
-An action creator that loads Holocron modules and their data.
-
-##### Arguments
-
-| name | type | required | value |
-|---|---|---|---|
-| `moduleConfigs` | `[{ name, props }]` | `true` | An array of objects containing module names and their props |
-
-##### Usage
-
-```js
-import { composeModules } from 'holocron';
-
-const load = (props) => (dispatch) => dispatch(composeModules([
-  { name: 'some-module', props: { someProp: props.anyProp } },
-  { name: 'another-module' },
-]));
-```
-
-#### `loadModule`
-
-An action creator that fetches a Holocron module.
-
-##### Arguments
-
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module being fetched |
-
-##### Usage
-
-```js
-import { loadModule } from 'holocron';
-
-const load = () => (dispatch) => dispatch(loadModule('my-module'));
-```
 
 > The following are low-level APIs unlikely to be needed by most users
 
