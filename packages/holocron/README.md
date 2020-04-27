@@ -9,7 +9,7 @@
 ## 📖 Table of Contents
 
 * [Features](#-features)
-* [API](#-api)
+* [API](#%EF%B8%8F-api)
 * [Available Scripts](#-available-scripts)
 
 ## ✨ Features

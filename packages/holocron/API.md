@@ -13,7 +13,7 @@ available on the server. We have organized them as such.
 - [App-level Functions](#app-level-functions)
   - [`createHolocronStore`](#createholocronstore)
 - [Holocron Module Configuration](#holocron-module-configuration)
-  - [`Module.holocron`](#holocron)
+  - [`Module.holocron`](#moduleholocron)
 - [Module-level Functions](#module-level-functions)
   - [`holocronModule`](#holocronmodule)
   - [`RenderModule`](#rendermodule)
