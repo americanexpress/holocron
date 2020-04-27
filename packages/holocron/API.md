@@ -36,6 +36,8 @@ available on the server. We have organized them as such.
 
 The below is intended only to be called by your app, not modules.
 
+<!--ONE-DOCS-ID id="createHolocronStore" start-->
+
 #### `createHolocronStore`
 
 Creates the [Redux] store with Holocron compatibility.
@@ -71,6 +73,8 @@ hydrate(
   document.getElementById('root')
 );
 ```
+
+<!--ONE-DOCS-ID end-->
 
 ### Holocron Module Configuration
 
