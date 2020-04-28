@@ -162,7 +162,7 @@ const MyModule = ({ data }) => (
   </div>
 );
 
-const loadModuleData = ({ store: { dispatch } }) => dispatch(composeModules([
+export const loadModuleData = ({ store: { dispatch } }) => dispatch(composeModules([
   { name: 'sub-module' },
 ]));
 
@@ -189,8 +189,8 @@ An action creator that loads Holocron modules and their data.
 ```js
 import { composeModules } from 'holocron';
 
-const loadModuleData = (props) => (dispatch) => dispatch(composeModules([
-  { name: 'some-module', props: { someProp: props.anyProp } },
+export const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(composeModules([
+  { name: 'some-module', props: { someProp: ownProps.anyProp } },
   { name: 'another-module' },
 ]));
 ```
@@ -210,7 +210,7 @@ An action creator that fetches a Holocron module.
 ```js
 import { loadModule } from 'holocron';
 
-const loadModuleData = () => (dispatch) => dispatch(loadModule('my-module'));
+const loadModuleData = ({ store: { dispatch } }) => dispatch(loadModule('my-module'));
 ```
 
 #### `holocronModule (Deprecated)`
