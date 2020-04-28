@@ -78,6 +78,8 @@ export default function getChildRoutes(store) {
 
 ## 🎛️ API
 
+<!--ONE-DOCS-ID id="ModuleRoute" start-->
+
 ### `ModuleRoute`
 
 `ModuleRoute` extends [`one-app-router`](https://github.com/americanexpress/one-app-router)'s
@@ -99,9 +101,13 @@ const myRoutes = [
 ];
 ```
 
+<!--ONE-DOCS-ID end-->
+
 #### Module Lifecycle Hooks
 
 These are a few statics that can be attached to modules loaded as `ModuleRoute`s.
+
+<!--ONE-DOCS-ID id="childRoutes" start-->
 
 ##### `childRoutes`
 
@@ -153,6 +159,10 @@ MyModule.childRoutes = (store) => (
 );
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="onEnterRouteHook" start-->
+
 ##### `onEnterRouteHook`
 
 When setting `ModuleRoutes`, you may set an `onEnter` hook as a prop on the `<ModuleRoute />`
@@ -196,6 +206,10 @@ MyModule.onEnterRouteHook = (store) => (nextState, replace, callback) => {
 }
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="moduleRoutePrefetch" start-->
+
 ### `moduleRoutePrefetch`
 
 `moduleRoutePrefetch` can be used to prefetch the modules and data for any route. It is a
@@ -223,6 +237,8 @@ const mapDispatchToProps = (dispatch, { router: { routes } = { routes: [] } }) =
 
 export default connect(null, mapDispatchToProps)(PrefetchLink);
 ```
+
+<!--ONE-DOCS-ID end-->
 
 ## 📜 Available Scripts
 
