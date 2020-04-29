@@ -13,7 +13,7 @@ available on the server. We have organized them as such.
 - [App-level Functions](#app-level-functions)
   - [`createHolocronStore`](#createholocronstore)
 - [Holocron Module Configuration](#holocron-module-configuration)
-  - [`Module.holocron`](#holocron)
+  - [`Module.holocron`](#moduleholocron)
 - [Module-level Functions](#module-level-functions)
   - [`RenderModule`](#rendermodule)
   - [`composeModules`](#composemodules)
@@ -35,6 +35,8 @@ available on the server. We have organized them as such.
 ### App-level Functions
 
 The below is intended only to be called by your app, not modules.
+
+<!--ONE-DOCS-ID id="createHolocronStore" start-->
 
 #### `createHolocronStore`
 
@@ -72,7 +74,11 @@ hydrate(
 );
 ```
 
+<!--ONE-DOCS-ID end-->
+
 ### Holocron Module Configuration
+
+<!--ONE-DOCS-ID id="Module.holocron" start-->
 
 #### `Module.holocron`
 
@@ -132,9 +138,13 @@ The Holocron Module parent React Components will be provided several props autom
 | `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
 | `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
+<!--ONE-DOCS-ID end-->
+
 ### Module-level Functions
 
 While these can all be used by the app itself, they will get the most use from modules.
+
+<!--ONE-DOCS-ID id="RenderModule" start-->
 
 #### `RenderModule`
 
@@ -174,6 +184,10 @@ MyModule.holocron = {
 export default MyModule;
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="composeModules" start-->
+
 #### `composeModules`
 
 An action creator that loads Holocron modules and their data.
@@ -195,6 +209,10 @@ export const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(co
 ]));
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="loadModule" start-->
+
 #### `loadModule`
 
 An action creator that fetches a Holocron module.
@@ -212,6 +230,9 @@ import { loadModule } from 'holocron';
 
 const loadModuleData = ({ store: { dispatch } }) => dispatch(loadModule('my-module'));
 ```
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="holocronModule" start-->
 
 #### `holocronModule (Deprecated)`
 
@@ -273,12 +294,15 @@ Components using this HOC will be provided several props.
 | `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
 | `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
+<!--ONE-DOCS-ID end-->
 
 > The following are low-level APIs unlikely to be needed by most users
 
 ### Module Registry
 
 These functions are all related to interactions with the module registry.
+
+<!--ONE-DOCS-ID id="registerModule" start-->
 
 #### `registerModule`
 
@@ -290,6 +314,10 @@ Adds a Holocron module to the registry
 |---|---|---|---|
 | `moduleName` | `String` | `true` | The name of your Holocron module |
 | `module` | `Function` | `true` | The Holocron module itself (a React component) |
+
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="getModule" start-->
 
 #### `getModule`
 
@@ -310,6 +338,10 @@ import { getModule } from 'holocron';
 const Module = getModule(moduleName, altModules);
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="getModules" start-->
+
 #### `getModules`
 
 Returns all modules in the registry
@@ -326,6 +358,10 @@ import { getModules } from 'holocron';
 const modules = getModules();
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="getModuleMap" start-->
+
 #### `getModuleMap`
 
 Returns the module map
@@ -341,6 +377,10 @@ import { getModuleMap } from 'holocron';
 
 const moduleMap = getModuleMap();
 ```
+
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="setModuleMap" start-->
 
 #### `setModuleMap`
 
@@ -360,10 +400,14 @@ import { setModuleMap } from 'holocron';
 setModuleMap(newModuleMap);
 ```
 
+<!--ONE-DOCS-ID end-->
+
 ### Selectors
 
 These are all functions that take a module name as the only parameter and return a new function
 that accepts the [Redux] state as the only parameter which returns data about the module.
+
+<!--ONE-DOCS-ID id="isLoaded" start-->
 
 #### `isLoaded`
 
@@ -385,6 +429,10 @@ const mapStateToProps = (state) => (
 );
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="failedToLoad" start-->
+
 #### `failedToLoad`
 
 A selector to determine if a Holocron module failed to load.
@@ -404,6 +452,10 @@ const mapStateToProps = (state) => ({
   myModuleFailedToLoad: failedToLoad('my-module')(state),
 });
 ```
+
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="getLoadError" start-->
 
 #### `getLoadError`
 
@@ -425,6 +477,10 @@ const mapStateToProps = (state) => ({
 });
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="isLoading" start-->
+
 #### `isLoading`
 
 A selector to determine if a module is loading.
@@ -444,6 +500,10 @@ const mapStateToProps = (state) => ({
   myModuleIsLoading: isLoading('my-module')(state),
 });
 ```
+
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="getLoadingPromise" start-->
 
 #### `getLoadingPromise`
 
@@ -465,12 +525,16 @@ const mapStateToProps = (state) => ({
 });
 ```
 
+<!--ONE-DOCS-ID end-->
+
 ## Server
 
 **Contents:**
 
 - [`updateModuleRegistry`](#updatemoduleregistry)
 - [`areModuleEntriesEqual`](#aremoduleentriesequal)
+
+<!--ONE-DOCS-ID id="updateModuleRegistry" start-->
 
 #### `updateModuleRegistry`
 
@@ -507,6 +571,10 @@ export default async function() {
 
 ```
 
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="areModuleEntriesEqual" start-->
+
 #### `areModuleEntriesEqual`
 
 Compares two module map entries to see if they are equal. This is intended for use when providing `getModulesToUpdate` to `updateModulesRegistry`
@@ -529,6 +597,8 @@ const getModulesToUpdate = (
         || someOtherLogic(moduleName))
 );
 ```
+
+<!--ONE-DOCS-ID end-->
 
 [Redux]: https://redux.js.org
 [Redux enhancer]: https://redux.js.org/recipes/configuring-your-store#extending-redux-functionality
