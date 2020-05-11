@@ -29,9 +29,9 @@
     "holocron": "^1.0.0-4"
   },
   "dependencies": {
-    "@americanexpress/one-app-router": "1.0.0",
+    "@americanexpress/one-app-router": "^1.1.0",
     "prop-types": "^15.5.10",
-    "react": "^16.0.0"
+    "react": "^16.13.1"
   },
   "devDependencies": {
     "babel-loader": "^8.0.5",
