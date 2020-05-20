@@ -88,7 +88,9 @@ export default async function loadModule(
       }
       nodeModule = requireFromString(moduleString, url);
     } catch (err) {
-      if (err.shouldBlockModuleReload !== false || process.env.NODE_ENV !== 'development') {
+      if (process.env.NODE_ENV !== 'production' && err.shouldBlockModuleReload !== true) {
+        console.warn('Holocron module "%s" at "%s" failed to execute.\n\t[Error Message]: "%s"\nPlease fix any errors and wait for it to be reloaded.', moduleName, url, err.message);
+      } else if (err.shouldBlockModuleReload !== false) {
         addToModuleBlockList(url);
         console.warn(`Holocron module at ${url} added to blocklist: ${err.message}`);
       }

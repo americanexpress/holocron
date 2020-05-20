@@ -32,9 +32,6 @@ let requireFromString;
 let moduleRegistry;
 
 describe('loadModule.node', () => {
-  jest.spyOn(console, 'log');
-  jest.spyOn(console, 'warn');
-
   // resetModules and require to allow for changing an env var that is used for a const
   function load({
     fetchText,
@@ -44,8 +41,6 @@ describe('loadModule.node', () => {
     moduleToBlockList,
   } = {}) {
     jest.resetModules();
-    mockHttpAgent.mockClear();
-    mockHttpsAgent.mockClear();
 
     global.fetch = jest.fn(() => (fetchError ? Promise.reject(fetchError) : Promise.resolve({
       status: fetchStatus || 200,
@@ -62,13 +57,26 @@ describe('loadModule.node', () => {
     return require('../src/loadModule.node.js').default; // eslint-disable-line global-require
   }
 
-  beforeEach(() => {
-    console.log.mockClear();
-    console.log.mockImplementation(() => {});
-    console.warn.mockClear();
-    console.warn.mockImplementation(() => {});
+  function getSHA(content = 'the Spanish Inquisition') {
+    // eslint-disable-next-line global-require
+    return require('ssri').fromData(content, { algorithms: ['sha256', 'sha384'] }).toString();
+  }
 
-    fetch.mockClear();
+  beforeAll(() => {
+    jest.spyOn(console, 'log');
+    jest.spyOn(console, 'warn');
+    console.log.mockImplementation(() => { });
+    console.warn.mockImplementation(() => { });
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const { NODE_ENV } = process.env;
+
+  afterEach(() => {
+    process.env.NODE_ENV = NODE_ENV;
   });
 
   describe('invalid moduleName', () => {
@@ -100,36 +108,6 @@ describe('loadModule.node', () => {
         expect(console.log.mock.calls[0][0]).toMatch('Failed to load Holocron module');
         expect(console.log.mock.calls[1][0]).toContain(assertionError.message);
       });
-    });
-  });
-
-  describe('development ', () => {
-    const { NODE_ENV } = process.env;
-
-    beforeAll(() => {
-      process.env.NODE_ENV = 'development';
-    });
-    afterAll(() => {
-      process.env.NODE_ENV = NODE_ENV;
-    });
-
-    it('reloads faulty module in development and does not add to black list', () => {
-      expect.assertions(2);
-
-      const moduleName = 'bad-dev-module';
-      const moduleUrl = 'https://example.com/cdn/awesome/1.0.0/awesome.node.js';
-      const requireError = new Error(`err... ${moduleName} failed to load`);
-
-      const loadModule = load();
-
-      requireFromString.mockImplementation(() => Promise.reject(requireError));
-
-      return loadModule(moduleName, { node: { integrity: '123', url: moduleUrl } })
-        .catch((error) => {
-          console.log(error);
-          expect(fetch).toHaveBeenCalledTimes(1);
-          expect(!!moduleRegistry.isModuleInBlockList(moduleUrl)).toBe(false);
-        });
     });
   });
 
@@ -243,11 +221,15 @@ describe('loadModule.node', () => {
 
   describe('loading a module', () => {
     describe('status', () => {
+      beforeEach(() => {
+        process.env.NODE_ENV = 'production';
+      });
+
       it('accepts 200', () => {
         expect.assertions(1);
         const loadModule = load({ fetchStatus: 200 });
         moduleRegistry.addToModuleBlockList = jest.fn();
-        return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
+        return loadModule('awesome', { node: { integrity: getSHA(), url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
           .then(() => {
             expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalled();
           });
@@ -358,25 +340,30 @@ describe('loadModule.node', () => {
       )).resolves.toEqual({ str: fetchText });
     });
 
-    it('rejects when given invalid JavaScript', () => {
+    it('rejects when given invalid JavaScript', async () => {
       expect.assertions(2);
+      process.env.NODE_ENV = 'production';
+      const fetchText = 'requireFromString throw test';
       const requireFromStringError = new Error('requireFromString throw test');
-      const loadModule = load({ fetchText: requireFromStringError });
+      const loadModule = load({ fetchText });
       moduleRegistry.addToModuleBlockList = jest.fn();
-      return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
-        .catch((err) => {
-          expect(err).toEqual(requireFromStringError);
-          expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith('https://example.com/cdn/awesome/1.0.0/awesome.node.js');
-        });
+      requireFromString.mockImplementation(() => { throw requireFromStringError; });
+      await expect(
+        loadModule('awesome', { node: { integrity: getSHA(fetchText), url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
+      ).rejects.toBe(requireFromStringError);
+      expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith('https://example.com/cdn/awesome/1.0.0/awesome.node.js');
     });
 
     it('does not add to blocklist if the error has shouldBlockModuleReload as false', () => {
       expect.assertions(1);
+      process.env.NODE_ENV = 'production';
+      const fetchText = 'requireFromStringError throw test';
       const requireFromStringError = new Error('requireFromString throw test');
       requireFromStringError.shouldBlockModuleReload = false;
-      const loadModule = load({ fetchText: requireFromStringError });
+      const loadModule = load({ fetchText });
       moduleRegistry.addToModuleBlockList = jest.fn();
-      return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
+      requireFromString.mockImplementation(() => { throw requireFromStringError; });
+      return loadModule('awesome', { node: { integrity: getSHA(fetchText), url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
         .catch(() => {
           expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalled();
         });
@@ -452,17 +439,59 @@ describe('loadModule.node', () => {
     expect(requireFromString).toHaveBeenCalledWith('hello there!', 'https://example.com/cdn/awesome/1.0.0/awesome.node.js');
   });
 
-  it('does not validate integrity if NODE_ENV is development', async () => {
-    expect.assertions(3);
-    const integrity = 'invalid sha!!!';
-    process.env.NODE_ENV = 'development';
+  describe('in development ', () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = 'development';
+    });
 
-    const loadModule = load({ fetchStatus: 200, fetchText: 'hello there!' });
-    moduleRegistry.addToModuleBlockList = jest.fn();
-    await expect(
-      loadModule('awesome', { node: { integrity, url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
-    ).resolves.toEqual({ str: 'hello there!' });
-    expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalled();
-    expect(requireFromString).toHaveBeenCalledWith('hello there!', 'https://example.com/cdn/awesome/1.0.0/awesome.node.js');
+    const moduleName = 'broken-dev-module';
+    const moduleUrl = `https://example.com/cdn/${moduleName}/1.0.0/${moduleName}.node.js`;
+
+    it('does not validate integrity if NODE_ENV is development', async () => {
+      expect.assertions(3);
+      const integrity = 'invalid sha!!!';
+
+      const loadModule = load({ fetchStatus: 200, fetchText: 'hello there!' });
+      moduleRegistry.addToModuleBlockList = jest.fn();
+      await expect(
+        loadModule('awesome', { node: { integrity, url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
+      ).resolves.toEqual({ str: 'hello there!' });
+      expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalled();
+      expect(requireFromString).toHaveBeenCalledWith('hello there!', 'https://example.com/cdn/awesome/1.0.0/awesome.node.js');
+    });
+
+    it(`does not add \`${moduleName}\` to block list in development`, async () => {
+      expect.assertions(4);
+
+      const requireError = new Error(`err... ${moduleName} failed to load`);
+      requireError.shouldBlockModuleReload = false;
+      const loadModule = load();
+      moduleRegistry.addToModuleBlockList = jest.fn();
+      requireFromString.mockImplementation(() => { throw requireError; });
+
+      await expect(
+        loadModule(moduleName, { node: { url: moduleUrl } })
+      ).rejects.toBe(requireError);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalledWith(moduleUrl);
+    });
+
+    it(`does not add \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
+      expect.assertions(4);
+
+      const requireError = new Error(`err... ${moduleName} failed to load`);
+      requireError.shouldBlockModuleReload = true;
+      const loadModule = load();
+      moduleRegistry.addToModuleBlockList = jest.fn();
+      requireFromString.mockImplementation(() => { throw requireError; });
+
+      await expect(
+        loadModule(moduleName, { node: { url: moduleUrl } })
+      ).rejects.toBe(requireError);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith(moduleUrl);
+    });
   });
 });
