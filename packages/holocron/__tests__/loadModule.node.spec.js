@@ -477,7 +477,7 @@ describe('loadModule.node', () => {
       expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalledWith(moduleUrl);
     });
 
-    it(`does not add \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
+    it(`adds \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
       expect.assertions(4);
 
       const requireError = new Error(`err... ${moduleName} failed to load`);
