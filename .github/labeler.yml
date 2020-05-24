@@ -1,0 +1,33 @@
+# Add 'holocron' label to any file changes in the holocron package
+holocron:
+  - packages/holocron/*
+
+# Add 'holocron-module-register-webpack-plugin' label to any file changes
+# in the holocron-module-register-webpack-plugin package
+holocron-module-register-webpack-plugin:
+  - packages/holocron-module-register-webpack-plugin/*
+
+# Add 'holocron-module-route' label to any file changes
+# in the holocron-module-route package
+holocron-module-route:
+  - packages/holocron-module-route/*
+
+# Add 'iguazu-holocron' label to any file changes in the iguazu-holocron package
+iguazu-holocron:
+  - packages/iguazu-holocron/*
+
+# Add 'test' label to any change to *.spec.js files
+test:
+  - packages/**/__tests__/**/*.spec.js
+
+# Add 'github' label to any changes in .github folder
+github:
+  - .github/**
+
+# Add 'workflow' label to any changes in .github/workflow
+workflow:
+  - .github/workflows/*
+
+# Add 'github-template' label to any changes in .github/ISSUE_TEMPLATE
+github-template:
+  - .github/ISSUE_TEMPLATE/*
