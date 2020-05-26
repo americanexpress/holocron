@@ -344,7 +344,7 @@ describe('loadModule.node', () => {
       expect.assertions(2);
       process.env.NODE_ENV = 'production';
       const fetchText = 'requireFromString throw test';
-      const requireFromStringError = new Error('requireFromString throw test');
+      const requireFromStringError = new Error(fetchText);
       const loadModule = load({ fetchText });
       moduleRegistry.addToModuleBlockList = jest.fn();
       requireFromString.mockImplementation(() => { throw requireFromStringError; });
