@@ -439,7 +439,7 @@ describe('loadModule.node', () => {
     expect(requireFromString).toHaveBeenCalledWith('hello there!', 'https://example.com/cdn/awesome/1.0.0/awesome.node.js');
   });
 
-  describe('in development ', () => {
+  describe('in development', () => {
     beforeEach(() => {
       process.env.NODE_ENV = 'development';
     });
