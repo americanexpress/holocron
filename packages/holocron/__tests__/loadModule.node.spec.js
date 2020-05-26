@@ -477,7 +477,7 @@ describe('loadModule.node', () => {
       expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalledWith(moduleUrl);
     });
 
-    it(`adds \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
+    it(`does not add \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
       expect.assertions(4);
 
       const requireError = new Error(`err... ${moduleName} failed to load`);
@@ -491,7 +491,7 @@ describe('loadModule.node', () => {
       ).rejects.toBe(requireError);
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
-      expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith(moduleUrl);
+      expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalledWith(moduleUrl);
     });
   });
 });
