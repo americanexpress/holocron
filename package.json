@@ -19,8 +19,8 @@
     "lerna:deploy": "node lernaDeploy.js"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.3",
-    "@babel/core": "^7.8.3",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "amex-jest-preset-react": "^5.0.2",
