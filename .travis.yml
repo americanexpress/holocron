@@ -11,7 +11,7 @@ before_install:
   # https://github.com/conventional-changelog/commitlint/issues/6
   - git remote set-branches origin master && git fetch
 install: skip
-script: skip
+script: exit 0
 before_deploy:
   echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
 jobs:
