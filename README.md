@@ -2,7 +2,7 @@
   <img src='https://github.com/americanexpress/holocron/raw/master/holocron.png' alt="Holocron - One Amex" width='50%'/>
 </h1>
 
-![CI/CD](https://github.com/americanexpress/holocron/workflows/CI/CD/badge.svg)
+![CI](https://github.com/americanexpress/holocron/workflows/CI/CD/badge.svg)
 [![Travis (.org) branch](https://img.shields.io/travis/americanexpress/holocron/master)](https://travis-ci.org/americanexpress/holocron)
 
 >Holocron contains a set of packages that are used to compose and load React components, enabling the updating and launching of server side rendered user experiences without server restarts. This repository is a monorepo managed using **[Lerna](https://github.com/lerna/lerna)**.
