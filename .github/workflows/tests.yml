@@ -27,22 +27,10 @@ jobs:
       env:
         NODE_ENV: development
     - name: Unit Tests
-      run: ./node_modules/.bin/jest
-      env:
-        NODE_ENV: production
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npm run test:unit
     - name: Git History Test
       run: npm run test:git-history
-      env:
-        NODE_ENV: production
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Lockfile Lint Test
       run: npm run test:lockfile
-      env:
-        NODE_ENV: production
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Lint
       run: npm run lint
-      env:
-        NODE_ENV: production
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
