@@ -1,5 +1,9 @@
 {
   "name": "holocron-build",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -9,10 +13,6 @@
     "node": ">=10.0.0",
     "npm": ">=6.12.0"
   },
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "preinstall": "node scripts/check-versions.js",
     "postinstall": "yarn workspaces run build",
@@ -21,8 +21,8 @@
     "test": "yarn test:unit",
     "test:unit": "NODE_ENV=development jest",
     "test:git-history": "commitlint --from origin/main --to HEAD",
-    "test:lockfile": "node lockFileLint.js",
-    "posttest": "npm run lint && npm run test:git-history && npm run test:lockfile",
+    "test:lockfile": "lockfile-lint --path yarn.lock --allowed-hosts registry.yarnpkg.com --validate-https",
+    "posttest": "yarn lint && yarn test:git-history && yarn test:lockfile",
     "lerna:version": "lerna version",
     "lerna:publish": "lerna publish from-package --yes",
     "lerna:deploy": "node lernaDeploy.js"
@@ -42,6 +42,7 @@
     "eslint-config-amex": "^11.2.0",
     "husky": "^4.0.10",
     "jest": "^25.1.0",
+    "lerna": "^3.22.1",
     "lockfile-lint": "^4.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

@@ -14,15 +14,14 @@
 
 module.exports = {
   preset: 'amex-jest-preset-react',
+  setupFiles: [
+    './jest.setup.js',
+  ],
   testMatch: [
     '**/__tests__/*.spec.{js,jsx}',
   ],
   collectCoverageFrom: [
-    '/*.{js,jsx}',
     'packages/*/src/*.{js,jsx}',
-  ],
-  setupFiles: [
-    './jest.setup.js',
   ],
   transform: {
     '^.+\\.[t|j]sx?$': 'babel-jest',
