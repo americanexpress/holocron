@@ -2,6 +2,7 @@
   "name": "holocron",
   "version": "1.1.0",
   "main": "index.js",
+  "module": "src/index.js",
   "keywords": [
     "holocron",
     "amex",
@@ -20,10 +21,12 @@
     "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
   ],
   "scripts": {
-    "prebuild": "rimraf *.js server ducks",
+    "clean": "rimraf *.js server ducks",
     "build": "babel src -d ./",
-    "prepublish": "npm run build",
-    "watch:build": "nodemon --watch src --ext js,jsx --exec npm run build"
+    "prebuild": "yarn clean",
+    "prepack": "yarn build",
+    "prepublish": "yarn build",
+    "watch:build": "nodemon --watch src --ext js,jsx --exec yarn build"
   },
   "license": "Apache-2.0",
   "dependencies": {
