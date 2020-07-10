@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src='https://github.com/americanexpress/holocron/raw/master/holocron.png' alt="Holocron - One Amex" width='50%'/>
+  <img src='https://github.com/americanexpress/holocron/raw/main/holocron.png' alt="Holocron - One Amex" width='50%'/>
 </h1>
 
 [![npm](https://img.shields.io/npm/v/holocron)](https://www.npmjs.com/package/holocron)
@@ -18,19 +18,19 @@
 
 #### Module Registry
 
-Holocron maintains an in-memory registry of Modules that can be updated dynamically without 
-requiring a server restart. The idea is that an application can update Holocron's module registry 
-whenever a new Holocron Module is to be added to the application's runtime. The end result is an 
+Holocron maintains an in-memory registry of Modules that can be updated dynamically without
+requiring a server restart. The idea is that an application can update Holocron's module registry
+whenever a new Holocron Module is to be added to the application's runtime. The end result is an
 application that can have React components updated/added to it at runtime.
 
 #### Holocron store
 
-After the server is initialized the holocron store is created within `createHolocronStore`, this 
+After the server is initialized the holocron store is created within `createHolocronStore`, this
 extends the Redux store and adds the reducers of your module to the store.
 
 #### Compose modules
 
-Once the modules to render are retrieved we dispatch  `composeModules` to get the data for these 
+Once the modules to render are retrieved we dispatch  `composeModules` to get the data for these
 modules, this data is needed for rendering.
 
 ## 🎛️ API
@@ -39,20 +39,20 @@ Check out the [API reference guide](./docs/api/README.md).
 
 ## 📜 Available Scripts
 
-To test out any changes that you've made locally, run `npm pack` then install this within your 
+To test out any changes that you've made locally, run `npm pack` then install this within your
 application.
 
 The scripts below are available to run and use:
-  
+
 **`npm run prebuild`**
 
-This removes any existing files generated during the build process and ensures that any new build is 
+This removes any existing files generated during the build process and ensures that any new build is
 clean.
 
 **`npm run build`**
 
-This deletes the current generated JS files within the directory and compiles the ECMAScript 6 code 
-within the `src` file to a version of ECMAScript that can run in current browsers using Babel 
+This deletes the current generated JS files within the directory and compiles the ECMAScript 6 code
+within the `src` file to a version of ECMAScript that can run in current browsers using Babel
 afterwards it copies them to the lib folder.
 
 **`npm run prepublish`**
@@ -61,5 +61,5 @@ This runs `npm run build`
 
 **`npm run watch:build`**
 
-This watches for any changes in the  `src` folder and runs `npm run build` if any changes are 
+This watches for any changes in the  `src` folder and runs `npm run build` if any changes are
 detected.
