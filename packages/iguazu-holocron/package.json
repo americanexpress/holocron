@@ -28,7 +28,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "holocron": "^1.1.0",
-    "iguazu": "3.0.0-3",
+    "iguazu": "^3.0.2",
     "react": "^16.0.0",
     "react-redux": "^7.1.1"
   },
