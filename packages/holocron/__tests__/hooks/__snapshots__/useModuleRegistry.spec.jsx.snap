@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useModuleRegistry adds a holocron module and removes it 1`] = `
+Object {
+  "blockModule": [Function],
+  "blocked": Immutable.List [],
+  "getBlockedModules": [Function],
+  "getModule": [Function],
+  "getModuleMap": [Function],
+  "getModules": [Function],
+  "isModuleBlocked": [Function],
+  "moduleMap": Immutable.Map {
+    "modules": Immutable.Map {},
+  },
+  "modules": Immutable.Map {
+    "my-module": [Function],
+  },
+  "registerModule": [Function],
+  "resetModuleRegistry": [Function],
+  "setModuleMap": [Function],
+}
+`;
+
+exports[`useModuleRegistry default state 1`] = `
+Object {
+  "blockModule": [Function],
+  "blocked": Immutable.List [],
+  "getBlockedModules": [Function],
+  "getModule": [Function],
+  "getModuleMap": [Function],
+  "getModules": [Function],
+  "isModuleBlocked": [Function],
+  "moduleMap": Immutable.Map {
+    "modules": Immutable.Map {},
+  },
+  "modules": Immutable.Map {},
+  "registerModule": [Function],
+  "resetModuleRegistry": [Function],
+  "setModuleMap": [Function],
+}
+`;

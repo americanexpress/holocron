@@ -20,8 +20,9 @@ import { Map as iMap, Set as iSet, isImmutable } from 'immutable';
 import holocronReducer from './ducks/load';
 import { getModule, getModules } from './moduleRegistry';
 import {
-  HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY, MODULE_REDUCER_ADDED,
+  HOLOCRON_STORE_KEY, MODULES_STORE_KEY, MODULE_REDUCER_ADDED,
 } from './ducks/constants';
+import { getModuleReducer } from './utility';
 
 function immutableCombineReducersWithNewModules(moduleReducerMap, newModuleState) {
   if (Object.keys(moduleReducerMap).length === 0) {
@@ -43,7 +44,9 @@ function immutableCombineReducersWithNewModules(moduleReducerMap, newModuleState
   };
 }
 
-function createReducer({ appReducer, state, localsForBuildInitialState }) {
+function createReducer({
+  appReducer, state, localsForBuildInitialState, registry = { getModule },
+}) {
   const moduleReducerMap = {};
   const newModuleState = {};
 
@@ -56,12 +59,12 @@ function createReducer({ appReducer, state, localsForBuildInitialState }) {
   }
 
   withReducers.forEach((moduleName) => {
-    const module = getModule(moduleName);
+    const module = registry.getModule(moduleName);
     if (!module) {
       console.warn(`unable to get the reducer of holocron module ${moduleName}`);
       return;
     }
-    const moduleReducer = module[REDUCER_KEY];
+    const moduleReducer = getModuleReducer(module);
     if (typeof moduleReducer.buildInitialState === 'function' && !loadedReducers.has(moduleName)) {
       newModuleState[moduleName] = moduleReducer.buildInitialState(
         localsForBuildInitialState
@@ -101,7 +104,8 @@ const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) 
   });
   const store = createReduxStore(reducer, preloadedState, enhancer);
   const { getState } = store;
-  const rebuildReducer = () => store.replaceReducer(createReducer({
+  const rebuildReducer = (registry) => store.replaceReducer(createReducer({
+    registry,
     appReducer,
     state: getState(),
     localsForBuildInitialState,

@@ -17,22 +17,22 @@ import { getModule, getModuleMap } from '../moduleRegistry';
 import {
   HOLOCRON_STORE_KEY,
   MODULES_STORE_KEY,
-  REDUCER_KEY,
   REGISTER_MODULE_REDUCER,
   MODULE_LOADED,
   MODULE_LOAD_FAILED,
   MODULE_LOADING,
   MODULE_REDUCER_ADDED,
 } from './constants';
+import { getModuleReducer } from '../utility';
 
-const initialState = iMap({
+export const getInitialState = () => iMap({
   withReducers: iSet(),
   loaded: iSet(),
   failed: iMap(),
   loading: iMap(),
 });
 
-export default function reducer(state = initialState, action) {
+export default function reducer(state = getInitialState(), action) {
   switch (action.type) {
     case REGISTER_MODULE_REDUCER: {
       const { moduleName } = action;
@@ -115,14 +115,14 @@ export function getLoadingPromise(moduleName) {
 }
 
 /* eslint-disable global-require */
-export function loadModule(moduleName) {
+export function loadModule(moduleName, registry = { getModuleMap, getModule }) {
   return (dispatch, getState, { modules, rebuildReducer }) => {
     const state = getState();
-    const moduleData = getModuleMap().getIn([MODULES_STORE_KEY, moduleName]);
+    const moduleData = registry.getModuleMap().getIn([MODULES_STORE_KEY, moduleName]);
 
     let loadPromise;
     if (isLoaded(moduleName)(state)) {
-      return Promise.resolve(getModule(moduleName, modules));
+      return Promise.resolve(registry.getModule(moduleName, modules));
     }
 
     if (failedToLoad(moduleName)(state)) {
@@ -140,7 +140,7 @@ export function loadModule(moduleName) {
     }
 
     if (modules) {
-      const module = getModule(moduleName, modules);
+      const module = registry.getModule(moduleName, modules);
       loadPromise = module ? Promise.resolve(module) : Promise.reject(new Error(`Module ${moduleName} was not preloaded on server`));
     } else {
       loadPromise = require('../loadModule.web.js').default(moduleName, moduleData);
@@ -151,9 +151,11 @@ export function loadModule(moduleName) {
     return loadPromise
       .then(
         (module) => {
-          if (module[REDUCER_KEY]) dispatch(registerModuleReducer(moduleName));
-          rebuildReducer();
-          dispatch({ type: MODULE_REDUCER_ADDED });
+          if (getModuleReducer(module)) {
+            dispatch(registerModuleReducer(moduleName));
+            rebuildReducer(registry);
+            dispatch({ type: MODULE_REDUCER_ADDED });
+          }
           dispatch(moduleLoaded(moduleName));
           return module;
         },

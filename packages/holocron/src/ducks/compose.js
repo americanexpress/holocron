@@ -13,33 +13,24 @@
  */
 
 import { loadModule } from './load';
-import { LOAD_KEY } from './constants';
+import { getModuleLoadFn, getLoadModuleDataFn } from '../utility';
 
 // This duck does not have a reducer
 export default null;
 
-function selectLoadModuleData(module) {
-  // TODO remove module.loadModuleData in next major version
-  if (module && module.loadModuleData) {
-    return module.loadModuleData;
-  }
-  if (module && module.holocron && module.holocron.loadModuleData) {
-    return module.holocron.loadModuleData;
-  }
-  return undefined;
-}
-
-export function composeModules(moduleConfigs) {
+export function composeModules(moduleConfigs, registry) {
   return (dispatch, getState, { fetchClient } = {}) => {
     const modulePromises = moduleConfigs.map((config) => {
       const { name } = config;
-      return dispatch(loadModule(name))
+      return dispatch(loadModule(name, registry))
         .then((module) => {
-          if (module[LOAD_KEY]) {
-            return dispatch(module[LOAD_KEY](config.props));
+          const load = getModuleLoadFn(module);
+
+          if (load) {
+            return dispatch(load(config.props));
           }
 
-          const loadModuleData = selectLoadModuleData(module);
+          const loadModuleData = getLoadModuleDataFn(module);
 
           if (loadModuleData) {
             return loadModuleData({

@@ -8,3 +8,4 @@ coverage
 packages/holocron/*.js
 packages/holocron/server/
 packages/holocron/ducks/
+packages/holocron/hooks/

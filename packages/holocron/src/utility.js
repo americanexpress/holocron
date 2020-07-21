@@ -12,18 +12,16 @@
  * under the License.
  */
 
-module.exports = {
-  preset: 'amex-jest-preset-react',
-  setupFiles: [
-    './jest.setup.js',
-  ],
-  testMatch: [
-    '**/__tests__/**/*.spec.{js,jsx}',
-  ],
-  collectCoverageFrom: [
-    'packages/*/src/**/*.{js,jsx}',
-  ],
-  transform: {
-    '^.+\\.[t|j]sx?$': 'babel-jest',
-  },
-};
+import { LOAD_KEY, REDUCER_KEY } from './ducks/constants';
+
+export const getModuleLoadFn = (module) => (module
+  ? module[LOAD_KEY] || (module.holocron && module.holocron.load)
+  : null);
+
+export const getLoadModuleDataFn = (module) => (module
+  ? module.loadModuleData || (module.holocron && module.holocron.loadModuleData)
+  : null);
+
+export const getModuleReducer = (module) => (module
+  ? module[REDUCER_KEY] || (module.holocron && module.holocron.reducer)
+  : null);

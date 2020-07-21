@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useHolocron Holocron passes context with store and registry 1`] = `
+<DocumentFragment>
+  <p>
+    {"holocron":{"withReducers":[],"loaded":[],"failed":{},"loading":{}},"modules":{}}
+  </p>
+  <p>
+    {"modules":{},"moduleMap":{"modules":{}},"blocked":[]}
+  </p>
+</DocumentFragment>
+`;
+
+exports[`useHolocron gets holocron context from hook returning component 1`] = `
+<DocumentFragment>
+  <p>
+    {"modules":{}}
+  </p>
+  <p>
+    {"modules":{},"moduleMap":{"modules":{}},"blocked":[]}
+  </p>
+</DocumentFragment>
+`;
+
+exports[`useHolocron passes context with store and registry 1`] = `
+<DocumentFragment>
+  <p>
+    {"holocron":{"withReducers":[],"loaded":[],"failed":{},"loading":{}},"modules":{}}
+  </p>
+  <p>
+    {"modules":{},"moduleMap":{"modules":{}},"blocked":[]}
+  </p>
+</DocumentFragment>
+`;

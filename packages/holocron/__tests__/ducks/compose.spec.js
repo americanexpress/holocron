@@ -47,8 +47,8 @@ describe('composeModules', () => {
 
     return thunk(dispatch)
       .then(() => {
-        expect(loadModule).toHaveBeenCalledWith('sub-module-a');
-        expect(loadModule).toHaveBeenCalledWith('sub-module-b');
+        expect(loadModule).toHaveBeenCalledWith('sub-module-a', undefined);
+        expect(loadModule).toHaveBeenCalledWith('sub-module-b', undefined);
         expect(subModuleALoad).toHaveBeenCalledWith({ someParam: 'x' });
       });
   });

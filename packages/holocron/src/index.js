@@ -50,3 +50,10 @@ export {
   RenderModule,
   holocronModule,
 };
+
+export {
+  useHolocron,
+  useHolocronContext,
+  Holocron,
+  HolocronContext,
+} from './hooks';

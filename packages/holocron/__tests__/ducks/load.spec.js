@@ -207,8 +207,9 @@ describe('loadModule', () => {
       },
     });
     const rebuildReducer = jest.fn();
-    const modules = iMap({ 'my-module': 'Preloaded MockModule' });
-    await expect(thunk(dispatch, getState, { rebuildReducer, modules })).resolves.toBe('Preloaded MockModule');
+    const Module = { holocron: { name: 'my-module', reducer } };
+    const modules = iMap({ 'my-module': Module });
+    await expect(thunk(dispatch, getState, { rebuildReducer, modules })).resolves.toBe(Module);
     expect(dispatch).toHaveBeenCalledWith({ type: MODULE_LOADED, moduleName: 'my-module' });
     expect(rebuildReducer).toHaveBeenCalled();
   });
@@ -275,6 +276,31 @@ describe('loadModule', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: MODULE_REDUCER_ADDED });
     expect(dispatch).toHaveBeenCalledWith({ type: MODULE_LOADED, moduleName: 'my-module' });
     expect(rebuildReducer).toHaveBeenCalled();
+  });
+
+  it('should not rebuild the store when a module is loaded successfully does not have a reducer', async () => {
+    const Module = 'Module';
+    require('../../src/loadModule.web').default.mockImplementationOnce(() => Promise.resolve(Module));
+    getModuleMap.mockReturnValue(
+      fromJS({ modules: { 'my-module': {} } })
+    );
+
+    const thunk = loadModule('my-module');
+    const dispatch = jest.fn((x) => x);
+    const getState = () => fromJS({
+      holocron: {
+        loaded: iSet(),
+        failed: {},
+        loading: {},
+        moduleVersions: { 'my-module': '1.2.3' },
+      },
+    });
+    const rebuildReducer = jest.fn();
+    await expect(thunk(dispatch, getState, { rebuildReducer })).resolves.toBe(Module);
+    expect(dispatch).toHaveBeenCalledWith({ type: MODULE_LOADED, moduleName: 'my-module' });
+    expect(dispatch).not.toHaveBeenCalledWith({ type: REGISTER_MODULE_REDUCER, moduleName: 'my-module' });
+    expect(dispatch).not.toHaveBeenCalledWith({ type: MODULE_REDUCER_ADDED });
+    expect(rebuildReducer).not.toHaveBeenCalled();
   });
 
   it('should load a module if the loading promise is falsy', async () => {
