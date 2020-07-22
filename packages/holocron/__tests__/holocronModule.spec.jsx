@@ -12,7 +12,7 @@
  * under the License.
  */
 
-/* eslint-disable react/prop-types, import/no-extraneous-dependencies  */
+/* eslint-disable react/prop-types, import/no-extraneous-dependencies, no-underscore-dangle  */
 import React from 'react';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -219,7 +219,7 @@ describe('holocronModule', () => {
   });
 
   it('should dispatch the module\'s load action on componentDidMount with no preloaded state', () => {
-    global.INITIAL_STATE = undefined;
+    global.__INITIAL_STATE__ = undefined;
     const load = jest.fn(() => () => Promise.resolve());
     const Module = holocronModule({
       name: 'mock-module',
@@ -240,7 +240,7 @@ describe('holocronModule', () => {
   });
 
   it('should not dispatch the module\'s load action on client takeover of a server render', () => {
-    global.INITIAL_STATE = { some: 'state' };
+    global.__INITIAL_STATE__ = { some: 'state' };
     const load = jest.fn(() => () => Promise.resolve());
     const Module = holocronModule({
       name: 'mock-module',
@@ -332,7 +332,7 @@ describe('holocronModule', () => {
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as loading when loading', () => {
-    global.INITIAL_STATE = undefined;
+    global.__INITIAL_STATE__ = undefined;
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
@@ -351,7 +351,7 @@ describe('holocronModule', () => {
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as loaded when loaded', async () => {
-    global.INITIAL_STATE = undefined;
+    global.__INITIAL_STATE__ = undefined;
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
@@ -378,7 +378,7 @@ describe('holocronModule', () => {
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as error when it failed to load', () => {
-    global.INITIAL_STATE = undefined;
+    global.__INITIAL_STATE__ = undefined;
     const loadPromise = Promise.reject();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
@@ -403,7 +403,7 @@ describe('holocronModule', () => {
   });
 
   it('should gracefully handle load not returning a Promise', () => {
-    global.INITIAL_STATE = undefined;
+    global.__INITIAL_STATE__ = undefined;
     const load = jest.fn(() => () => 'not a promise');
     const Module = holocronModule({
       name: 'mock-module',

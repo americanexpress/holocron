@@ -109,7 +109,8 @@ export default function holocronModule({
 
       componentDidMount() {
         this.mounted = true;
-        if ((loadModuleData || load) && !global.INITIAL_STATE) {
+        // eslint-disable-next-line no-underscore-dangle
+        if ((loadModuleData || load) && !global.__INITIAL_STATE__) {
           this.initiateLoad(0, this.props);
         }
       }
