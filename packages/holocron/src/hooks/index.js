@@ -18,3 +18,10 @@ export {
   Holocron,
   HolocronContext,
 } from './useHolocron';
+
+export {
+  default as useHolocronModule,
+  useHolocronModuleContext,
+  HolocronModule,
+  HolocronModuleContext,
+} from './useHolocronModule';

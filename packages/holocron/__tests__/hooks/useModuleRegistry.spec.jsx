@@ -31,6 +31,9 @@ describe(createRegistryActions.name, () => {
     expect(() => actions.registerModule()).not.toThrow();
     expect(() => actions.setModuleMap()).not.toThrow();
     expect(() => actions.resetModuleRegistry()).not.toThrow();
+    expect(() => actions.getModuleReducers()).not.toThrow();
+    expect(() => actions.getModuleReducer()).not.toThrow();
+    expect(() => actions.setModuleReducer()).not.toThrow();
   });
 });
 

@@ -45,7 +45,8 @@ function immutableCombineReducersWithNewModules(moduleReducerMap, newModuleState
 }
 
 function createReducer({
-  appReducer, state, localsForBuildInitialState, registry = { getModule },
+  appReducer, state, localsForBuildInitialState,
+  registry = { getModule, getModuleReducer },
 }) {
   const moduleReducerMap = {};
   const newModuleState = {};
@@ -60,11 +61,11 @@ function createReducer({
 
   withReducers.forEach((moduleName) => {
     const module = registry.getModule(moduleName);
-    if (!module) {
+    const moduleReducer = registry.getModuleReducer(module, moduleName);
+    if (!module || !moduleReducer) {
       console.warn(`unable to get the reducer of holocron module ${moduleName}`);
       return;
     }
-    const moduleReducer = getModuleReducer(module);
     if (typeof moduleReducer.buildInitialState === 'function' && !loadedReducers.has(moduleName)) {
       newModuleState[moduleName] = moduleReducer.buildInitialState(
         localsForBuildInitialState

@@ -26,6 +26,9 @@ import reducer, {
   isModuleBlocked,
   resetModuleRegistry,
   createInitialState,
+  setModuleReducer,
+  getModuleReducer,
+  getModuleReducers,
 } from '../../src/ducks/registry';
 
 describe('registry', () => {
@@ -34,8 +37,10 @@ describe('registry', () => {
 
   const moduleName = 'my-module';
   const module = () => 'hello';
+  const moduleReducer = jest.fn();
   const moduleMap = {
     modules: {
+      module: {},
       [moduleName]: {},
     },
   };
@@ -46,9 +51,14 @@ describe('registry', () => {
     expect(initialState.toJS()).toEqual({
       blockedModules: [],
       moduleMap: {
-        modules: {},
+        modules: {
+          module: {},
+        },
       },
-      modules: {},
+      modules: {
+        module: expect.any(Function),
+      },
+      reducers: {},
     });
   });
 
@@ -57,9 +67,19 @@ describe('registry', () => {
     expect(getModuleMap()(store.getState())).toEqual(fromJS(moduleMap));
   });
 
+  test('sets a module reducer', () => {
+    store.dispatch(setModuleReducer(moduleName, moduleReducer));
+    expect(getModuleReducer(moduleName)(store.getState())).toEqual(moduleReducer);
+    expect(getModuleReducers()(store.getState())).toEqual(
+      fromJS({ [moduleName]: moduleReducer })
+    );
+  });
+
   test('registers a module', () => {
     store.dispatch(registerModule(moduleName, module));
-    expect(getModules()(store.getState())).toEqual(fromJS({ [moduleName]: module }));
+    expect(getModules()(store.getState())).toEqual(
+      fromJS({ [moduleName]: module, module: expect.any(Function) })
+    );
     expect(getModule(moduleName)(store.getState())).toEqual(module);
     expect(getModule('random-module')(store.getState())).toEqual(null);
   });

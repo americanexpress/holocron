@@ -56,4 +56,8 @@ export {
   useHolocronContext,
   Holocron,
   HolocronContext,
+  useHolocronModule,
+  useHolocronModuleContext,
+  HolocronModule,
+  HolocronModuleContext,
 } from './hooks';

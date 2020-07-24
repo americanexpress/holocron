@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HolocronModule attempts to load up module data without "loadModuleData" 1`] = `
+<DocumentFragment>
+  <p>
+    {"moduleLoadStatus":"loaded","moduleState":null,"moduleData":null,"moduleConfig":{"name":"Module","moduleMetaData":{"browser":{"url":"https://example.com/modules/module.js"}}},"holocronState":{"isReducerLoaded":false,"isHolocronLoaded":"Module","isHolocronLoading":false,"isHolocronError":false}}
+  </p>
+</DocumentFragment>
+`;
+
+exports[`HolocronModule fails to load up module data using "loadModuleData" 1`] = `
+<DocumentFragment>
+  <p>
+    {"moduleLoadStatus":"error","moduleState":null,"moduleData":null,"moduleConfig":{"name":"Module","moduleMetaData":{"browser":{"url":"https://example.com/modules/module.js"}}},"holocronState":{"isReducerLoaded":false,"isHolocronLoaded":"Module","isHolocronLoading":false,"isHolocronError":false}}
+  </p>
+</DocumentFragment>
+`;
+
+exports[`HolocronModule loads up module data with "loadModuleData" 1`] = `
+<DocumentFragment>
+  <p>
+    {"moduleLoadStatus":"loaded","moduleState":null,"moduleConfig":{"name":"Module","moduleMetaData":{"browser":{"url":"https://example.com/modules/module.js"}}},"holocronState":{"isReducerLoaded":false,"isHolocronLoaded":"Module","isHolocronLoading":false,"isHolocronError":false}}
+  </p>
+</DocumentFragment>
+`;
+
+exports[`HolocronModule using a reducer supplied to a module 1`] = `
+<DocumentFragment>
+  <p>
+    {}
+  </p>
+  <p>
+    {"moduleLoadStatus":"loaded","moduleState":{"count":1},"moduleData":null,"moduleConfig":{"name":"module","initialState":{"count":1}},"holocronState":{"isReducerLoaded":"module","isHolocronLoaded":"module","isHolocronLoading":false,"isHolocronError":false}}
+  </p>
+</DocumentFragment>
+`;
+
+exports[`useHolocronModule uses holocron context in sub component to access module state 1`] = `
+<DocumentFragment>
+  <p>
+    {"moduleLoadStatus":"initial","moduleState":null,"moduleData":null,"moduleConfig":{"name":"module"},"holocronState":{"isReducerLoaded":false,"isHolocronLoaded":false,"isHolocronLoading":{},"isHolocronError":false}}
+  </p>
+</DocumentFragment>
+`;

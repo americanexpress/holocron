@@ -12,7 +12,12 @@
  * under the License.
  */
 
-import { LOAD_KEY, REDUCER_KEY } from './ducks/constants';
+import { createSelector } from 'reselect';
+
+import {
+  LOAD_KEY, REDUCER_KEY, HOLOCRON_STORE_KEY, MODULES_STORE_KEY, INIT_MODULE_STATE,
+} from './ducks/constants';
+import { getInitialState } from '../ducks/load';
 
 export const getModuleLoadFn = (module) => (module
   ? module[LOAD_KEY] || (module.holocron && module.holocron.load)
@@ -25,3 +30,30 @@ export const getLoadModuleDataFn = (module) => (module
 export const getModuleReducer = (module) => (module
   ? module[REDUCER_KEY] || (module.holocron && module.holocron.reducer)
   : null);
+
+export function createModuleStateSelector({ name: moduleName, reducer, initialState }) {
+  return createSelector(
+    (state) => state.getIn(
+      [MODULES_STORE_KEY, moduleName],
+      initialState || typeof reducer === 'function'
+        ? reducer(undefined, { type: INIT_MODULE_STATE })
+        : { toJS: () => null }
+    ),
+    (moduleState) => moduleState.toJS()
+  );
+}
+
+export function createHolocronModuleStateSelector({ name: moduleName }) {
+  return createSelector(
+    (state) => state.getIn(
+      [HOLOCRON_STORE_KEY],
+      getInitialState()
+    ),
+    (holocronState) => ({
+      isReducerLoaded: holocronState.getIn(['withReducers', moduleName], false),
+      isHolocronLoaded: holocronState.getIn(['loaded', moduleName], false),
+      isHolocronLoading: holocronState.getIn(['loading', moduleName], false),
+      isHolocronError: holocronState.getIn(['failed', moduleName], false),
+    })
+  );
+}

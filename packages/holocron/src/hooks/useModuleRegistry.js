@@ -35,6 +35,9 @@ import reducer, {
   getBlockedModules,
   isModuleBlocked,
   resetModuleRegistry,
+  getModuleReducer,
+  getModuleReducers,
+  setModuleReducer,
   createInitialState,
 } from '../ducks/registry';
 
@@ -66,6 +69,18 @@ export function createRegistryActions(state, dispatch) {
     },
     resetModuleRegistry(newModules, newModuleMap) {
       return dispatch(resetModuleRegistry(newModules, newModuleMap));
+    },
+    // Experimental
+    getModuleReducers() {
+      return getModuleReducers()(state);
+    },
+    getModuleReducer(module = { holocron: { name: 'module' } }, moduleName = module) {
+      let name = moduleName;
+      if (typeof moduleName !== 'string') name = module.holocron.name;
+      return getModuleReducer(name)(state);
+    },
+    setModuleReducer(moduleName, moduleReducer) {
+      return dispatch(setModuleReducer(moduleName, moduleReducer));
     },
   };
 }

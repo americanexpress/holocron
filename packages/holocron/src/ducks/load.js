@@ -64,7 +64,7 @@ export default function reducer(state = getInitialState(), action) {
   }
 }
 
-function registerModuleReducer(moduleName) {
+export function registerModuleReducer(moduleName) {
   return {
     type: REGISTER_MODULE_REDUCER,
     moduleName,
@@ -115,12 +115,10 @@ export function getLoadingPromise(moduleName) {
 }
 
 /* eslint-disable global-require */
-export function loadModule(moduleName, registry = { getModuleMap, getModule }) {
+export function loadModule(moduleName, registry = { getModuleMap, getModule }, moduleMetaData) {
   return (dispatch, getState, { modules, rebuildReducer }) => {
     const state = getState();
-    const moduleData = registry.getModuleMap().getIn([MODULES_STORE_KEY, moduleName]);
 
-    let loadPromise;
     if (isLoaded(moduleName)(state)) {
       return Promise.resolve(registry.getModule(moduleName, modules));
     }
@@ -133,16 +131,20 @@ export function loadModule(moduleName, registry = { getModuleMap, getModule }) {
       return getLoadingPromise(moduleName)(state);
     }
 
-    if (!moduleData) {
-      const moduleLoadError = new Error(`Could not load Module ${moduleName} because it does not exist in the Module Version Map`);
-      dispatch(moduleLoadFailed(moduleName, moduleLoadError));
-      return Promise.reject(moduleLoadError);
-    }
-
+    let loadPromise;
     if (modules) {
       const module = registry.getModule(moduleName, modules);
       loadPromise = module ? Promise.resolve(module) : Promise.reject(new Error(`Module ${moduleName} was not preloaded on server`));
     } else {
+      const moduleData = moduleMetaData
+        || registry.getModuleMap().getIn([MODULES_STORE_KEY, moduleName]);
+
+      if (!moduleData) {
+        const moduleLoadError = new Error(`Could not load Module ${moduleName} because it does not exist in the Module Version Map`);
+        dispatch(moduleLoadFailed(moduleName, moduleLoadError));
+        return Promise.reject(moduleLoadError);
+      }
+
       loadPromise = require('../loadModule.web.js').default(moduleName, moduleData);
     }
 

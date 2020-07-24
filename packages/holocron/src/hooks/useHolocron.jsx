@@ -40,10 +40,12 @@ export default function useHolocron(options = {}) {
     blockedModules,
     holocronModules,
     holocronModuleMap,
+    // settings
+    ssr = false,
   } = options;
 
   const registry = useModuleRegistry(holocronModuleMap, holocronModules, blockedModules);
-  const [store] = React.useState(() => providedStore || createHolocronStore({
+  const store = React.useRef(providedStore || createHolocronStore({
     reducer,
     initialState,
     enhancer,
@@ -51,15 +53,19 @@ export default function useHolocron(options = {}) {
     extraThunkArguments: { ...extraThunkArguments, registry },
   }));
 
+  React.useEffect(() => {
+    store.current.rebuildReducer(registry);
+  }, [registry]);
+
   const context = useMemo(
-    () => ({ store, registry }),
-    [store, registry]
+    () => ({ store: store.current, registry, ssr }),
+    [store, registry, ssr]
   );
 
   return React.useMemo(() => {
     function __Holocron__({ children }) {
       return (
-        <Provider store={store}>
+        <Provider store={store.current}>
           <HolocronContext.Provider value={context}>
             {children}
           </HolocronContext.Provider>

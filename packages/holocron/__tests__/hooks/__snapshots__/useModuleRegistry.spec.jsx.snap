@@ -7,17 +7,23 @@ Object {
   "getBlockedModules": [Function],
   "getModule": [Function],
   "getModuleMap": [Function],
+  "getModuleReducer": [Function],
+  "getModuleReducers": [Function],
   "getModules": [Function],
   "isModuleBlocked": [Function],
   "moduleMap": Immutable.Map {
-    "modules": Immutable.Map {},
+    "modules": Immutable.Map {
+      "module": Object {},
+    },
   },
   "modules": Immutable.Map {
+    "module": [Function],
     "my-module": [Function],
   },
   "registerModule": [Function],
   "resetModuleRegistry": [Function],
   "setModuleMap": [Function],
+  "setModuleReducer": [Function],
 }
 `;
 
@@ -28,14 +34,21 @@ Object {
   "getBlockedModules": [Function],
   "getModule": [Function],
   "getModuleMap": [Function],
+  "getModuleReducer": [Function],
+  "getModuleReducers": [Function],
   "getModules": [Function],
   "isModuleBlocked": [Function],
   "moduleMap": Immutable.Map {
-    "modules": Immutable.Map {},
+    "modules": Immutable.Map {
+      "module": Object {},
+    },
   },
-  "modules": Immutable.Map {},
+  "modules": Immutable.Map {
+    "module": [Function],
+  },
   "registerModule": [Function],
   "resetModuleRegistry": [Function],
   "setModuleMap": [Function],
+  "setModuleReducer": [Function],
 }
 `;

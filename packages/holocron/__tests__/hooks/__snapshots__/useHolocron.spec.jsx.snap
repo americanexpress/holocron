@@ -6,7 +6,7 @@ exports[`useHolocron Holocron passes context with store and registry 1`] = `
     {"holocron":{"withReducers":[],"loaded":[],"failed":{},"loading":{}},"modules":{}}
   </p>
   <p>
-    {"modules":{},"moduleMap":{"modules":{}},"blocked":[]}
+    {"modules":{},"moduleMap":{"modules":{"module":{}}},"blocked":[]}
   </p>
 </DocumentFragment>
 `;
@@ -17,7 +17,7 @@ exports[`useHolocron gets holocron context from hook returning component 1`] = `
     {"modules":{}}
   </p>
   <p>
-    {"modules":{},"moduleMap":{"modules":{}},"blocked":[]}
+    {"modules":{},"moduleMap":{"modules":{"module":{}}},"blocked":[]}
   </p>
 </DocumentFragment>
 `;
@@ -28,7 +28,7 @@ exports[`useHolocron passes context with store and registry 1`] = `
     {"holocron":{"withReducers":[],"loaded":[],"failed":{},"loading":{}},"modules":{}}
   </p>
   <p>
-    {"modules":{},"moduleMap":{"modules":{}},"blocked":[]}
+    {"modules":{},"moduleMap":{"modules":{"module":{}}},"blocked":[]}
   </p>
 </DocumentFragment>
 `;

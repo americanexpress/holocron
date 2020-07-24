@@ -734,3 +734,21 @@ export function renderStaticRoutes(req, res, next) {
   else next();
 }
 ```
+
+##### Node Hierarchy
+
+Looking at the big picture, we can see holocron and a tree of holocron modules.
+
+```jsx
+(
+  <Holocron>
+    <HolocronModule />
+    <HolocronModule />
+    <HolocronLayer>
+      <HolocronModule />
+      <HolocronModule />
+      <HolocronModule />
+    </HolocronLayer>
+  </Holocron>
+);
+```

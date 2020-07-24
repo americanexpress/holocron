@@ -18,23 +18,35 @@ import {
   MODULES_STORE_KEY,
   REGISTRY_MODULE_MAP_KEY,
   REGISTRY_MODULE_BLOCKED_KEY,
+  REGISTRY_MODULE_REDUCERS_KEY,
   REGISTER_MODULE,
   BLOCK_MODULE,
   SET_MODULE_MAP,
+  SET_MODULE_REDUCER,
   RESET_MODULES_AND_MAP,
 } from './constants';
+import { getModuleReducer as getModuleReducerFromModule } from '../utility';
 
 const initialState = iMap({
-  [MODULES_STORE_KEY]: iMap({}),
-  [REGISTRY_MODULE_MAP_KEY]: iMap({ modules: iMap({}) }),
-  [REGISTRY_MODULE_BLOCKED_KEY]: iList([]),
+  [MODULES_STORE_KEY]: iMap({ module: ({ children }) => children }),
+  [REGISTRY_MODULE_MAP_KEY]: iMap({ modules: iMap({ module: {} }) }),
+  [REGISTRY_MODULE_BLOCKED_KEY]: iList(),
+  [REGISTRY_MODULE_REDUCERS_KEY]: iMap(),
 });
 
 export function createInitialState(moduleMap, modules, blocked) {
+  let reducers = iMap();
+  if (Object.keys(modules || {}).length > 0) {
+    Object.entries(modules || {}).forEach(([name, module]) => {
+      const moduleReducer = getModuleReducerFromModule(module);
+      if (moduleReducer) reducers = reducers.merge(fromJS({ [name]: moduleReducer }));
+    });
+  }
   return initialState.mergeDeep({
     [MODULES_STORE_KEY]: fromJS(modules || {}),
-    [REGISTRY_MODULE_MAP_KEY]: fromJS(moduleMap || { modules: {} }),
+    [REGISTRY_MODULE_MAP_KEY]: fromJS(moduleMap || {}),
     [REGISTRY_MODULE_BLOCKED_KEY]: iList(blocked),
+    [REGISTRY_MODULE_REDUCERS_KEY]: reducers,
   });
 }
 
@@ -59,6 +71,12 @@ export default function reducer(state = initialState, action) {
       return state
         .update(REGISTRY_MODULE_MAP_KEY, iMap(),
           (moduleMap) => moduleMap.clear().merge(fromJS(newModuleMap)));
+    }
+    case SET_MODULE_REDUCER: {
+      const { moduleName, moduleReducer } = action;
+      return state
+        .update(REGISTRY_MODULE_REDUCERS_KEY, iMap(),
+          (modules) => modules.set(moduleName, moduleReducer));
     }
     case REGISTER_MODULE: {
       const { moduleName, module } = action;
@@ -93,6 +111,14 @@ export function setModuleMap(newModuleMap) {
   };
 }
 
+export function setModuleReducer(moduleName, moduleReducer) {
+  return {
+    type: SET_MODULE_REDUCER,
+    moduleName,
+    moduleReducer,
+  };
+}
+
 export function resetModuleRegistry(newModules, newModuleMap) {
   return {
     type: RESET_MODULES_AND_MAP,
@@ -119,4 +145,12 @@ export function getModuleMap() {
 
 export function getBlockedModules() {
   return (state) => state.getIn([REGISTRY_MODULE_BLOCKED_KEY], iList());
+}
+
+export function getModuleReducer(moduleName) {
+  return (state) => state.getIn([REGISTRY_MODULE_REDUCERS_KEY, moduleName]);
+}
+
+export function getModuleReducers() {
+  return (state) => state.get(REGISTRY_MODULE_REDUCERS_KEY);
 }
