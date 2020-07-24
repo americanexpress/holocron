@@ -24,6 +24,7 @@ import {
   MODULES_STORE_KEY,
   REGISTRY_MODULE_MAP_KEY,
   REGISTRY_MODULE_BLOCKED_KEY,
+  REGISTRY_MODULE_REDUCERS_KEY,
 } from '../ducks/constants';
 import reducer, {
   getModule,
@@ -94,10 +95,20 @@ export default function useModuleRegistry(
     reducer,
     createInitialState(holocronModuleMap, holocronModules, blockedModules)
   );
-  return React.useMemo(() => ({
+  const registry = React.useMemo(() => ({
     ...createRegistryActions(state, dispatch),
     modules: state.get(MODULES_STORE_KEY),
     moduleMap: state.get(REGISTRY_MODULE_MAP_KEY),
     blocked: state.get(REGISTRY_MODULE_BLOCKED_KEY),
+    reducers: state.get(REGISTRY_MODULE_REDUCERS_KEY),
   }), [state, dispatch]);
+
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    React.useEffect(() => {
+      console.debug('Holocron Module Registry has started!');
+    }, []);
+  }
+
+  return registry;
 }

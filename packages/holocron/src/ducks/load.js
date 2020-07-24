@@ -71,7 +71,7 @@ export function registerModuleReducer(moduleName) {
   };
 }
 
-function moduleLoaded(moduleName) {
+export function moduleLoaded(moduleName) {
   return {
     type: MODULE_LOADED,
     moduleName,

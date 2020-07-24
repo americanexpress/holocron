@@ -12,12 +12,12 @@
  * under the License.
  */
 
+import { Set as iSet, Map as iMap } from 'immutable';
 import { createSelector } from 'reselect';
 
 import {
   LOAD_KEY, REDUCER_KEY, HOLOCRON_STORE_KEY, MODULES_STORE_KEY, INIT_MODULE_STATE,
 } from './ducks/constants';
-import { getInitialState } from '../ducks/load';
 
 export const getModuleLoadFn = (module) => (module
   ? module[LOAD_KEY] || (module.holocron && module.holocron.load)
@@ -47,7 +47,12 @@ export function createHolocronModuleStateSelector({ name: moduleName }) {
   return createSelector(
     (state) => state.getIn(
       [HOLOCRON_STORE_KEY],
-      getInitialState()
+      iMap({
+        withReducers: iSet(),
+        loaded: iSet(),
+        failed: iMap(),
+        loading: iMap(),
+      })
     ),
     (holocronState) => ({
       isReducerLoaded: holocronState.getIn(['withReducers', moduleName], false),

@@ -21,7 +21,7 @@
     "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
   ],
   "scripts": {
-    "clean": "rimraf *.js server ducks",
+    "clean": "rimraf *.js server ducks hooks",
     "build": "babel src -d ./",
     "prebuild": "yarn clean",
     "prepack": "yarn build",

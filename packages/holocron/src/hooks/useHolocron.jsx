@@ -44,6 +44,7 @@ export default function useHolocron(options = {}) {
     ssr = false,
   } = options;
 
+  const initialized = React.useRef(false);
   const registry = useModuleRegistry(holocronModuleMap, holocronModules, blockedModules);
   const store = React.useRef(providedStore || createHolocronStore({
     reducer,
@@ -54,6 +55,7 @@ export default function useHolocron(options = {}) {
   }));
 
   React.useEffect(() => {
+    if (!initialized.current) initialized.current = true;
     store.current.rebuildReducer(registry);
   }, [registry]);
 
@@ -67,7 +69,7 @@ export default function useHolocron(options = {}) {
       return (
         <Provider store={store.current}>
           <HolocronContext.Provider value={context}>
-            {children}
+            {initialized && children}
           </HolocronContext.Provider>
         </Provider>
       );
@@ -80,7 +82,7 @@ export default function useHolocron(options = {}) {
     };
     __Holocron__.getContext = () => context;
     return __Holocron__;
-  }, [context]);
+  }, [context, initialized]);
 }
 
 export function Holocron({ children, ...props }) {

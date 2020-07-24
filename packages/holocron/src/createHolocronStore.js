@@ -91,7 +91,7 @@ function createReducer({
   };
 }
 
-const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) => (
+const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}, modules) => (
   createReduxStore
 ) => (
   appReducer,
@@ -114,7 +114,7 @@ const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) 
   store.rebuildReducer = rebuildReducer;
   let { dispatch } = store;
 
-  if (!global.BROWSER) { store.modules = getModules(); }
+  if (!global.BROWSER) { store.modules = modules || getModules(); }
 
   const middlewareAPI = {
     getState: store.getState,
@@ -138,14 +138,15 @@ export default function createHolocronStore({
   enhancer,
   localsForBuildInitialState,
   extraThunkArguments,
+  modules,
 }) {
   if (!(!initialState || isImmutable(initialState))) {
     throw new Error('createHolocronStore expects immutable initial state');
   }
 
   const enhancedEnhancer = enhancer
-    ? compose(holocronEnhancer(localsForBuildInitialState, extraThunkArguments), enhancer)
-    : holocronEnhancer(localsForBuildInitialState, extraThunkArguments);
+    ? compose(holocronEnhancer(localsForBuildInitialState, extraThunkArguments, modules), enhancer)
+    : holocronEnhancer(localsForBuildInitialState, extraThunkArguments, modules);
 
   return createStore(reducer, initialState, enhancedEnhancer);
 }

@@ -20,7 +20,7 @@ function onScriptComplete() {
   // Do nothing for now
 }
 
-export default function loadModule(moduleName, moduleData) {
+export default function loadModule(moduleName, moduleData, registry) {
   return new Promise((resolve, reject) => {
     if (typeof moduleName !== 'string') {
       throw new TypeError('loadModule: moduleName must be a string');
@@ -48,7 +48,7 @@ export default function loadModule(moduleName, moduleData) {
     if (isProduction) {
       script.integrity = integrity;
     }
-    const clientCacheRevision = getModuleMap().get('clientCacheRevision', getModuleMap().get('key'));
+    const clientCacheRevision = registry.getModuleMap().get('clientCacheRevision', registry.getModuleMap().get('key'));
     script.src = isProduction && clientCacheRevision ? `${url}?clientCacheRevision=${clientCacheRevision}` : url;
     const timeout = setTimeout(onScriptComplete, 120000);
     script.addEventListener('error', (event) => {
@@ -58,7 +58,7 @@ export default function loadModule(moduleName, moduleData) {
 
     script.addEventListener('load', () => {
       clearTimeout(timeout);
-      resolve(getModule(moduleName));
+      resolve(registry.getModule(moduleName));
     });
 
     head.appendChild(script);

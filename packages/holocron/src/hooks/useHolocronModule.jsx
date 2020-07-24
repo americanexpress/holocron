@@ -27,7 +27,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import shallowEqual from 'shallowequal';
 
 import { MODULE_REDUCER_ADDED } from '../ducks/constants';
-import { loadModule, registerModuleReducer } from '../ducks/load';
+import { loadModule, registerModuleReducer, moduleLoaded } from '../ducks/load';
 import { useHolocronContext } from './useHolocron';
 import {
   getLoadModuleDataFn,
@@ -132,27 +132,34 @@ export default function useHolocronModule(config = { name: 'module' }) {
     }
   }, [registry]);
 
-  React.useLayoutEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      if (typeof moduleConfig.name !== 'string' || !moduleConfig.name) {
-        console.assert(false, 'Expected "Module.holocron.name" to be configured, received "%s"', moduleConfig.name);
-      } else {
-        console.debug('Holocron Module "%s" started successfully!', moduleConfig.name);
-        console.dir(moduleConfig);
+  React.useEffect(() => {
+    if (__Holocron_Module__) {
+      if (process.env.NODE_ENV === 'development') {
+        if (typeof moduleConfig.name !== 'string' || !moduleConfig.name) {
+          console.assert(false, 'Expected "Module.holocron.name" to be configured, received "%s"', moduleConfig.name);
+        } else {
+          console.debug('Holocron Module "%s" started successfully!', moduleConfig.name);
+          console.dir(moduleConfig);
+        }
       }
-    }
+    } else if (!registry.getModule(moduleConfig.name)) {
+      console.log('registry', registry.getModules());
+      dispatch(loadModule(moduleConfig.name, registry, moduleConfig.moduleMetaData))
+        .then((module) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('Holocron Module "%s" loaded successfully!', moduleConfig.name);
+            console.dir(moduleState);
+            console.warn(module);
+          }
 
-    dispatch(loadModule(moduleConfig.name, registry, moduleConfig.moduleMetaData))
-      .then((module) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.debug('Holocron Module "%s" loaded successfully!', moduleConfig.name);
-          console.dir(moduleState);
-        }
-        if (!registry.getModule(moduleConfig.name)) {
-          registry.registerModule(moduleConfig.name, module);
-        }
-      });
-  }, [__Holocron_Module__]);
+          if (!registry.getModule(moduleConfig.name)) {
+            registry.registerModule(moduleConfig.name, module);
+          }
+
+          dispatch(moduleLoaded());
+        });
+    }
+  }, [__Holocron_Module__, registry]);
 
   React.useEffect(() => {
     if (holocronState.isHolocronLoaded) loadModuleData({});
