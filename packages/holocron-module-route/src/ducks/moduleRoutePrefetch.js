@@ -53,6 +53,5 @@ export const moduleRoutePrefetch = ({ routes, location }) => {
   };
 };
 
-
 // This duck does not have a reducer
 export default null;

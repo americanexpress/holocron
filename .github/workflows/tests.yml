@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        git remote set-branches --add origin master
+        git remote set-branches --add origin main
         git fetch
     - name: Setup Node
       uses: actions/setup-node@v1
