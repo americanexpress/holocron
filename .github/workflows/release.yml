@@ -30,8 +30,6 @@ jobs:
           run: NODE_ENV=development yarn
       - name: Test packages
         run: yarn test
-      - name: Build packages
-        run: NODE_ENV=production yarn build
       - name: Release packages
         env:
           NODE_ENV: production
