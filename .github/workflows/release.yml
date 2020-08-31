@@ -6,14 +6,15 @@ on:
       - main
 
 jobs:
-  prepare:
+  checkCommit:
+    name: Check commit
     runs-on: ubuntu-latest
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - run: echo "${{ github.event.head_commit.message }}"
   release:
-    needs: prepare
-    name: Publish
+    name: Release
+    needs: [checkCommit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,10 +24,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12'
-      - run: NODE_ENV=development npm ci
-      - run: npm run test
-      - run: npm run build
-      - name: Lerna release
+        run: |
+          git remote set-branches --add origin main
+          git fetch
+          run: NODE_ENV=development yarn
+      - name: Test packages
+        run: yarn test
+      - name: Build packages
+        run: NODE_ENV=production yarn build
+      - name: Release packages
         env:
+          NODE_ENV: production
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm run lerna:deploy -- "${{ github.event.head_commit.message }}"
+        run: |
+          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
+          yarn lerna:deploy -- "${{ github.event.head_commit.message }}"
