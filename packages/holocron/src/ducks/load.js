@@ -151,9 +151,11 @@ export function loadModule(moduleName) {
     return loadPromise
       .then(
         (module) => {
-          if (module[REDUCER_KEY]) dispatch(registerModuleReducer(moduleName));
-          rebuildReducer();
-          dispatch({ type: MODULE_REDUCER_ADDED });
+          if (module[REDUCER_KEY]) {
+            dispatch(registerModuleReducer(moduleName));
+            rebuildReducer();
+            dispatch({ type: MODULE_REDUCER_ADDED });
+          }
           dispatch(moduleLoaded(moduleName));
           return module;
         },
