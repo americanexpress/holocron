@@ -278,7 +278,7 @@ describe('loadModule', () => {
     expect(rebuildReducer).toHaveBeenCalled();
   });
 
-  it('should not rebuild the store when a module is loaded successfully does not have a reducer', async () => {
+  it('should not rebuild the store when a module without a reducer is loaded successfully', async () => {
     const Module = 'Module';
     require('../../src/loadModule.web').default.mockImplementationOnce(() => Promise.resolve(Module));
     getModuleMap.mockReturnValue(
