@@ -5,8 +5,8 @@
   ],
   "command": {
     "version": {
-      "conventionalCommits": true,
-      "allowBranch": "master"
+      "conventionalCommits": true
     }
-  }
+  },
+  "version": "independent"
 }
