@@ -1,10 +1,10 @@
 <h1 align="center">
-  <img src='https://github.com/americanexpress/holocron/raw/master/packages/iguazu-holocron/iguazu-holocron.png' alt="Iguazu Holocron - One Amex" width='50%'/>
+  <img src='https://github.com/americanexpress/holocron/raw/main/packages/iguazu-holocron/iguazu-holocron.png' alt="Iguazu Holocron - One Amex" width='50%'/>
 </h1>
 
 [![npm](https://img.shields.io/npm/v/iguazu-holocron)](https://www.npmjs.com/package/iguazu-holocron)
 
-> This loads Holocron modules using [Iguazu](https://github.com/americanexpress/iguazu), an 
+> This loads Holocron modules using [Iguazu](https://github.com/americanexpress/iguazu), an
 > asynchronous data flow solution for React/Redux applications.
 
 ## 📖 Table of Contents
@@ -158,7 +158,7 @@ export default connectAsync({ loadDataAsProps })(MyModule);
 
 ### `queryModuleWithData`
 
-An Iguazu adapter for loading a Holocron module and its data (from the loaded module's own 
+An Iguazu adapter for loading a Holocron module and its data (from the loaded module's own
 `loadDataAsProps`).
 
 #### Arguments
@@ -246,7 +246,7 @@ import { queryModule, anyAreEmpty } from 'iguazu-holocron';
 const MyModule = ({ MyOtherModule, ThirdModule }) => (
   <>
     {/* some jsx */}
-    { anyAreEmpty(MyOtherModule, ThirdModule) ? 
+    { anyAreEmpty(MyOtherModule, ThirdModule) ?
       <Spinner /> :
       <MyOtherModule><ThirdModule/></MyOtherModule>
     }
@@ -265,11 +265,11 @@ export default connectAsync({ loadDataAsProps })(MyModule);
 
 ### `configureIguazuSSR`
 
-`configureIguazuSSR` is a helper for loading data on the server via Iguazu. It does not need to be 
+`configureIguazuSSR` is a helper for loading data on the server via Iguazu. It does not need to be
 called directly, but needs to be attached to the module as the static `loadModuleData` along with
 `loadDataAsProps`.
 
-> `loadModuleData` is a module lifecycle hook used by Holocron for data fetching during server 
+> `loadModuleData` is a module lifecycle hook used by Holocron for data fetching during server
 > side rendering.
 
 #### Usage

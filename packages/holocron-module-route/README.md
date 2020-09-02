@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src='https://github.com/americanexpress/holocron/raw/master/packages/holocron-module-route/holocron-module-route.png' alt="Holocron Module Route - One Amex" width='50%'/>
+  <img src='https://github.com/americanexpress/holocron/raw/main/packages/holocron-module-route/holocron-module-route.png' alt="Holocron Module Route - One Amex" width='50%'/>
 </h1>
 
 [![npm](https://img.shields.io/npm/v/holocron-module-route)](https://www.npmjs.com/package/holocron-module-route)
@@ -83,11 +83,11 @@ export default function getChildRoutes(store) {
 ### `ModuleRoute`
 
 `ModuleRoute` extends [`one-app-router`](https://github.com/americanexpress/one-app-router)'s
-[`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route). It has
+[`Route`](https://github.com/americanexpress/one-app-router/blob/main/docs/API.md#route). It has
 all the functionality of `Route`, with the addition of loading a
 [holocron module](https://github.com/americanexpress/one-app#modules) instead of a component.
 
-#### Extended [`Route`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#route) Props
+#### Extended [`Route`](https://github.com/americanexpress/one-app-router/blob/main/docs/API.md#route) Props
 
 | name | type | required | value |
 |---|---|---|---|
@@ -97,7 +97,7 @@ all the functionality of `Route`, with the addition of loading a
 
 ```js
 const myRoutes = [
-  <ModuleRoute path="some-path" moduleName="someModule" />
+  <ModuleRoute path="some-path" moduleName="someModule" />,
 ];
 ```
 
@@ -120,18 +120,18 @@ as a single parameter and returns either an array of routes or a single route.
 ###### As an Array:
 
 ```jsx
-const MyModule = () => {/* jsx */};
+const MyModule = () => { /* jsx */ };
 
 MyModule.childRoutes = [
   <ModuleRoute path="some-path" moduleName="someModule" />,
-  <ModuleRoute path="another-path" moduleName="anotherModule" />
+  <ModuleRoute path="another-path" moduleName="anotherModule" />,
 ];
 ```
 
 ###### As a single route:
 
 ```jsx
-const MyModule = () => {/* jsx */};
+const MyModule = () => { /* jsx */ };
 
 MyModule.childRoutes = <ModuleRoute path="some-path" moduleName="someModule" />;
 ```
@@ -147,7 +147,7 @@ MyModule.childRoutes = <ModuleRoute path="some-path" moduleName="someModule" />;
 **Usage:**
 
 ```jsx
-const MyModule = () => {/* jsx */};
+const MyModule = () => { /* jsx */ };
 
 MyModule.childRoutes = (store) => (
   <ModuleRoute
@@ -173,7 +173,7 @@ different behavior for each.
 **One Argument**
 
 When using only one argument, `onEnterRouteHook` will receive the [Redux store](https://redux.js.org/basics/store/)
-an must return an `onEnter` hook, which has the same API as [defined in `one-app-router`](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#onenternextstate-replace-callback).
+an must return an `onEnter` hook, which has the same API as [defined in `one-app-router`](https://github.com/americanexpress/one-app-router/blob/main/docs/API.md#onenternextstate-replace-callback).
 
 | name | type | value |
 |---|---|---|
@@ -184,7 +184,7 @@ an must return an `onEnter` hook, which has the same API as [defined in `one-app
 When using two or three arguments, the API is the same as the `onEnter` in `one-app-router`, where
 the first two arguments are `nextState` and `replace` and the optional third argument is a callback,
 which, when used, will block the transition until it is called. See the
-[`one-app-router` documentation](https://github.com/americanexpress/one-app-router/blob/master/docs/API.md#onenternextstate-replace-callback)
+[`one-app-router` documentation](https://github.com/americanexpress/one-app-router/blob/main/docs/API.md#onenternextstate-replace-callback)
 for more details.
 
 | name | type | value |
@@ -196,14 +196,14 @@ for more details.
 **Usage**
 
 ```jsx
-const MyModule = () => {/* jsx */};
+const MyModule = () => { /* jsx */ };
 
 MyModule.onEnterRouteHook = (store) => (nextState, replace, callback) => {
   store.dispatch(authenticate()).then(() => {
     if (!store.getState().isAuthenticated) replace('/login');
     callback();
   });
-}
+};
 ```
 
 <!--ONE-DOCS-ID end-->
