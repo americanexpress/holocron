@@ -12,7 +12,7 @@
     "lint": "eslint --ext js,jsx,snap packages",
     "test": "npm run test:unit",
     "test:unit": "NODE_ENV=development jest",
-    "test:git-history": "commitlint --from origin/master --to HEAD",
+    "test:git-history": "commitlint --from origin/main --to HEAD",
     "test:lockfile": "node lockFileLint.js",
     "posttest": "npm run lint && npm run test:git-history && npm run test:lockfile",
     "lerna:version": "lerna version",
