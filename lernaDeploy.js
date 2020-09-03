@@ -17,5 +17,5 @@ const { exec } = require('child_process');
 const regex = /^chore\(release\): (0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm;
 const commitMessage = process.argv[2]; // This is the commit message
 if (commitMessage != null && regex.test(commitMessage)) {
-  exec('npm run lerna:publish').stderr.pipe(process.stderr);
+  exec('yarn lerna:publish').stderr.pipe(process.stderr);
 }

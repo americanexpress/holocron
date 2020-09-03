@@ -39,27 +39,27 @@ Check out the [API reference guide](./docs/api/README.md).
 
 ## 📜 Available Scripts
 
-To test out any changes that you've made locally, run `npm pack` then install this within your
+To test out any changes that you've made locally, run `yarn pack` then install this within your
 application.
 
 The scripts below are available to run and use:
 
-**`npm run prebuild`**
+**`yarn prebuild`**
 
 This removes any existing files generated during the build process and ensures that any new build is
 clean.
 
-**`npm run build`**
+**`yarn build`**
 
 This deletes the current generated JS files within the directory and compiles the ECMAScript 6 code
 within the `src` file to a version of ECMAScript that can run in current browsers using Babel
 afterwards it copies them to the lib folder.
 
-**`npm run prepublish`**
+**`yarn prepublish`**
 
-This runs `npm run build`
+This runs `yarn build`
 
-**`npm run watch:build`**
+**`yarn watch:build`**
 
-This watches for any changes in the  `src` folder and runs `npm run build` if any changes are
+This watches for any changes in the  `src` folder and runs `yarn build` if any changes are
 detected.
