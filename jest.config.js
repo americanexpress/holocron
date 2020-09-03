@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 American Express Travel Related Services Company, Inc.
+ * Copyright 2020 American Express Travel Related Services Company, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,9 +12,18 @@
  * under the License.
  */
 
-module.exports = (api) => {
-  api.cache(true);
-  return {
-    presets: ['amex'],
-  };
+module.exports = {
+  preset: 'amex-jest-preset-react',
+  setupFiles: [
+    './jest.setup.js',
+  ],
+  testMatch: [
+    '**/__tests__/*.spec.{js,jsx}',
+  ],
+  collectCoverageFrom: [
+    'packages/*/src/*.{js,jsx}',
+  ],
+  transform: {
+    '^.+\\.[t|j]sx?$': 'babel-jest',
+  },
 };

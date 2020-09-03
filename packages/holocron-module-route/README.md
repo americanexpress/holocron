@@ -26,6 +26,10 @@
 ### Installation
 
 ```bash
+yarn add holocron-module-route
+
+# or
+
 npm install --save holocron-module-route
 ```
 
@@ -242,21 +246,21 @@ export default connect(null, mapDispatchToProps)(PrefetchLink);
 
 ## 📜 Available Scripts
 
-To test out any changes that you've made locally, run `npm pack` then install this within your
+To test out any changes that you've made locally, run `yarn pack` then install this within your
 application.
 
 The scripts below are available to run and use:
 
-**`npm run babel`**
+**`yarn babel`**
 
 This deletes the current JS files within the `lib` directory and compiles the ECMAScript 6 code
 within the `src` file to a version of ECMAScript that can run in current browsers using Babel
 afterwards it copies them to the lib folder.
 
-**`npm run build`**
+**`yarn build`**
 
-This runs `npm run babel`
+This runs `yarn babel`
 
-**`npm run prepublish`**
+**`yarn prepublish`**
 
-This runs `npm run build`
+This runs `yarn build`

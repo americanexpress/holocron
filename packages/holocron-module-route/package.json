@@ -19,10 +19,17 @@
     "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
   ],
   "main": "lib/index.js",
+  "module": "src/index.js",
+  "files": [
+    "lib/*",
+    "src/*"
+  ],
   "scripts": {
-    "babel": "rimraf lib && babel src --out-dir lib --copy-files",
-    "build": "npm run babel",
-    "prepublish": "npm run build"
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "build": "babel src --out-dir lib --copy-files",
+    "prepack": "yarn build",
+    "prepublish": "yarn build"
   },
   "license": "Apache-2.0",
   "peerDependencies": {
