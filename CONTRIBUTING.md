@@ -33,14 +33,14 @@ This project adheres to the American Express [Code of Conduct](./CODE_OF_CONDUCT
 3. Install the dependencies by running
 
     ```bash
-    $ npm install
+    $ yarn
     ```
 
 4. You can now run the scripts within the different [packages](./packages).
 
 ### Creating a `holocron` new release
 
-1. Run `npm run lerna:version` locally from your release branch. This would push your release changes(changelog and tags) to the branch on github.
+1. Run `yarn lerna:version` locally from your release branch. This would push your release changes(changelog and tags) to the branch on github.
 2. Create a pull request from your branch to the `main` branch with your changes.
 3. Once the changes are approved ensure you merge the changes and provide the commit message for the merge as
    `chore(release): <semantic-release-version>`

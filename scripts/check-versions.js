@@ -20,9 +20,9 @@
 // ES6 features
 /* eslint-disable prefer-arrow-callback, prefer-template */
 
-const exec = require('child_process').exec;
+const { exec } = require('child_process');
 
-const engines = require('../package.json').engines;
+const { engines } = require('../package.json');
 
 const nodeRange = engines.node;
 const npmRange = engines.npm;
@@ -53,9 +53,10 @@ function parseRange(raw) {
     return raw;
   }
 
+  // TODO: translate any "~" "^" etc. to ">=" "<=" etc.
   return raw
     // split by any whitespace
-    .split(/[\s\uFEFF\xA0]+/)
+    .split(/[\s\uFEFF\u00A0]+/)
     // split range type and version
     .map(function parseBound(b) {
       const match = /^(>=)(.+)$/.exec(b);
@@ -66,20 +67,18 @@ function parseRange(raw) {
         comparator: match[1],
         version: parseVersion(match[2]),
       };
-    })
-    // TODO: translate any "~" "^" etc. to ">=" "<=" etc.
-    ;
+    });
 }
 
 function isHigherVersion(compare, baseline) {
   if (compare.major < baseline.major) {
     return false;
-  } else if (compare.major === baseline.major && compare.minor < baseline.minor) {
+  } if (compare.major === baseline.major && compare.minor < baseline.minor) {
     return false;
-  } else if (
-    compare.major === baseline.major &&
-    compare.minor === baseline.minor &&
-    compare.patch < baseline.patch
+  } if (
+    compare.major === baseline.major
+    && compare.minor === baseline.minor
+    && compare.patch < baseline.patch
   ) {
     return false;
   }
@@ -113,6 +112,7 @@ function checkEngine(engine, range, using) {
     /* eslint-disable no-console */
     console.error(engine + ' version must be ' + range + ', found ' + using);
     /* eslint-enable no-console */
+    /* eslint-disable-next-line unicorn/no-process-exit */
     process.exit(1);
   }
 }
@@ -130,6 +130,7 @@ exec('npm -v', function checkNpmVersion(error, stdout, stderr) {
     /* eslint-disable no-console */
     console.error(stderr);
     /* eslint-enable no-console */
+    /* eslint-disable-next-line unicorn/no-process-exit */
     process.exit(1);
   }
 

@@ -16,7 +16,11 @@
 ### Installation
 
 ```bash
-npm i holocron-module-register-webpack-plugin
+yarn add holocron-module-register-webpack-plugin --dev
+
+# or
+
+npm install holocron-module-register-webpack-plugin --save-dev
 ```
 
 ### Configurations
