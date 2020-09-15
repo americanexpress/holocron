@@ -17,7 +17,7 @@
     "Nelly Kiboi <Nelly.J.Kiboi@aexp.com> (https://github.com/nellyk)",
     "Nickolas Oliver <nickolas.oliver@aexp.com> (https://github.com/PixnBits)"
   ],
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "HolocronModuleRegisterPlugin.js",
   "files": [
     "HolocronModuleRegisterPlugin.js"
