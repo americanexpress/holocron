@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   checkCommit:
     name: Check commit
@@ -30,7 +29,6 @@ jobs:
       - name: Install yarn
         run: |-
          NODE_ENV=development yarn
-         yarn lerna bootstrap   
       - name: Test packages
         run: yarn test
       - name: Release packages
