@@ -3,7 +3,6 @@
 </h1>
 
 ![CI](https://github.com/americanexpress/holocron/workflows/CI/CD/badge.svg)
-[![Travis (.org) branch](https://img.shields.io/travis/americanexpress/holocron/main)](https://travis-ci.org/americanexpress/holocron)
 
 > Holocron contains a set of packages that are used to compose and load React components, enabling the updating and launching of server side rendered user experiences without server restarts.
 > This repository is a monorepo managed using **[Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)** & **[Lerna](https://github.com/lerna/lerna)**.

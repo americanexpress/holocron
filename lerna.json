@@ -1,12 +1,12 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "packages": [
     "packages/*"
   ],
   "command": {
     "version": {
       "conventionalCommits": true,
-      "allowBranch": "main"
+      "allowBranch": "chore/release-*"
     }
   }
 }
