@@ -23,16 +23,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
-        run: |-
-          git remote set-branches --add origin main
-          git fetch
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '12' 
+      - name: Install yarn
         run: |-
-          NODE_ENV=development yarn
-          yarn lerna bootstrap
+         NODE_ENV=development yarn
+         yarn lerna bootstrap   
       - name: Test packages
         run: yarn test
       - name: Release packages
