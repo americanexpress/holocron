@@ -1,6 +1,6 @@
 {
   "name": "holocron-module-route",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "keywords": [
     "holocron",
     "amex",
@@ -33,7 +33,7 @@
   },
   "license": "Apache-2.0",
   "peerDependencies": {
-    "holocron": "^1.0.0-4"
+    "holocron": "^1.1.1"
   },
   "dependencies": {
     "@americanexpress/one-app-router": "^1.1.0",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "babel-loader": "^8.0.5",
-    "holocron": "^1.1.0",
+    "holocron": "^1.1.1",
     "react-addons-test-utils": "^15.4.2",
     "rimraf": "^2.5.4"
   },

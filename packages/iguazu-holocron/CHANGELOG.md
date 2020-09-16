@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
+# [1.1.1](https://github.com/americanexpress/holocron/compare/v1.1.0...v1.1.1) (2020-09-15)
+
+
+No changes in this release for `iguazu-holocron`.
+
+
 # [1.1.0](https://github.com/americanexpress/holocron/compare/v1.0.0...v1.1.0) (2020-03-27)
 
 
