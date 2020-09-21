@@ -40,12 +40,13 @@ This project adheres to the American Express [Code of Conduct](./CODE_OF_CONDUCT
 
 ### Creating a `holocron` new release
 
-1. Run `yarn lerna:version` locally from your release branch. This would push your release changes(changelog and tags) to the branch on github.
-2. Create a pull request from your branch to the `main` branch with your changes.
-3. Once the changes are approved ensure you merge the changes and provide the commit message for the merge as
+1. Create a new branch with the pattern `chore/release-[new version]`.
+2. Run `yarn lerna:version` locally from your release branch. This would push your release changes(changelog and tags) to the branch on github.
+3. Create a pull request from your branch to the `main` branch with your changes.
+4. Once the changes are approved ensure you merge the changes and provide the commit message for the merge as
    `chore(release): <semantic-release-version>`
    ensure you follow this convention otherwise the deployment will not be executed.
-4. Once this is merged to main a deployment would be initiated on the main branch and all packages that changed would be released to npm.
+5. Once this is merged to main a deployment would be initiated on the main branch and all packages that changed would be released to npm.
 
 ## Submitting a new feature
 
