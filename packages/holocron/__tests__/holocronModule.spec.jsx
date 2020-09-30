@@ -219,7 +219,6 @@ describe('holocronModule', () => {
   });
 
   it('should dispatch the module\'s load action on componentDidMount with no preloaded state', () => {
-    global.__INITIAL_STATE__ = undefined;
     const load = jest.fn(() => () => Promise.resolve());
     const Module = holocronModule({
       name: 'mock-module',
@@ -239,37 +238,6 @@ describe('holocronModule', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('should not dispatch the module\'s load action on client takeover of a server render', () => {
-    global.__INITIAL_STATE__ = { some: 'state' };
-    const load = jest.fn(() => () => Promise.resolve());
-    const Module = holocronModule({
-      name: 'mock-module',
-      load,
-    })(() => <div>Mock Module</div>);
-    const mockStore = createStore((state) => state, applyMiddleware(thunk));
-    renderer.create(
-      <Provider store={mockStore}>
-        <Module />
-      </Provider>
-    );
-    expect(load).not.toHaveBeenCalled();
-  });
-
-  it('should not dispatch the module\'s load action on the server render', () => {
-    const load = jest.fn();
-    const Module = holocronModule({
-      name: 'mock-module',
-      load,
-    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
-    const mockStore = createStore((state) => state);
-    renderer.create(
-      <Provider store={mockStore}>
-        <Module />
-      </Provider>
-    );
-    expect(load).not.toHaveBeenCalled();
-  });
-
   it('should dispatch the module\'s load action if it receives new props that pass shouldModuleReload', () => {
     const load = jest.fn(() => () => Promise.resolve());
     const Module = connect((state) => state)(holocronModule({
@@ -287,12 +255,13 @@ describe('holocronModule', () => {
         <Module />
       </Provider>
     );
+    expect(load).toHaveBeenCalledTimes(1);
     mockStore.dispatch({ type: 'MOCK_ACTION_TYPE', newState: { someParam: 'new' } });
     // couldn't use toHaveBeenCalledWith because mapDispatchToProps is used
-    const calledProps = load.mock.calls[0][0];
+    const calledProps = load.mock.calls[1][0];
     const calledPropsWithoutFunctions = _.pickBy(calledProps, (p) => typeof p !== 'function');
     expect(calledPropsWithoutFunctions).toEqual({ someParam: 'new' });
-    expect(load).toHaveBeenCalledTimes(1);
+    expect(load).toHaveBeenCalledTimes(2);
   });
 
   it('should not dispatch the module\'s load action if it receives new props that do not pass shouldModuleReload', () => {
@@ -308,9 +277,10 @@ describe('holocronModule', () => {
         <Module />
       </Provider>
     );
+    expect(load).toHaveBeenCalledTimes(1);
     const { dispatch } = mockStore;
     dispatch({ type: 'MOCK_ACTION_TYPE', newState: { someParam: 'initial', differentParam: 'new' } });
-    expect(load).not.toHaveBeenCalled();
+    expect(load).toHaveBeenCalledTimes(1);
   });
 
   it('should not dispatch the module\'s load action if no shouldModuleReload function is provided', () => {
@@ -325,14 +295,14 @@ describe('holocronModule', () => {
         <Module />
       </Provider>
     );
+    expect(load).toHaveBeenCalledTimes(1);
     const { dispatch } = mockStore;
     dispatch({ type: 'MOCK_ACTION_TYPE', newState: { someParam: 'new' } });
-    expect(load).not.toHaveBeenCalled();
+    expect(load).toHaveBeenCalledTimes(1);
   });
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as loading when loading', () => {
-    global.__INITIAL_STATE__ = undefined;
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
@@ -351,7 +321,6 @@ describe('holocronModule', () => {
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as loaded when loaded', async () => {
-    global.__INITIAL_STATE__ = undefined;
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
@@ -378,7 +347,6 @@ describe('holocronModule', () => {
 
   // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as error when it failed to load', () => {
-    global.__INITIAL_STATE__ = undefined;
     const loadPromise = Promise.reject();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
@@ -403,7 +371,6 @@ describe('holocronModule', () => {
   });
 
   it('should gracefully handle load not returning a Promise', () => {
-    global.__INITIAL_STATE__ = undefined;
     const load = jest.fn(() => () => 'not a promise');
     const Module = holocronModule({
       name: 'mock-module',
