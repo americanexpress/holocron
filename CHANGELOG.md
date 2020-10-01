@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.2) (2020-10-01)
+
+
+### Bug Fixes
+
+* **holocronModule:** remove check for initial-state ([#56](https://github.com/americanexpress/holocron/issues/56)) ([76c73b1](https://github.com/americanexpress/holocron/commit/76c73b175802ed199ee74ae8587b30c313fda592))
+
+
+
+
+
 # [1.1.1](https://github.com/americanexpress/holocron/compare/v1.1.0...v1.1.1) (2020-09-15)
 
 
