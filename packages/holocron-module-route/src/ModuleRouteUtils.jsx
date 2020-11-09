@@ -26,9 +26,15 @@ export const addToRouteProps = (route, newProps) => ({
 });
 
 export const passChildrenProps = (givenRoutes = [], newProps) => {
-  const routes = typeof givenRoutes === 'function' ? givenRoutes(newProps.store) : givenRoutes;
-  return Array.isArray(routes) ? routes.map((route) => addToRouteProps(route, newProps))
-    : [addToRouteProps(routes, newProps)];
+  try {
+    const routes = typeof givenRoutes === 'function' ? givenRoutes(newProps.store) : givenRoutes;
+    return Array.isArray(routes) ? routes.map((route) => addToRouteProps(route, newProps))
+      : [addToRouteProps(routes, newProps)];
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(`Error thrown ${e} please check childRoutes on your root module`);
+    return null;
+  }
 };
 
 export const getRouteIndex = (

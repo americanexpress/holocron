@@ -74,6 +74,8 @@ describe('ModuleRouteUtils', () => {
   });
 
   describe('passChildrenProps', () => {
+    console.log = jest.fn();
+    beforeEach(() => console.log.mockClear());
     it('should pass props to children', () => {
       const routes = [{}];
       const newProps = { hello: 'world' };
@@ -95,8 +97,17 @@ describe('ModuleRouteUtils', () => {
     it('should return an empty array if no routes are provided', () => {
       expect(passChildrenProps(undefined, {})).toMatchSnapshot();
     });
+    it('should throw a console error if an error is thrown when creaing routes', () => {
+      const childRoutes = () => [
+        // needs to be undefined for this to throw an error
+        // eslint-disable-next-line no-undef
+        <ModuleRoute path="/" property={a.b} />,
+      ];
+      passChildrenProps(childRoutes, 'test');
+      expect(console.log).toHaveBeenCalled();
+      expect(console.log.mock.calls[0][0]).toEqual(expect.stringContaining('Error thrown ReferenceError: a is not defined please check childRoutes on your root module'));
+    });
   });
-
   describe('getRouteIndex', () => {
     it('should return the index route', () => {
       const indexRoute = 'indexRoute';
