@@ -75,7 +75,7 @@ describe('ModuleRouteUtils', () => {
 
   describe('passChildrenProps', () => {
     console.error = jest.fn();
-    beforeEach(() => console.log.mockClear());
+    beforeEach(() => console.error.mockClear());
     it('should pass props to children', () => {
       const routes = [{}];
       const newProps = { hello: 'world' };
