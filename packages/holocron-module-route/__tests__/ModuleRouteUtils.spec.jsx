@@ -97,7 +97,7 @@ describe('ModuleRouteUtils', () => {
     it('should return an empty array if no routes are provided', () => {
       expect(passChildrenProps(undefined, {})).toMatchSnapshot();
     });
-    it('should throw a console error if an error is thrown when creaing routes', () => {
+    it('catches and logs error when an error is thrown', () => {
       const childRoutes = () => [
         // needs to be undefined for this to throw an error
         // eslint-disable-next-line no-undef
