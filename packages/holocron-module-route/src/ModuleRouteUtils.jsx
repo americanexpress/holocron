@@ -32,7 +32,7 @@ export const passChildrenProps = (givenRoutes = [], newProps) => {
       : [addToRouteProps(routes, newProps)];
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.log(`Error thrown ${e} please check childRoutes on your root module`);
+    console.error(`Error thrown ${e} please check childRoutes on your root module`);
     return null;
   }
 };
