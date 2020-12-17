@@ -143,12 +143,15 @@ HelloWorld.holocron = {
 <<<<<<< refs/remotes/upstream/main
 =======
 
+<<<<<<< refs/remotes/upstream/main
 if (!global.BROWSER) {
   // eslint-disable-next-line global-require
   HelloWorld.appConfig = require('../appConfig').default;
 }
 >>>>>>> docs: Update holocron usage#1
 
+=======
+>>>>>>> docs: Removed one-app code snippet
 export default HelloWorld;
 ```
 
