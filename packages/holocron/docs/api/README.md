@@ -141,11 +141,6 @@ HelloWorld.holocron = {
   // options,
 };
 
-if (!global.BROWSER) {
-  // eslint-disable-next-line global-require
-  HelloWorld.appConfig = require('../appConfig').default;
-}
-
 export default HelloWorld;
 ```
 
