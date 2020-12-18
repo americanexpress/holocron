@@ -3,6 +3,8 @@
 </h1>
 
 ![CI](https://github.com/americanexpress/holocron/workflows/CI/CD/badge.svg)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+
 
 > Holocron contains a set of packages that are used to compose and load React components, enabling the updating and launching of server side rendered user experiences without server restarts.
 > This repository is a monorepo managed using **[Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)** & **[Lerna](https://github.com/lerna/lerna)**.
