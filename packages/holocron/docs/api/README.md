@@ -103,30 +103,43 @@ The optional `holocron` object set to the parent React Component inside a Holocr
 ```jsx
 import React from 'react';
 import PropTypes from 'prop-types';
-import { reducer, fetchData } from '../duck';
+import { fromJS } from 'immutable';
 
-const HelloWorld = ({ moduleState: { myData } }) => (
-  <h1>
-Hello,
-    {myData.name}
-  </h1>
-);
-HelloWorld.propTypes = {
-  moduleState: PropTypes.shape({
-    myData: PropTypes.string,
-  }).isRequired,
+const HelloWorld = ({ moduleState: { name }, moduleLoadStatus }) => {
+  if (moduleLoadStatus === 'loading') return <h1>Loading...</h1>;
+  if (moduleLoadStatus === 'error') return <h1>Error!</h1>;
+  return <h1>Hello, {name}!</h1>;
 };
 
-const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(fetchData(ownProps.input));
-const shouldModuleReload = (oldProps, newProps) => oldProps.input !== newProps.input;
+HelloWorld.propTypes = {
+  moduleState: PropTypes.shape({
+    name: PropTypes.string,
+  }).isRequired,
+  moduleLoadStatus: PropTypes.oneOf(['loading', 'loaded', 'error']),
+};
+
+const loadModuleData = ({ store: { dispatch } }) => dispatch({ type: 'SET_NAME', name: 'World' });
+
+const shouldModuleReload = (oldProps, newProps) => oldProps.moduleState?.name !== newProps.moduleState?.name;
+
+// This reducer is supplying 'moduleState' in our component
+// Note: reducers use immutable.js
+const reducer = (state = fromJS({}), action) => {
+  switch (action.type) {
+    case 'SET_NAME': {
+      return state.set('name', action.name);
+    }
+    default: return state;
+  }
+};
 
 HelloWorld.holocron = {
-  name: 'hello-world',
+  name: 'holocron-hello-world',
   reducer,
   loadModuleData,
   shouldModuleReload,
-  options,
-}
+  // options,
+};
 
 export default HelloWorld;
 ```

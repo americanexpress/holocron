@@ -109,9 +109,7 @@ export default function holocronModule({
 
       componentDidMount() {
         this.mounted = true;
-        if (loadModuleData || load) {
-          this.initiateLoad(0, this.props);
-        }
+        this.initiateLoad(0, this.props);
       }
 
       // ignoring to support deprecated componentWillReceiveProps.
