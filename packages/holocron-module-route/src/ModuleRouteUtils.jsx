@@ -48,21 +48,21 @@ export const createModuleRoute = (defaultProps, props) => {
   if (moduleName) {
     moduleRoute = Object.assign(moduleRoute, {
       getIndexRoute(partialNextState, cb) {
-        store.dispatch(loadModule(moduleName))
+        return store.dispatch(loadModule(moduleName))
           .then(
             ({ childRoutes }) => cb(null, getRouteIndex(childRoutes, { store })),
             cb
           );
       },
       getChildRoutes(location, cb) {
-        store.dispatch(loadModule(moduleName))
+        return store.dispatch(loadModule(moduleName))
           .then(
             ({ childRoutes }) => cb(null, passChildrenProps(childRoutes, { store })),
             cb
           );
       },
       getComponent(nextState, cb) {
-        store.dispatch(loadModule(moduleName))
+        return store.dispatch(loadModule(moduleName))
           .then(
             (module) => cb(null, module),
             cb
@@ -73,7 +73,7 @@ export const createModuleRoute = (defaultProps, props) => {
   if (moduleName && !moduleRoute.onEnter) {
     moduleRoute = Object.assign(moduleRoute, {
       onEnter(nextState, replace, cb) {
-        store.dispatch(loadModule(moduleName))
+        return store.dispatch(loadModule(moduleName))
           .then(
             ({ onEnterRouteHook }) => {
               if (!onEnterRouteHook) {
