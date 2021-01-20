@@ -149,6 +149,20 @@ describe('ModuleRouteUtils', () => {
         });
         return moduleRoute.getIndexRoute(undefined, callback);
       });
+
+      it('errors can be caught', async () => {
+        expect.assertions(1);
+        const moduleName = 'test-module';
+        const props = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, props);
+        // eslint-disable-next-line no-throw-literal
+        const callback = jest.fn(() => { throw 'some error'; });
+        try {
+          await moduleRoute.getIndexRoute(undefined, callback);
+        } catch (e) {
+          expect(e).toEqual('some error');
+        }
+      });
     });
 
     describe('getChildRoutes', () => {
@@ -163,6 +177,20 @@ describe('ModuleRouteUtils', () => {
         });
         return moduleRoute.getChildRoutes(undefined, callback);
       });
+
+      it('errors can be caught', async () => {
+        expect.assertions(1);
+        const moduleName = 'test-module';
+        const props = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, props);
+        // eslint-disable-next-line no-throw-literal
+        const callback = jest.fn(() => { throw 'some error'; });
+        try {
+          await moduleRoute.getChildRoutes(undefined, callback);
+        } catch (e) {
+          expect(e).toEqual('some error');
+        }
+      });
     });
 
     describe('getComponent', () => {
@@ -176,6 +204,20 @@ describe('ModuleRouteUtils', () => {
           done();
         });
         return moduleRoute.getComponent(undefined, callback);
+      });
+
+      it('errors can be caught', async () => {
+        expect.assertions(1);
+        const moduleName = 'test-module';
+        const props = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, props);
+        // eslint-disable-next-line no-throw-literal
+        const callback = jest.fn(() => { throw 'some error'; });
+        try {
+          await moduleRoute.getComponent(undefined, callback);
+        } catch (e) {
+          expect(e).toEqual('some error');
+        }
       });
     });
 
@@ -193,6 +235,21 @@ describe('ModuleRouteUtils', () => {
           done();
         }
         moduleRoute.onEnter('nextState', replace, cb);
+      });
+
+      it('errors can be caught', async () => {
+        expect.assertions(1);
+        const moduleName = 'store-hook-module';
+        const props = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, props);
+        // eslint-disable-next-line no-throw-literal
+        const cb = jest.fn(() => { throw 'onEnter error'; });
+        const replace = jest.fn();
+        try {
+          await moduleRoute.onEnter('nextState', replace, cb);
+        } catch (e) {
+          expect(e).toEqual('onEnter error');
+        }
       });
 
       it('should allow the Module to specify a synchronous onEnter hook', (done) => {
