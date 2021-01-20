@@ -1,6 +1,6 @@
 {
   "name": "holocron-module-route",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "keywords": [
     "holocron",
     "amex",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "babel-loader": "^8.0.5",
-    "holocron": "^1.1.3",
+    "holocron": "^1.1.4",
     "react-addons-test-utils": "^15.4.2",
     "rimraf": "^2.5.4"
   },

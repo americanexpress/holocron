@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.4) (2021-01-20)
+
+
+### Bug Fixes
+
+* **moduleRoute:** return promises ([#68](https://github.com/americanexpress/holocron/issues/68)) ([cbaa54d](https://github.com/americanexpress/holocron/commit/cbaa54d5900a998f0a8ef3c1de531f1df04b7798))
+
+
+
+
+
 ## [1.1.3](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.3) (2021-01-20)
 
 
