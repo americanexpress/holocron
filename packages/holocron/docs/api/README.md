@@ -174,7 +174,7 @@ A React component for rendering a Holocron module.
 ##### Usage
 
 ```jsx
-import { RenderModule, holocronModule, composeModules } from 'holocron';
+import { RenderModule, composeModules } from 'holocron';
 
 const MyModule = ({ data }) => (
   <div>
