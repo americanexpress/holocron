@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.3) (2021-01-21)
+
+
+### Bug Fixes
+
+* **holocron-module:** moduleLoadStatus 'loading' even with no load or loadModuleData ([7b7d2d8](https://github.com/americanexpress/holocron/commit/7b7d2d83516504085608f3385063a460c79d540d))
+* **holocronModule:** remove check for initial-state ([#56](https://github.com/americanexpress/holocron/issues/56)) ([76c73b1](https://github.com/americanexpress/holocron/commit/76c73b175802ed199ee74ae8587b30c313fda592))
+* **moduleRoute:** return promises ([#68](https://github.com/americanexpress/holocron/issues/68)) ([cbaa54d](https://github.com/americanexpress/holocron/commit/cbaa54d5900a998f0a8ef3c1de531f1df04b7798))
+* **yarn-lock:** add missing dep update ([#70](https://github.com/americanexpress/holocron/issues/70)) ([023399c](https://github.com/americanexpress/holocron/commit/023399c71e9643a15c9e7c7357f872b7fb527596))
+
+
+### Reverts
+
+* Revert "chore(release): 1.1.3" (#72) ([43e924c](https://github.com/americanexpress/holocron/commit/43e924c05f98d56215dd28fc401216f7abefa197)), closes [#72](https://github.com/americanexpress/holocron/issues/72)
+
+
+
+
+
 ## [1.1.2](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.2) (2020-10-01)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.3) (2021-01-21)
+
+
+### Reverts
+
+* Revert "chore(release): 1.1.3" (#72) ([43e924c](https://github.com/americanexpress/holocron/commit/43e924c05f98d56215dd28fc401216f7abefa197)), closes [#72](https://github.com/americanexpress/holocron/issues/72)
+
+
+
+
+
 ## [1.1.2](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.2) (2020-10-01)
 
 **Note:** Version bump only for package iguazu-holocron
