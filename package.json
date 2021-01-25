@@ -17,7 +17,7 @@
     "preinstall": "node scripts/check-versions.js",
     "postinstall": "yarn workspaces run build",
     "clean": "git clean -d -X",
-    "lint": "eslint --ext js,jsx,snap .",
+    "lint": "eslint --ext js,jsx,snap,md .",
     "test": "yarn test:unit",
     "test:unit": "cross-env NODE_ENV=development jest",
     "test:git-history": "commitlint --from origin/main --to HEAD",

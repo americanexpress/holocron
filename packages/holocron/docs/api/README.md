@@ -16,9 +16,10 @@ available on the server. We have organized them as such.
   - [`Module.holocron`](#moduleholocron)
 - [Module-level Functions](#module-level-functions)
   - [`RenderModule`](#rendermodule)
+  - [`HolocronModule`](#holocronmodule)
   - [`composeModules`](#composemodules)
   - [`loadModule`](#loadmodule)
-  - [`holocronModule (Deprecated)`](#holocronmodule)
+  - [`holocronModule` HoC (Deprecated)](#holocronmodule-hoc-deprecated)
 - [Module Registry](#module-registry)
   - [`registerModule`](#registermodule)
   - [`getModule`](#getmodule)
@@ -82,7 +83,7 @@ hydrate(
 
 #### `Module.holocron`
 
-The optional `holocron` object set to the parent React Component inside a Holocron Module determines behavior of state management, data loading, and React prop management. 
+The optional `holocron` object set to the parent React Component inside a Holocron Module determines behavior of state management, data loading, and React prop management.
 
 > A `name` property is required if a `reducer` is set otherwise the `reducer` will not be added to the Redux Store.
 
@@ -105,9 +106,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
 
-const HelloWorld = ({ moduleState: { name }, moduleLoadStatus }) => {
-  if (moduleLoadStatus === 'loading') return <h1>Loading...</h1>;
-  if (moduleLoadStatus === 'error') return <h1>Error!</h1>;
+const HelloWorld = ({
+  moduleLoadStatus,
+  moduleState: { name },
+}) => {
+  if (moduleLoadStatus === 'loading') {
+    return <h1>Loading...</h1>;
+  }
+  if (moduleLoadStatus === 'error') {
+    return <h1>Error!</h1>;
+  }
   return <h1>Hello, {name}!</h1>;
 };
 
@@ -115,12 +123,21 @@ HelloWorld.propTypes = {
   moduleState: PropTypes.shape({
     name: PropTypes.string,
   }).isRequired,
-  moduleLoadStatus: PropTypes.oneOf(['loading', 'loaded', 'error']),
+  moduleLoadStatus: PropTypes.oneOf([
+    'loading',
+    'loaded',
+    'error',
+  ]),
 };
 
-const loadModuleData = ({ store: { dispatch } }) => dispatch({ type: 'SET_NAME', name: 'World' });
+const loadModuleData = ({
+  store: { dispatch },
+}) => dispatch({ type: 'SET_NAME', name: 'World' });
 
-const shouldModuleReload = (oldProps, newProps) => oldProps.moduleState?.name !== newProps.moduleState?.name;
+const shouldModuleReload = (
+  oldProps,
+  newProps
+) => oldProps.moduleState.name !== newProps.moduleState.name;
 
 // This reducer is supplying 'moduleState' in our component
 // Note: reducers use immutable.js
@@ -138,7 +155,6 @@ HelloWorld.holocron = {
   reducer,
   loadModuleData,
   shouldModuleReload,
-  // options,
 };
 
 export default HelloWorld;
@@ -169,8 +185,7 @@ A React component for rendering a Holocron module.
 |---|---|---|---|
 | `moduleName` | `PropTypes.string` | `true` | The name of the Holocron module to be rendered |
 | `props` | `PropTypes.object` | `false` | Props to pass the rendered Holocron module |
-| `children` | `PropTypes.node` | `false` | Childen passed to the rendered Holocron module |
-
+| `children` | `PropTypes.node` | `false` | Children passed to the rendered Holocron module |
 ##### Usage
 
 ```jsx
@@ -192,9 +207,156 @@ export const loadModuleData = ({ store: { dispatch } }) => dispatch(composeModul
 MyModule.holocron = {
   name: 'my-module',
   loadModuleData,
-}
+};
 
 export default MyModule;
+```
+
+<!--ONE-DOCS-ID end-->
+
+<!--ONE-DOCS-ID id="HolocronModule" start-->
+
+#### `HolocronModule`
+
+A React component for rendering a Holocron module with its full life-cycle.
+The component will call [`composeModules`](#composemodules) to load in the
+Holocron module and [`RenderModule`](#rendermodule) to render it.
+When rendering on the server, the `HolocronModule` component expects the
+Holocron modules to be preloaded before rendering.
+
+##### Props
+
+| name         | type               | required | value                                           |
+|--------------|--------------------|----------|-------------------------------------------------|
+| `moduleName` | `PropTypes.string` | `true`   | The name of the Holocron module to be rendered  |
+| `fallback`   | `PropTypes.func`   | `false`  | An optional render function called when loading |
+| `...props`   | `PropTypes.object` | `false`  | Props to pass the rendered Holocron module      |
+
+##### Usage
+
+```jsx
+import React from 'react';
+import { HolocronModule } from 'holocron';
+
+const MyModule = ({ data }) => (
+  <div>
+    {/* some more JSX */}
+    <HolocronModule moduleName="sub-module-with-data">
+      <p>Hello, world</p>
+    </HolocronModule>
+  </div>
+);
+
+MyModule.holocron = {
+  name: 'my-module',
+};
+
+export default MyModule;
+```
+
+##### Additional Module Props
+
+`HolocronModule` will provide two additional props to your module,
+in addition to `moduleLoadStatus` and `moduleState`.
+
+| prop name        | type       | value                                                                                 |
+|------------------|------------|---------------------------------------------------------------------------------------|
+| `loadModuleData` | `Function` | calls `composeModules` and returns the data configured with `holocron.loadModuleData` |
+| `moduleData`     | `Object`   | The data returned from `loadModuleData`                                               |
+
+Both of these props can be used inside of your module to access the data,
+and reload the module data on demand.
+
+```jsx
+import React from 'react';
+
+export default function MyModule({ moduleData, loadModuleData }) {
+  return (
+    <div>
+      <ComponentDisplayingModuleData data={moduleData} />
+      <button type="button" onClick={loadModuleData}>
+        Update Module Data
+      </button>
+    </div>
+  );
+}
+
+MyModule.holocron = {
+  name: 'my-module',
+  loadModuleData() {
+    return fetch('...').then((res) => res.json());
+  },
+};
+```
+
+> Please note, `moduleData` will be `null` during server side rendering using One App.
+
+##### Integrations
+
+`HolocronModule` can be used in many ways to dynamically include
+Holocron modules anywhere within a micro-frontend like One App - this
+includes on-demand loading of a Holocron module that is server-side
+friendly (and available) when rendering from One App. Let us suppose
+we wanted to create a lazy-loading Holocron module to load/render
+only when the user has taken a given action like click a button:
+
+```jsx
+import React from 'react';
+import { HolocronModule as Module } from 'holocron';
+
+export default function MyModule() {
+  const [showOtherModule, setShowOtherModule] = React.useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => {
+          setShowOtherModule(!showOtherModule);
+        }}
+      >
+        Show Other Module
+      </button>
+      {showOtherModule ? (
+        <Module moduleName="other-module" />
+      ) : null}
+    </div>
+  );
+}
+```
+
+`HolocronModule` also has seamless compatibility with libraries
+like `@reach/router` and makes it easy to compose and route modules
+all together using a micro-frontend architecture:
+
+```jsx
+import React from 'react';
+import { Provider } from 'react-redux';
+import { Router } from '@reach/router';
+import {
+  HolocronModule as Module,
+  createHolocronStore,
+  // setModuleMap,
+} from 'holocron';
+
+// make sure to setup your module map before creating the store
+// setModuleMap({})
+
+const store = createHolocronStore({ reducer: (state) => state });
+
+export default function App() {
+  return (
+    <Provider store={store}>
+      <Router>
+        <Module path="/" moduleName="entry-module">
+          <Module path="/" moduleName="landing-page" />
+          <Module path="/stickers/*" moduleName="sticker-book">
+            <Module path="/stickers/:stickersId" moduleName="stickers-viewer" />
+          </Module>
+        </Module>
+      </Router>
+    </Provider>
+  );
+}
 ```
 
 <!--ONE-DOCS-ID end-->
@@ -277,7 +439,7 @@ import { reducer, fetchData } from '../duck';
 
 const HelloWorld = ({ moduleState: { myData } }) => (
   <h1>
-Hello,
+    Hello,
     {myData.name}
   </h1>
 );
@@ -573,7 +735,7 @@ const onModuleLoad = ({ module, moduleName }) => {
   console.info(`Loaded module ${moduleName}`);
 };
 
-export default async function() {
+export default async function updateRegistry() {
   const moduleMapResponse = await fetch(MODULE_MAP_URL);
   const moduleMap = await moduleMapResponse.json();
   await updateModuleRegistry({
@@ -605,10 +767,14 @@ Compares two module map entries to see if they are equal. This is intended for u
 import { areModuleEntriesEqual } from 'holocron/server';
 
 const getModulesToUpdate = (
-  currentModules, nextModules) => Object.keys(next).filter((moduleName) => (
-  !areModuleEntriesEqual(curr[moduleName], next[moduleName])
-        || someOtherLogic(moduleName))
-);
+  currentModules,
+  nextModules
+) => Object
+  .keys(next)
+  .filter(
+    (moduleName) => !areModuleEntriesEqual(curr[moduleName], next[moduleName])
+        || someOtherLogic(moduleName)
+  );
 ```
 
 <!--ONE-DOCS-ID end-->

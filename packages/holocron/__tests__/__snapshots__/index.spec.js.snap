@@ -2,6 +2,7 @@
 
 exports[`public API should not have anything removed 1`] = `
 Object {
+  "HolocronModule": [Function],
   "RenderModule": [Function],
   "composeModules": [Function],
   "createHolocronStore": [Function],

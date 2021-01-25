@@ -145,11 +145,11 @@ import { connectAsync } from 'iguazu';
 import { queryModule } from 'iguazu-holocron';
 
 const MyModule = ({ MyOtherModule }) => (
-  <>
+  <React.Fragment>
     {/* some jsx */}
     <MyOtherModule />
-  </>
-)
+  </React.Fragment>
+);
 
 function loadDataAsProps({ store }) {
   return {
@@ -179,11 +179,11 @@ import { connectAsync } from 'iguazu';
 import { queryModuleWithData } from 'iguazu-holocron';
 
 const MyModule = ({ MyOtherModule, someData }) => (
-  <>
+  <React.Fragment>
     {/* some jsx */}
     <MyOtherModule someData={someData} />
-  </>
-)
+  </React.Fragment>
+);
 
 function loadDataAsProps({ store, ownProps }) {
   return {
@@ -214,11 +214,11 @@ import { connectAsync } from 'iguazu';
 import { queryModule, isEmpty } from 'iguazu-holocron';
 
 const MyModule = ({ MyOtherModule }) => (
-  <>
+  <React.Fragment>
     {/* some jsx */}
     {isEmpty(MyOtherModule) ? <Spinner /> : <MyOtherModule />}
-  </>
-)
+  </React.Fragment>
+);
 
 function loadDataAsProps({ store }) {
   return {
@@ -248,14 +248,13 @@ import { connectAsync } from 'iguazu';
 import { queryModule, anyAreEmpty } from 'iguazu-holocron';
 
 const MyModule = ({ MyOtherModule, ThirdModule }) => (
-  <>
+  <React.Fragment>
     {/* some jsx */}
-    { anyAreEmpty(MyOtherModule, ThirdModule) ?
-      <Spinner /> :
-      <MyOtherModule><ThirdModule/></MyOtherModule>
-    }
-  </>
-)
+    { anyAreEmpty(MyOtherModule, ThirdModule)
+      ? <Spinner />
+      : <MyOtherModule><ThirdModule /></MyOtherModule>}
+  </React.Fragment>
+);
 
 function loadDataAsProps({ store }) {
   return {
@@ -282,7 +281,7 @@ called directly, but needs to be attached to the module as the static `loadModul
 import { connectAsync } from 'iguazu';
 import { queryModule } from 'iguazu-holocron';
 
-const MyModule = ({ data }) => <p>{`Data: ${data}`}</p>)
+const MyModule = ({ data }) => <p>{`Data: ${data}`}</p>;
 
 function loadDataAsProps({ store }) {
   return {
