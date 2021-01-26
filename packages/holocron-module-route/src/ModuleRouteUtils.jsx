@@ -34,6 +34,7 @@ export const passChildrenProps = (givenRoutes = [], newProps) => {
 export const getRouteIndex = (
   routes, props
 ) => routes && createRoutes(passChildrenProps(routes, props))[0].indexRoute;
+
 export const createModuleRoute = (defaultProps, props) => {
   const { moduleName, store } = props;
 
@@ -48,32 +49,32 @@ export const createModuleRoute = (defaultProps, props) => {
   if (moduleName) {
     moduleRoute = Object.assign(moduleRoute, {
       getIndexRoute(partialNextState, cb) {
-        return store.dispatch(loadModule(moduleName))
+        store.dispatch(loadModule(moduleName))
           .then(
-            ({ childRoutes }) => cb(null, getRouteIndex(childRoutes, { store })),
-            cb
-          );
+            ({ childRoutes }) => cb(null, getRouteIndex(childRoutes, { store }))
+          )
+          .catch(cb);
       },
       getChildRoutes(location, cb) {
-        return store.dispatch(loadModule(moduleName))
+        store.dispatch(loadModule(moduleName))
           .then(
-            ({ childRoutes }) => cb(null, passChildrenProps(childRoutes, { store })),
-            cb
-          );
+            ({ childRoutes }) => cb(null, passChildrenProps(childRoutes, { store }))
+          )
+          .catch(cb);
       },
       getComponent(nextState, cb) {
-        return store.dispatch(loadModule(moduleName))
+        store.dispatch(loadModule(moduleName))
           .then(
-            (module) => cb(null, module),
-            cb
-          );
+            (module) => cb(null, module)
+          )
+          .catch(cb);
       },
     });
   }
   if (moduleName && !moduleRoute.onEnter) {
     moduleRoute = Object.assign(moduleRoute, {
       onEnter(nextState, replace, cb) {
-        return store.dispatch(loadModule(moduleName))
+        store.dispatch(loadModule(moduleName))
           .then(
             ({ onEnterRouteHook }) => {
               if (!onEnterRouteHook) {
@@ -86,9 +87,9 @@ export const createModuleRoute = (defaultProps, props) => {
               }
               onEnter(nextState, replace);
               return cb();
-            },
-            cb
-          );
+            }
+          )
+          .catch(cb);
       },
     });
   }

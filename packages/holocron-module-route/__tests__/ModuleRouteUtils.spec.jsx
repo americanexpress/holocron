@@ -150,18 +150,18 @@ describe('ModuleRouteUtils', () => {
         return moduleRoute.getIndexRoute(undefined, callback);
       });
 
-      it('errors can be caught', async () => {
-        expect.assertions(1);
+      it('passes errors to callback', (done) => {
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        // eslint-disable-next-line no-throw-literal
-        const callback = jest.fn(() => { throw 'some error'; });
-        try {
-          await moduleRoute.getIndexRoute(undefined, callback);
-        } catch (e) {
-          expect(e).toEqual('some error');
-        }
+
+        const callback = jest.fn((error) => {
+          expect(error.message).toEqual('boom');
+          done();
+        });
+        // this ensures error thrown during the `.then` rather than after
+        callback.mockImplementationOnce(() => { throw new Error('boom'); });
+        moduleRoute.getIndexRoute(undefined, callback);
       });
     });
 
@@ -178,18 +178,18 @@ describe('ModuleRouteUtils', () => {
         return moduleRoute.getChildRoutes(undefined, callback);
       });
 
-      it('errors can be caught', async () => {
-        expect.assertions(1);
+      it('passes errors to callback', (done) => {
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        // eslint-disable-next-line no-throw-literal
-        const callback = jest.fn(() => { throw 'some error'; });
-        try {
-          await moduleRoute.getChildRoutes(undefined, callback);
-        } catch (e) {
-          expect(e).toEqual('some error');
-        }
+
+        const callback = jest.fn((error) => {
+          expect(error.message).toEqual('boom');
+          done();
+        });
+        // this ensures error thrown during the `.then` rather than after
+        callback.mockImplementationOnce(() => { throw new Error('boom'); });
+        moduleRoute.getChildRoutes(undefined, callback);
       });
     });
 
@@ -206,18 +206,18 @@ describe('ModuleRouteUtils', () => {
         return moduleRoute.getComponent(undefined, callback);
       });
 
-      it('errors can be caught', async () => {
-        expect.assertions(1);
+      it('passes errors to callback', (done) => {
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        // eslint-disable-next-line no-throw-literal
-        const callback = jest.fn(() => { throw 'some error'; });
-        try {
-          await moduleRoute.getComponent(undefined, callback);
-        } catch (e) {
-          expect(e).toEqual('some error');
-        }
+
+        const callback = jest.fn((error) => {
+          expect(error.message).toEqual('boom');
+          done();
+        });
+        // this ensures error thrown during the `.then` rather than after
+        callback.mockImplementationOnce(() => { throw new Error('boom'); });
+        moduleRoute.getComponent(undefined, callback);
       });
     });
 
@@ -237,19 +237,19 @@ describe('ModuleRouteUtils', () => {
         moduleRoute.onEnter('nextState', replace, cb);
       });
 
-      it('errors can be caught', async () => {
-        expect.assertions(1);
+      it('passes errors to callback', (done) => {
         const moduleName = 'store-hook-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        // eslint-disable-next-line no-throw-literal
-        const cb = jest.fn(() => { throw 'onEnter error'; });
+
+        const callback = jest.fn((error) => {
+          expect(error.message).toEqual('boom');
+          done();
+        });
         const replace = jest.fn();
-        try {
-          await moduleRoute.onEnter('nextState', replace, cb);
-        } catch (e) {
-          expect(e).toEqual('onEnter error');
-        }
+        // this ensures error thrown during the `.then` rather than after
+        callback.mockImplementationOnce(() => { throw new Error('boom'); });
+        moduleRoute.onEnter('nextState', replace, callback);
       });
 
       it('should allow the Module to specify a synchronous onEnter hook', (done) => {
