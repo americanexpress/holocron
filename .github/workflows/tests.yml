@@ -15,11 +15,11 @@ jobs:
     name: Node ${{ matrix.node }}
     steps:
     - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha }}
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+        ref: ${{ github.event.pull_request.head.sha }}
     - run: |
         git remote set-branches --add origin main
         git fetch
