@@ -19,13 +19,16 @@ jobs:
     needs: [checkCommit]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: '12' 
+          node-version: '12'
       - name: Install yarn
         run: |-
          NODE_ENV=development yarn
