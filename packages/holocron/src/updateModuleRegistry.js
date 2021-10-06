@@ -78,7 +78,14 @@ export default async function updateModuleRegistry({
   const finalNewModuleMap = { ...newModuleMap };
   // Keep working version of modules if they are in the list of problem modules
   problemModules.forEach((module) => {
-    finalNewModuleMap.modules[module] = currentModuleMap.modules[module];
+    if (currentModuleMap.modules) {
+      finalNewModuleMap.modules[module] = currentModuleMap.modules[module];
+    } else {
+      // If it doesn't exist in the old module map, that means its being deployed for the first time
+      // or holocron is initializing modules for the first time. If there is an issue with the
+      // module we should exclude it from the module map entirely.
+      delete finalNewModuleMap.modules[module];
+    }
   });
   resetModuleRegistry(newModules, finalNewModuleMap);
 
