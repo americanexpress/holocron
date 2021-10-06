@@ -45,22 +45,43 @@ export default async function updateModuleRegistry({
     getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules)
   );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
-
+  const problemModules = [];
   let updatedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
     const loadedModules = await acc;
-    const nextModules = await Promise.all(moduleBatch.map(
-      async (moduleName) => addHigherOrderComponent(
-        await loadModule(moduleName, newModuleMap.modules[moduleName], onModuleLoad)
-      )
+    const nextModules = await Promise.allSettled(moduleBatch.map(
+      async (moduleName) => {
+        try {
+          const loadedModule = await loadModule(
+            moduleName,
+            newModuleMap.modules[moduleName],
+            onModuleLoad
+          );
+          return addHigherOrderComponent(loadedModule);
+        } catch (e) {
+          problemModules.push(moduleName);
+          return Promise.reject(e);
+        }
+      }
     ));
-    return [...loadedModules, ...nextModules];
+    const successfullyLoadedModules = nextModules.filter(
+      ({ status }) => status === 'fulfilled'
+    ).map(({ value }) => value);
+    return [...loadedModules, ...successfullyLoadedModules];
   }, []);
   updatedModules = updatedModules.reduce((
     acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
   const newModules = getModules().merge(updatedModules);
+  // Updated modules may have less modules than flatModulesToUpdate if any modules failed to load
+  const updatedFlatMap = flatModulesToUpdate.filter(
+    (mod) => Object.keys(updatedModules).some((updatedModule) => updatedModule === mod)
+  );
+  const finalNewModuleMap = { ...newModuleMap };
+  // Keep working version of modules if they are in the list of problem modules
+  problemModules.forEach((module) => {
+    finalNewModuleMap.modules[module] = currentModuleMap.modules[module];
+  });
+  resetModuleRegistry(newModules, finalNewModuleMap);
 
-  resetModuleRegistry(newModules, newModuleMap);
-
-  return flatModulesToUpdate.reduce((
+  return updatedFlatMap.reduce((
     acc, moduleName) => ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {});
 }
