@@ -35,60 +35,62 @@ function defaultGetModulesToUpdate(curr, next) {
 }
 
 export default async function updateModuleRegistry({
-  moduleMap: newModuleMap,
+  moduleMap: unsanitizedModuleMap,
   onModuleLoad = () => null,
   batchModulesToUpdate = (x) => [x],
   getModulesToUpdate = defaultGetModulesToUpdate,
 }) {
   const currentModuleMap = getModuleMap().toJS();
   const modulesToUpdate = batchModulesToUpdate(
-    getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules)
+    getModulesToUpdate(currentModuleMap.modules || {}, unsanitizedModuleMap.modules)
   );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
   const problemModules = [];
-  let updatedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
-    const loadedModules = await acc;
-    const nextModules = await Promise.allSettled(moduleBatch.map(
+  let successfullyLoadedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
+    const previouslyResolvedModules = await acc;
+    const newlyResolvedModules = await Promise.allSettled(moduleBatch.map(
       async (moduleName) => {
         try {
           const loadedModule = await loadModule(
             moduleName,
-            newModuleMap.modules[moduleName],
+            unsanitizedModuleMap.modules[moduleName],
             onModuleLoad
           );
           return addHigherOrderComponent(loadedModule);
         } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn(e);
           problemModules.push(moduleName);
           return Promise.reject(e);
         }
       }
     ));
-    const successfullyLoadedModules = nextModules.filter(
+    const fulfilledModules = newlyResolvedModules.filter(
       ({ status }) => status === 'fulfilled'
     ).map(({ value }) => value);
-    return [...loadedModules, ...successfullyLoadedModules];
+    return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
-  updatedModules = updatedModules.reduce((
+  successfullyLoadedModules = successfullyLoadedModules.reduce((
     acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
-  const newModules = getModules().merge(updatedModules);
+  const newModules = getModules().merge(successfullyLoadedModules);
   // Updated modules may have less modules than flatModulesToUpdate if any modules failed to load
   const updatedFlatMap = flatModulesToUpdate.filter(
-    (mod) => Object.keys(updatedModules).some((updatedModule) => updatedModule === mod)
+    (mod) => Object.keys(successfullyLoadedModules).some((updatedModule) => updatedModule === mod)
   );
-  const finalNewModuleMap = { ...newModuleMap };
+  const sanitizedModuleMap = { ...unsanitizedModuleMap };
   // Keep working version of modules if they are in the list of problem modules
   problemModules.forEach((module) => {
     if (currentModuleMap.modules) {
-      finalNewModuleMap.modules[module] = currentModuleMap.modules[module];
+      sanitizedModuleMap.modules[module] = currentModuleMap.modules[module];
     } else {
       // If it doesn't exist in the old module map, that means its being deployed for the first time
       // or holocron is initializing modules for the first time. If there is an issue with the
       // module we should exclude it from the module map entirely.
-      delete finalNewModuleMap.modules[module];
+      delete sanitizedModuleMap.modules[module];
     }
   });
-  resetModuleRegistry(newModules, finalNewModuleMap);
+  resetModuleRegistry(newModules, sanitizedModuleMap);
 
   return updatedFlatMap.reduce((
-    acc, moduleName) => ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {});
+    acc, moduleName) => ({ ...acc, [moduleName]: sanitizedModuleMap.modules[moduleName] }), {});
 }
