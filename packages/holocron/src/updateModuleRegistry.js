@@ -59,7 +59,7 @@ export default async function updateModuleRegistry({
           return addHigherOrderComponent(loadedModule);
         } catch (e) {
           // eslint-disable-next-line no-console
-          console.warn(e);
+          console.error(e);
           problemModules.push(moduleName);
           return Promise.reject(e);
         }
