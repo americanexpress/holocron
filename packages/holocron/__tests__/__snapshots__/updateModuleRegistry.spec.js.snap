@@ -55,8 +55,6 @@ Object {
 }
 `;
 
-exports[`updateModuleRegistry should throw if any of the modules fail to load 1`] = `"Failed to load module"`;
-
 exports[`updateModuleRegistry should update the modules in the registry: module map 1`] = `
 Immutable.Map {
   "key": "key123",

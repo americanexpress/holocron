@@ -482,8 +482,7 @@ describe('updateModuleRegistry', () => {
     expect(updatedModules).toMatchSnapshot();
   });
 
-  it('should throw if any of the modules fail to load', async () => {
-    expect.assertions(1);
+  it('should not throw if any of the modules fail to load', async () => {
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
 
     loadModule.mockImplementationOnce(mockLoadModule);
@@ -525,11 +524,63 @@ describe('updateModuleRegistry', () => {
       },
     };
     const batchModulesToUpdate = (x) => x.map((i) => [i]);
-    await expect(updateModuleRegistry({
+    const updatedRegistry = await updateModuleRegistry({
       moduleMap: newModuleMap,
       onModuleLoad,
       batchModulesToUpdate,
-    })).rejects.toThrowErrorMatchingSnapshot();
+    });
+    expect(updatedRegistry['another-module']).toBeTruthy();
+    expect(updatedRegistry['best-module']).toBeFalsy();
+  });
+  it('should not throw if any of the modules fail to load - empty module map', async () => {
+    const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
+
+    loadModule.mockImplementationOnce(mockLoadModule);
+    loadModule.mockImplementationOnce(async () => { throw new Error('Failed to load module'); });
+    resetModuleRegistry({}, {});
+    const currentModuleMap = getModuleMap().toJS();
+    const newModuleMap = {
+      ...currentModuleMap,
+      modules: {
+        ...currentModuleMap.modules,
+        'another-module': {
+          node: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.node.js',
+            integrity: '23124',
+          },
+          browser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.browser.js',
+            integrity: '346346',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js',
+            integrity: '123545',
+          },
+        },
+        'best-module': {
+          node: {
+            url: 'https://example.com/cdn/best-module/2.5.6/best-module.node.js',
+            integrity: '23124',
+          },
+          browser: {
+            url: 'https://example.com/cdn/best-module/2.5.6/best-module.browser.js',
+            integrity: '346346',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/best-module/2.5.6/best-module.legacy.browser.js',
+            integrity: '123545',
+          },
+        },
+      },
+    };
+    const batchModulesToUpdate = (x) => x.map((i) => [i]);
+    const updatedRegistry = await updateModuleRegistry({
+      moduleMap: newModuleMap,
+      onModuleLoad,
+      batchModulesToUpdate,
+    });
+    expect(updatedRegistry['another-module']).toBeTruthy();
+    expect(updatedRegistry['best-module']).toBeFalsy();
   });
 });
 
