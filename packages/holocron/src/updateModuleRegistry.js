@@ -58,8 +58,15 @@ export default async function updateModuleRegistry({
           );
           return addHigherOrderComponent(loadedModule);
         } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error(e);
+          const brokenUrl = unsanitizedModuleMap.modules[moduleName].baseUrl;
+          if (currentModuleMap.modules && currentModuleMap.modules[moduleName]) {
+            const previousUrl = currentModuleMap.modules[moduleName].baseUrl;
+            // eslint-disable-next-line no-console
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, e);
+          } else {
+            // eslint-disable-next-line no-console
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Removing ${moduleName} from in-memory module map until next module map poll.`, e);
+          }
           problemModules.push(moduleName);
           return Promise.reject(e);
         }
