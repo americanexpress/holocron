@@ -534,7 +534,7 @@ describe('updateModuleRegistry', () => {
     });
     expect(updatedRegistry['another-module']).toBeTruthy();
     // Since "module-three" already exists in the module map, we expect it to use the old version
-    expect(getModuleMap().toJS().modules['module-three'].baseUrl).toBe('https://example.com/cdn/module-three/1.0.0/module-three.node.js');
+    expect(getModuleMap().toJS().modules['module-three'].node.url).toBe('https://example.com/cdn/module-three/1.0.0/module-three.node.js');
     expect(console.error).toHaveBeenCalled();
   });
   it('should not throw if any of the modules fail to load - empty module map', async () => {

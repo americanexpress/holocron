@@ -58,9 +58,9 @@ export default async function updateModuleRegistry({
           );
           return addHigherOrderComponent(loadedModule);
         } catch (e) {
-          const brokenUrl = unsanitizedModuleMap.modules[moduleName].baseUrl;
+          const brokenUrl = unsanitizedModuleMap.modules[moduleName].node.url;
           if (currentModuleMap.modules && currentModuleMap.modules[moduleName]) {
-            const previousUrl = currentModuleMap.modules[moduleName].baseUrl;
+            const previousUrl = currentModuleMap.modules[moduleName].node.url;
             // eslint-disable-next-line no-console
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, e);
           } else {
