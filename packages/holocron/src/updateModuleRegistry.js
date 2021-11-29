@@ -65,7 +65,7 @@ export default async function updateModuleRegistry({
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, e);
           } else {
             // eslint-disable-next-line no-console
-            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Removing ${moduleName} from in-memory module map until next module map poll.`, e);
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
           }
           problemModules.push(moduleName);
           return Promise.reject(e);
