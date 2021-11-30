@@ -485,7 +485,7 @@ describe('updateModuleRegistry', () => {
 
   it('should not throw if any of the modules fail to load', async () => {
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
-    console.error = jest.fn();
+    jest.spyOn(console, 'error').mockImplementation((x) => x);
 
     loadModule.mockImplementationOnce(mockLoadModule);
     loadModule.mockImplementationOnce(async () => { throw new Error('Failed to load module'); });
@@ -539,7 +539,7 @@ describe('updateModuleRegistry', () => {
   });
   it('should not throw if any of the modules fail to load - empty module map', async () => {
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
-    console.error = jest.fn();
+    jest.spyOn(console, 'error').mockImplementation((x) => x);
 
     loadModule.mockImplementationOnce(mockLoadModule);
     loadModule.mockImplementationOnce(async () => { throw new Error('Failed to load module'); });
