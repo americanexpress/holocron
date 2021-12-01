@@ -96,6 +96,7 @@ export default function holocronModule({
   mergeProps,
   options = {},
 } = {}) {
+  let that;
   return function wrapWithHolocron(WrappedComponent) {
     class HolocronModuleWrapper extends React.Component {
       constructor(props) {
@@ -103,8 +104,10 @@ export default function holocronModule({
         this.state = {
           loadCount: 0,
           status: 'loading',
+          currentProps: props,
         };
         this.mounted = false;
+        that = this;
       }
 
       componentDidMount() {
@@ -112,17 +115,17 @@ export default function holocronModule({
         this.initiateLoad(0, this.props);
       }
 
-      // ignoring to support deprecated componentWillReceiveProps.
-      // This needs to be removed to support React17
-      // eslint-disable-next-line camelcase
-      UNSAFE_componentWillReceiveProps(nextProps) {
-        const { loadCount } = this.state;
-        const { props } = this;
-        if (shouldModuleReload && shouldModuleReload(props, nextProps)) {
+      static getDerivedStateFromProps(nextProps, { currentProps, loadCount }) {
+        if (shouldModuleReload && shouldModuleReload(currentProps, nextProps)) {
           const newLoadCount = loadCount + 1;
-          this.setState({ status: 'loading', loadCount: newLoadCount });
-          this.initiateLoad(newLoadCount, nextProps);
+          that.initiateLoad(newLoadCount, nextProps);
+          return {
+            status: 'loading',
+            loadCount: newLoadCount,
+            currentProps: nextProps,
+          };
         }
+        return null;
       }
 
       // Ignoring as internal state cannot be checked when unmounted.
