@@ -1,6 +1,6 @@
 {
   "name": "holocron",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "main": "index.js",
   "module": "src/index.js",
   "keywords": [
@@ -34,8 +34,6 @@
     "hoist-non-react-statics": "^3.3.0",
     "immutable": "^4.0.0-rc.12",
     "prop-types": "^15.5.10",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",
     "redux-immutable": "^4.0.0",
@@ -48,6 +46,8 @@
   "devDependencies": {
     "@babel/polyfill": "^7.2.5",
     "nodemon": "^1.10.2",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
     "rimraf": "^2.5.4"
   },
   "repository": {
@@ -58,5 +58,9 @@
   "homepage": "https://github.com/americanexpress/holocron",
   "bugs": {
     "url": "https://github.com/americanexpress/holocron/issues"
+  },
+  "peerDependencies": {
+    "react": ">=16.11.0",
+    "react-dom": ">=16.11.0"
   }
 }
