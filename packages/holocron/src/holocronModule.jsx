@@ -102,16 +102,14 @@ export default function holocronModule({
       const isMounted = useRef(false);
       const prevPropsRef = useRef({});
 
-      const initiateLoad = (currentLoadCount, frozenProps) => {
-        executeLoadingFunctions({
-          loadModuleData,
-          WrappedComponent,
-          frozenProps,
-          currentLoadCount,
-          hocName: getModuleName(WrappedComponent, name),
-          hocInstance: { mounted: isMounted.current, loadCount, setState },
-        });
-      };
+      const initiateLoad = (currentLoadCount, frozenProps) => executeLoadingFunctions({
+        loadModuleData,
+        WrappedComponent,
+        frozenProps,
+        currentLoadCount,
+        hocName: getModuleName(WrappedComponent, name),
+        hocInstance: { mounted: isMounted.current, loadCount, setState },
+      });
 
       if (
         Object.keys(prevPropsRef.current).length > 0
@@ -119,7 +117,7 @@ export default function holocronModule({
         && shouldModuleReload(prevPropsRef.current, props)
       ) {
         const newLoadCount = loadCount + 1;
-        setState((prevState) => ({ ...prevState, loadCount: newLoadCount }));
+        setState((prevState) => ({ ...prevState, loadCount: newLoadCount, status: 'loading' }));
         initiateLoad(newLoadCount, props);
       }
 
@@ -127,7 +125,7 @@ export default function holocronModule({
 
       React.useEffect(() => {
         isMounted.current = true;
-        initiateLoad(loadCount, props);
+        initiateLoad(0, props);
 
         return () => {
           isMounted.current = false;
