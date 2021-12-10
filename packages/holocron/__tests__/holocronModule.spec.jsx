@@ -359,6 +359,7 @@ describe('holocronModule', () => {
     await sleep(1);
     wrapper.update();
     expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual('error');
+    wrapper.unmount();
   });
 
   it('should not try to setState if it is not mounted', () => {
