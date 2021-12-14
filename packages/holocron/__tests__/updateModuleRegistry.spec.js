@@ -109,6 +109,7 @@ describe('updateModuleRegistry', () => {
               url: 'https://example.com/cdn/module-three/1.0.0/module-three.legacy.browser.js',
               integrity: '3534536',
             },
+            baseUrl: 'https://example.com/cdn/module-three/1.0.0/module-three.node.js',
           },
         },
       }
@@ -482,9 +483,9 @@ describe('updateModuleRegistry', () => {
     expect(updatedModules).toMatchSnapshot();
   });
 
-  it('should throw if any of the modules fail to load', async () => {
-    expect.assertions(1);
+  it('should not throw if any of the modules fail to load', async () => {
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
+    jest.spyOn(console, 'error').mockImplementation((x) => x);
 
     loadModule.mockImplementationOnce(mockLoadModule);
     loadModule.mockImplementationOnce(async () => { throw new Error('Failed to load module'); });
@@ -508,28 +509,86 @@ describe('updateModuleRegistry', () => {
             integrity: '123545',
           },
         },
-        'best-module': {
+        'module-three': {
           node: {
-            url: 'https://example.com/cdn/best-module/2.5.6/best-module.node.js',
-            integrity: '23124',
+            url: 'https://example.com/cdn/module-three/1.0.1/module-three.node.js',
+            integrity: '123444',
           },
           browser: {
-            url: 'https://example.com/cdn/best-module/2.5.6/best-module.browser.js',
-            integrity: '346346',
+            url: 'https://example.com/cdn/module-three/1.0.1/module-three.browser.js',
+            integrity: '555111',
           },
           legacyBrowser: {
-            url: 'https://example.com/cdn/best-module/2.5.6/best-module.legacy.browser.js',
-            integrity: '123545',
+            url: 'https://example.com/cdn/module-three/1.0.1/module-three.legacy.browser.js',
+            integrity: '1234444455',
           },
+          baseUrl: 'https://example.com/cdn/module-three/1.0.1/module-three.node.js',
         },
       },
     };
     const batchModulesToUpdate = (x) => x.map((i) => [i]);
-    await expect(updateModuleRegistry({
+    const updatedRegistry = await updateModuleRegistry({
       moduleMap: newModuleMap,
       onModuleLoad,
       batchModulesToUpdate,
-    })).rejects.toThrowErrorMatchingSnapshot();
+    });
+    expect(updatedRegistry['another-module']).toBeTruthy();
+    // Since "module-three" already exists in the module map, we expect it to use the old version
+    expect(getModuleMap().toJS().modules['module-three'].node.url).toBe('https://example.com/cdn/module-three/1.0.0/module-three.node.js');
+    expect(console.error).toHaveBeenCalled();
+  });
+  it('should not throw if any of the modules fail to load - empty module map', async () => {
+    const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
+    jest.spyOn(console, 'error').mockImplementation((x) => x);
+
+    loadModule.mockImplementationOnce(mockLoadModule);
+    loadModule.mockImplementationOnce(async () => { throw new Error('Failed to load module'); });
+    resetModuleRegistry({}, {});
+    const currentModuleMap = getModuleMap().toJS();
+    const newModuleMap = {
+      ...currentModuleMap,
+      modules: {
+        ...currentModuleMap.modules,
+        'another-module': {
+          node: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.node.js',
+            integrity: '23124',
+          },
+          browser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.browser.js',
+            integrity: '346346',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js',
+            integrity: '123545',
+          },
+        },
+        'module-three': {
+          node: {
+            url: 'https://example.com/cdn/module-three/1.0.1/module-three.node.js',
+            integrity: '7747545',
+          },
+          browser: {
+            url: 'https://example.com/cdn/module-three/1.0.1/module-three.browser.js',
+            integrity: '44532345',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/module-three/1.0.1/module-three.legacy.browser.js',
+            integrity: '3534536',
+          },
+          baseUrl: 'https://example.com/cdn/module-three/1.0.1/module-three.node.js',
+        },
+      },
+    };
+    const batchModulesToUpdate = (x) => x.map((i) => [i]);
+    const updatedRegistry = await updateModuleRegistry({
+      moduleMap: newModuleMap,
+      onModuleLoad,
+      batchModulesToUpdate,
+    });
+    expect(updatedRegistry['another-module']).toBeTruthy();
+    expect(getModuleMap().toJS().modules['module-three']).toBeFalsy();
+    expect(console.error).toHaveBeenCalled();
   });
 });
 

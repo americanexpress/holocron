@@ -35,32 +35,69 @@ function defaultGetModulesToUpdate(curr, next) {
 }
 
 export default async function updateModuleRegistry({
-  moduleMap: newModuleMap,
+  moduleMap: unsanitizedModuleMap,
   onModuleLoad = () => null,
   batchModulesToUpdate = (x) => [x],
   getModulesToUpdate = defaultGetModulesToUpdate,
 }) {
   const currentModuleMap = getModuleMap().toJS();
   const modulesToUpdate = batchModulesToUpdate(
-    getModulesToUpdate(currentModuleMap.modules || {}, newModuleMap.modules)
+    getModulesToUpdate(currentModuleMap.modules || {}, unsanitizedModuleMap.modules)
   );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
-
-  let updatedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
-    const loadedModules = await acc;
-    const nextModules = await Promise.all(moduleBatch.map(
-      async (moduleName) => addHigherOrderComponent(
-        await loadModule(moduleName, newModuleMap.modules[moduleName], onModuleLoad)
-      )
+  const problemModules = [];
+  let successfullyLoadedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
+    const previouslyResolvedModules = await acc;
+    const newlyResolvedModules = await Promise.allSettled(moduleBatch.map(
+      async (moduleName) => {
+        try {
+          const loadedModule = await loadModule(
+            moduleName,
+            unsanitizedModuleMap.modules[moduleName],
+            onModuleLoad
+          );
+          return addHigherOrderComponent(loadedModule);
+        } catch (e) {
+          const brokenUrl = unsanitizedModuleMap.modules[moduleName].node.url;
+          if (currentModuleMap.modules && currentModuleMap.modules[moduleName]) {
+            const previousUrl = currentModuleMap.modules[moduleName].node.url;
+            // eslint-disable-next-line no-console
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, e);
+          } else {
+            // eslint-disable-next-line no-console
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
+          }
+          problemModules.push(moduleName);
+          return Promise.reject(e);
+        }
+      }
     ));
-    return [...loadedModules, ...nextModules];
+    const fulfilledModules = newlyResolvedModules.filter(
+      ({ status }) => status === 'fulfilled'
+    ).map(({ value }) => value);
+    return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
-  updatedModules = updatedModules.reduce((
+  successfullyLoadedModules = successfullyLoadedModules.reduce((
     acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
-  const newModules = getModules().merge(updatedModules);
+  const newModules = getModules().merge(successfullyLoadedModules);
+  // Updated modules may have less modules than flatModulesToUpdate if any modules failed to load
+  const updatedFlatMap = flatModulesToUpdate.filter(
+    (mod) => Object.keys(successfullyLoadedModules).some((updatedModule) => updatedModule === mod)
+  );
+  const sanitizedModuleMap = { ...unsanitizedModuleMap };
+  // Keep working version of modules if they are in the list of problem modules
+  problemModules.forEach((module) => {
+    if (currentModuleMap.modules) {
+      sanitizedModuleMap.modules[module] = currentModuleMap.modules[module];
+    } else {
+      // If it doesn't exist in the old module map, that means its being deployed for the first time
+      // or holocron is initializing modules for the first time. If there is an issue with the
+      // module we should exclude it from the module map entirely.
+      delete sanitizedModuleMap.modules[module];
+    }
+  });
+  resetModuleRegistry(newModules, sanitizedModuleMap);
 
-  resetModuleRegistry(newModules, newModuleMap);
-
-  return flatModulesToUpdate.reduce((
-    acc, moduleName) => ({ ...acc, [moduleName]: newModuleMap.modules[moduleName] }), {});
+  return updatedFlatMap.reduce((
+    acc, moduleName) => ({ ...acc, [moduleName]: sanitizedModuleMap.modules[moduleName] }), {});
 }
