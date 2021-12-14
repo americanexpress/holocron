@@ -68,7 +68,7 @@ export async function executeLoadingFunctions({
   // Provide componentName for error messages
   componentName,
   // Provide component instance for getting current state of component post async
-  hocInstance: { mounted, setState, loadCount },
+  hocInstance: { mounted, setStatus, loadCount },
 }) {
   try {
     // Call deprecated load function if exists
@@ -77,12 +77,12 @@ export async function executeLoadingFunctions({
     await executeLoadModuleData(loadModuleData, WrappedComponent, frozenProps);
     // Modify state only when mounted and current loadCount is less or equal than previous loadCount
     if (mounted && loadCount <= currentLoadCount) {
-      setState({ status: 'loaded' });
+      setStatus('loaded');
     }
   } catch (error) {
     console.error(`Error while attempting to call 'load' or 'loadModuleData' inside Holocron module ${componentName}.`, error);
     if (mounted) {
-      setState({ status: 'error' });
+      setStatus('error');
     }
   }
 }
@@ -98,8 +98,9 @@ export default function holocronModule({
 } = {}) {
   return function wrapWithHolocron(WrappedComponent) {
     const HolocronModuleWrapper = (props) => {
-      const [{ loadCount, status }, setState] = useState({ loadCount: 0, status: 'loading' });
+      const [status, setStatus] = useState('loading');
       const isMounted = useRef(false);
+      const loadCountRef = useRef(0);
       const prevPropsRef = useRef({});
 
       const initiateLoad = (currentLoadCount, frozenProps) => executeLoadingFunctions({
@@ -107,8 +108,8 @@ export default function holocronModule({
         WrappedComponent,
         frozenProps,
         currentLoadCount,
-        hocName: getModuleName(WrappedComponent, name),
-        hocInstance: { mounted: isMounted.current, loadCount, setState },
+        componentName: getModuleName(WrappedComponent, name),
+        hocInstance: { mounted: isMounted.current, loadCount: loadCountRef.current, setStatus },
       });
 
       if (
@@ -116,9 +117,9 @@ export default function holocronModule({
         && typeof shouldModuleReload === 'function'
         && shouldModuleReload(prevPropsRef.current, props)
       ) {
-        const newLoadCount = loadCount + 1;
-        setState((prevState) => ({ ...prevState, loadCount: newLoadCount, status: 'loading' }));
-        initiateLoad(newLoadCount, props);
+        loadCountRef.current += 1;
+        setStatus('loading');
+        initiateLoad(loadCountRef.current, props);
       }
 
       prevPropsRef.current = props;

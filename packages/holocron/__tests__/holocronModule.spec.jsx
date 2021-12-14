@@ -64,7 +64,7 @@ describe('holocronModule', () => {
       load: fakeLoad,
     };
     fakeInstance = {
-      setState: fakeSetState,
+      setStatus: fakeSetState,
       mounted: true,
       loadCount: 0,
     };
@@ -105,7 +105,7 @@ describe('holocronModule', () => {
   });
 
   describe('executeLoadingFunctions', () => {
-    it('should call setState with success', async () => {
+    it('should call setStatus with success', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
@@ -115,10 +115,10 @@ describe('holocronModule', () => {
         componentName: 'FakeComponent',
         hocInstance: { ...fakeInstance },
       });
-      expect(fakeSetState).toHaveBeenCalledWith({ status: 'loaded' });
+      expect(fakeSetState).toHaveBeenCalledWith('loaded');
     });
 
-    it('should not call setState if over loadCount', async () => {
+    it('should not call setStatus if over loadCount', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
@@ -135,7 +135,7 @@ describe('holocronModule', () => {
       expect(fakeSetState).not.toHaveBeenCalled();
     });
 
-    it('should call setState with error on failure', async () => {
+    it('should call setStatus with error on failure', async () => {
       expect.assertions(1);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
@@ -148,10 +148,10 @@ describe('holocronModule', () => {
         componentName: 'FakeComponent',
         hocInstance: { ...fakeInstance },
       });
-      expect(fakeSetState).toHaveBeenCalledWith({ status: 'error' });
+      expect(fakeSetState).toHaveBeenCalledWith('error');
     });
 
-    it('should not call setState if unmounted on failure', async () => {
+    it('should not call setStatus if unmounted on failure', async () => {
       expect.assertions(2);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
@@ -362,7 +362,7 @@ describe('holocronModule', () => {
     wrapper.unmount();
   });
 
-  it('should not try to setState if it is not mounted', () => {
+  it('should not try to setStatus if it is not mounted', () => {
     // TODO: actually test this when we update jest and start using enzyme and we can unmount
   });
 
