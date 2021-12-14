@@ -105,7 +105,7 @@ describe('holocronModule', () => {
   });
 
   describe('executeLoadingFunctions', () => {
-    it('should call setStatus with success', async () => {
+    it('should call setStatus with loaded', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
