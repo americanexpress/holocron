@@ -12,7 +12,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -64,11 +64,11 @@ export async function executeLoadingFunctions({
   // Frozen props as of when called
   frozenProps,
   // Provide loadCount to limit state changes
-  loadCount,
+  currentLoadCount,
   // Provide componentName for error messages
   componentName,
   // Provide component instance for getting current state of component post async
-  hocInstance,
+  hocInstance: { mounted, setStatus, loadCount },
 }) {
   try {
     // Call deprecated load function if exists
@@ -76,13 +76,13 @@ export async function executeLoadingFunctions({
     // Call loadModuleData if it exists
     await executeLoadModuleData(loadModuleData, WrappedComponent, frozenProps);
     // Modify state only when mounted and current loadCount is less or equal than previous loadCount
-    if (hocInstance.mounted && hocInstance.state.loadCount <= loadCount) {
-      hocInstance.setState({ status: 'loaded' });
+    if (mounted && loadCount <= currentLoadCount) {
+      setStatus('loaded');
     }
   } catch (error) {
     console.error(`Error while attempting to call 'load' or 'loadModuleData' inside Holocron module ${componentName}.`, error);
-    if (hocInstance.mounted) {
-      hocInstance.setState({ status: 'error' });
+    if (mounted) {
+      setStatus('error');
     }
   }
 }
@@ -97,57 +97,45 @@ export default function holocronModule({
   options = {},
 } = {}) {
   return function wrapWithHolocron(WrappedComponent) {
-    class HolocronModuleWrapper extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          loadCount: 0,
-          status: 'loading',
+    const HolocronModuleWrapper = (props) => {
+      const [status, setStatus] = useState('loading');
+      const isMounted = useRef(false);
+      const loadCountRef = useRef(0);
+      const prevPropsRef = useRef({});
+
+      const initiateLoad = (currentLoadCount, frozenProps) => executeLoadingFunctions({
+        loadModuleData,
+        WrappedComponent,
+        frozenProps,
+        currentLoadCount,
+        componentName: getModuleName(WrappedComponent, name),
+        hocInstance: { mounted: isMounted.current, loadCount: loadCountRef.current, setStatus },
+      });
+
+      if (
+        Object.keys(prevPropsRef.current).length > 0
+        && typeof shouldModuleReload === 'function'
+        && shouldModuleReload(prevPropsRef.current, props)
+      ) {
+        loadCountRef.current += 1;
+        setStatus('loading');
+        initiateLoad(loadCountRef.current, props);
+      }
+
+      prevPropsRef.current = props;
+
+      React.useEffect(() => {
+        isMounted.current = true;
+        initiateLoad(0, props);
+
+        return () => {
+          isMounted.current = false;
         };
-        this.mounted = false;
-      }
+      }, []);
 
-      componentDidMount() {
-        this.mounted = true;
-        this.initiateLoad(0, this.props);
-      }
-
-      // ignoring to support deprecated componentWillReceiveProps.
-      // This needs to be removed to support React17
-      // eslint-disable-next-line camelcase
-      UNSAFE_componentWillReceiveProps(nextProps) {
-        const { loadCount } = this.state;
-        const { props } = this;
-        if (shouldModuleReload && shouldModuleReload(props, nextProps)) {
-          const newLoadCount = loadCount + 1;
-          this.setState({ status: 'loading', loadCount: newLoadCount });
-          this.initiateLoad(newLoadCount, nextProps);
-        }
-      }
-
-      // Ignoring as internal state cannot be checked when unmounted.
-      /* istanbul ignore next */
-      componentWillUnmount() {
-        this.mounted = false;
-      }
-
-      initiateLoad(loadCount, frozenProps) {
-        return executeLoadingFunctions({
-          loadModuleData,
-          WrappedComponent,
-          frozenProps,
-          loadCount,
-          hocName: getModuleName(WrappedComponent, name),
-          hocInstance: this,
-        });
-      }
-
-      render() {
-        const { status } = this.state;
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        return <WrappedComponent {...this.props} moduleLoadStatus={status} />;
-      }
-    }
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      return <WrappedComponent {...props} moduleLoadStatus={status} />;
+    };
 
     HolocronModuleWrapper.propTypes = {
       load: PropTypes.func,

@@ -21,6 +21,7 @@ import { Provider, connect } from 'react-redux';
 import { fromJS } from 'immutable';
 import renderer from 'react-test-renderer';
 import _ from 'lodash';
+import { mount } from 'enzyme';
 
 import holocronModule, {
   executeLoad,
@@ -63,16 +64,15 @@ describe('holocronModule', () => {
       load: fakeLoad,
     };
     fakeInstance = {
-      setState: fakeSetState,
+      setStatus: fakeSetState,
       mounted: true,
-      state: {
-        loadCount: 0,
-      },
+      loadCount: 0,
     };
   });
   afterEach(() => {
     global.BROWSER = false;
   });
+  const TestComponent = ({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>;
 
   describe('executeLoad', () => {
     it('should return undefined with no args', () => {
@@ -105,20 +105,20 @@ describe('holocronModule', () => {
   });
 
   describe('executeLoadingFunctions', () => {
-    it('should call setState with success', async () => {
+    it('should call setStatus with loaded', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
         frozenProps: fakeProps,
-        loadCount: 0,
+        currentLoadCount: 0,
         componentName: 'FakeComponent',
-        hocInstance: fakeInstance,
+        hocInstance: { ...fakeInstance },
       });
-      expect(fakeSetState).toHaveBeenCalledWith({ status: 'loaded' });
+      expect(fakeSetState).toHaveBeenCalledWith('loaded');
     });
 
-    it('should not call setState if over loadCount', async () => {
+    it('should not call setStatus if over loadCount', async () => {
       expect.assertions(1);
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
@@ -129,15 +129,13 @@ describe('holocronModule', () => {
         hocInstance: {
           ...fakeInstance,
           mounted: false,
-          state: {
-            loadCount: 9999,
-          },
+          loadCount: 9999,
         },
       });
       expect(fakeSetState).not.toHaveBeenCalled();
     });
 
-    it('should call setState with error on failure', async () => {
+    it('should call setStatus with error on failure', async () => {
       expect.assertions(1);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
@@ -146,14 +144,14 @@ describe('holocronModule', () => {
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
         frozenProps: fakeProps,
-        loadCount: 0,
+        currentLoadCount: 0,
         componentName: 'FakeComponent',
-        hocInstance: fakeInstance,
+        hocInstance: { ...fakeInstance },
       });
-      expect(fakeSetState).toHaveBeenCalledWith({ status: 'error' });
+      expect(fakeSetState).toHaveBeenCalledWith('error');
     });
 
-    it('should not call setState if unmounted on failure', async () => {
+    it('should not call setStatus if unmounted on failure', async () => {
       expect.assertions(2);
       fakeLoadModuleData = () => {
         throw new Error('Failed');
@@ -162,7 +160,7 @@ describe('holocronModule', () => {
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
         frozenProps: fakeProps,
-        loadCount: 0,
+        currentLoadCount: 0,
         componentName: 'FakeComponent',
         hocInstance: {
           ...fakeInstance,
@@ -218,7 +216,7 @@ describe('holocronModule', () => {
     expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should dispatch the module\'s load action on componentDidMount with no preloaded state', () => {
+  it('should dispatch the module\'s load action on when component mount\'s with no preloaded state', () => {
     const load = jest.fn(() => () => Promise.resolve());
     const Module = holocronModule({
       name: 'mock-module',
@@ -226,12 +224,13 @@ describe('holocronModule', () => {
     })(() => <div>Mock Module</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
     const props = { a: 'b', x: { y: 'z' } };
-    renderer.create(
+    mount(
       <Provider store={mockStore}>
         <Module {...props} />
       </Provider>
     );
     // couldn't use toHaveBeenCalledWith because mapDispatchToProps is used
+
     const calledProps = load.mock.calls[0][0];
     const calledPropsWithoutFunctions = _.pickBy(calledProps, (p) => typeof p !== 'function');
     expect(calledPropsWithoutFunctions).toEqual(props);
@@ -250,7 +249,7 @@ describe('holocronModule', () => {
       { someParam: 'initial' },
       applyMiddleware(thunk)
     );
-    renderer.create(
+    mount(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -272,7 +271,7 @@ describe('holocronModule', () => {
       shouldModuleReload: (currProps, nextProps) => currProps.someParam !== nextProps.someParam,
     })(() => <div>Mock Module</div>));
     const mockStore = createStore((state, action) => (action.type === 'MOCK_ACTION_TYPE' ? action.newState : state), { someParam: 'initial' });
-    renderer.create(
+    mount(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -290,7 +289,7 @@ describe('holocronModule', () => {
       load,
     })(() => <div>Mock Module</div>));
     const mockStore = createStore((state, action) => (action.type === 'MOCK_ACTION_TYPE' ? action.newState : state), { someParam: 'initial' });
-    renderer.create(
+    mount(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -301,36 +300,36 @@ describe('holocronModule', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as loading when loading', () => {
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
+    })(TestComponent);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
-    const tree = renderer.create(
+
+    const wrapper = mount(
       <Provider store={mockStore}>
         <Module />
       </Provider>
     );
 
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual('loading');
   });
 
-  // TODO: use enzyme to assert correct props, need to update version of jest first
   it('should pass the moduleLoadStatus prop as loaded when loaded', async () => {
     const loadPromise = Promise.resolve();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
+    })(TestComponent);
     const mockStore = createStore(
       (state) => state, applyMiddleware(thunk.withExtraArgument({ fetchClient: jest.fn() }))
     );
-    const tree = renderer.create(
+
+    const wrapper = mount(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -339,34 +338,31 @@ describe('holocronModule', () => {
     // Wait one cycle of the event loop since we can't retrieve a promise from initiateLoad
     await sleep(1);
 
-    return loadPromise
-      .then(() => {
-        expect(tree.toJSON()).toMatchSnapshot();
-      });
+    wrapper.update();
+    expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual('loaded');
   });
 
-  // TODO: use enzyme to assert correct props, need to update version of jest first
-  it('should pass the moduleLoadStatus prop as error when it failed to load', () => {
+  it('should pass the moduleLoadStatus prop as error when it failed to load', async () => {
     const loadPromise = Promise.reject();
     const load = jest.fn(() => () => loadPromise);
     const Module = holocronModule({
       name: 'mock-module',
       load,
-    })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
+    })(TestComponent);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
-    const tree = renderer.create(
+
+    const wrapper = mount(
       <Provider store={mockStore}>
         <Module />
       </Provider>
     );
-
-    return loadPromise
-      .catch(() => {
-        expect(tree.toJSON()).toMatchSnapshot();
-      });
+    await sleep(1);
+    wrapper.update();
+    expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual('error');
+    wrapper.unmount();
   });
 
-  it('should not try to setState if it is not mounted', () => {
+  it('should not try to setStatus if it is not mounted', () => {
     // TODO: actually test this when we update jest and start using enzyme and we can unmount
   });
 
