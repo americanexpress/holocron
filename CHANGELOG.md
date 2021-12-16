@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/americanexpress/holocron/compare/v1.1.5...v1.2.0) (2021-12-16)
+
+
+### Bug Fixes
+
+* **externals:** mismatched externals caused one-app to fail to start ([#90](https://github.com/americanexpress/holocron/issues/90)) ([fe49f8c](https://github.com/americanexpress/holocron/commit/fe49f8cf82d7e00dd9fac925cd61d23240d92469))
+
+
+
+
+
 ## [1.1.5](https://github.com/americanexpress/holocron/compare/v1.1.1...v1.1.5) (2021-12-02)
 
 
