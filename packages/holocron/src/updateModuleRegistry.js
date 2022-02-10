@@ -77,13 +77,15 @@ export default async function updateModuleRegistry({
     ).map(({ value }) => value);
     return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
-  successfullyLoadedModules = successfullyLoadedModules.reduce((
-    acc, module, i) => ({ ...acc, [flatModulesToUpdate[i]]: module }), {});
-  const newModules = getModules().merge(successfullyLoadedModules);
-  // Updated modules may have less modules than flatModulesToUpdate if any modules failed to load
-  const updatedFlatMap = flatModulesToUpdate.filter(
-    (mod) => Object.keys(successfullyLoadedModules).some((updatedModule) => updatedModule === mod)
+  const updatedFlatMap = flatModulesToUpdate.filter((mod) => !problemModules.includes(mod));
+  successfullyLoadedModules = successfullyLoadedModules.reduce(
+    (acc, module, i) => ({
+      ...acc,
+      [updatedFlatMap[i]]: module,
+    }),
+    {}
   );
+  const newModules = getModules().merge(successfullyLoadedModules);
   const sanitizedModuleMap = { ...unsanitizedModuleMap };
   // Keep working version of modules if they are in the list of problem modules
   problemModules.forEach((module) => {
@@ -97,7 +99,6 @@ export default async function updateModuleRegistry({
     }
   });
   resetModuleRegistry(newModules, sanitizedModuleMap);
-
   return updatedFlatMap.reduce((
     acc, moduleName) => ({ ...acc, [moduleName]: sanitizedModuleMap.modules[moduleName] }), {});
 }
