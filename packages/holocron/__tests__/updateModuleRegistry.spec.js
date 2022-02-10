@@ -524,6 +524,20 @@ describe('updateModuleRegistry', () => {
           },
           baseUrl: 'https://example.com/cdn/module-three/1.0.1/module-three.node.js',
         },
+        'good-module': {
+          node: {
+            url: 'https://example.com/cdn/good-module/2.5.6/good-module.js',
+            integrity: '1111122222',
+          },
+          browser: {
+            url: 'https://example.com/cdn/good-module/2.5.6/good-module.browser.js',
+            integrity: '1111122222333',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/good-module/2.5.6/good-module.legacy.browser.js',
+            integrity: '333332222111',
+          },
+        },
       },
     };
     const batchModulesToUpdate = (x) => x.map((i) => [i]);
@@ -533,6 +547,10 @@ describe('updateModuleRegistry', () => {
       batchModulesToUpdate,
     });
     expect(updatedRegistry['another-module']).toBeTruthy();
+    expect(updatedRegistry['module-three']).toBeFalsy();
+    expect(updatedRegistry['good-module']).toBeTruthy();
+    // Ensure the new module "good" module gets added even though bad module was in the same update
+    expect(getModules().toJS()['good-module']).toBeTruthy();
     // Since "module-three" already exists in the module map, we expect it to use the old version
     expect(getModuleMap().toJS().modules['module-three'].node.url).toBe('https://example.com/cdn/module-three/1.0.0/module-three.node.js');
     expect(console.error).toHaveBeenCalled();
