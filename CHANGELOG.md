@@ -8,7 +8,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* **externals:** mismatched externals caused one-app to fail to start ([#90](https://github.com/americanexpress/holocron/issues/90)) ([fe49f8c](https://github.com/americanexpress/holocron/commit/fe49f8cf82d7e00dd9fac925cd61d23240d92469))
 * **updateModuleRegistry:** flatModuleMap contained problem modules ([#95](https://github.com/americanexpress/holocron/issues/95)) ([e7e29be](https://github.com/americanexpress/holocron/commit/e7e29be6549ecf42562d3c53f764fbfbf170befe))
 
 
