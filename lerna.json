@@ -6,7 +6,7 @@
   "command": {
     "version": {
       "conventionalCommits": true,
-      "allowBranch": "chore/release-*",
+      "allowBranch": ["main", "chore/release-*"],
       "message": "chore(release): %v"
     }
   }
