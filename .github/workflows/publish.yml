@@ -1,11 +1,8 @@
-name: Release
+name: Manually Publish
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
 jobs:
-  checkCommit:
+  info:
     name: Check commit
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -14,9 +11,9 @@ jobs:
       run: echo "::set-output name=message::${{ github.event.head_commit.message }}"
     outputs:
       commitMsg: ${{ steps.commit.outputs.message }}
-  release:
-    name: Release
-    needs: [checkCommit]
+  publish:
+    name: Publish
+    needs: [info]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,20 +21,22 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Setup node
+          ref: main
+      - name: Node Install
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
-      - name: Install yarn
-        run: |-
-         NODE_ENV=development yarn
-      - name: Test packages
+          node-version: '16'
+      - name: Installing Packages
+        env:
+          NODE_ENV: development
+        run: yarn install --frozen-lockfile
+      - name: Testing Packages
         run: yarn test
-      - name: Release packages
+      - name: Releasing Packages
         env:
           NODE_ENV: production
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
         run: |-
           echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
-          yarn lerna:deploy -- "${{ needs.checkCommit.outputs.commitMsg }}"
+          yarn lerna:publish
