@@ -31,3 +31,7 @@ workflow:
 # Add 'github-template' label to any changes in .github/ISSUE_TEMPLATE
 github-template:
   - .github/ISSUE_TEMPLATE/*
+
+# Add one app team review label to any pull requests
+one-app-team-review-requested:
+  - '*'
