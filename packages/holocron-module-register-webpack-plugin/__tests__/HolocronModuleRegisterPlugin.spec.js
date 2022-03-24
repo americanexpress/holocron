@@ -25,7 +25,7 @@ const HolocronModuleRegisterPlugin = require('../HolocronModuleRegisterPlugin');
 const fixturesPath = path.join(__dirname, '../__fixtures__');
 const buildPath = path.join(fixturesPath, 'build');
 
-const webpackOptions = {
+let webpackOptions = {
   entry: path.join(fixturesPath, 'SomeModule.js'),
   output: {
     path: buildPath,
@@ -52,7 +52,7 @@ describe('HolocronModuleRegisterPlugin', () => {
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.startsWith('(function() {')).toBe(true);
       expect(fileContents).toContain('const SomeModule = () => null;');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
+      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModuleName);})();')).toBe(true);
       done();
     });
   });
@@ -74,7 +74,7 @@ describe('HolocronModuleRegisterPlugin', () => {
       if (stats.hasErrors()) done.fail(stats.toJson().errors);
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents).toContain('()=>null');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModule);')).toBe(true);
+      expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModuleName);')).toBe(true);
       done();
     });
   });
@@ -98,10 +98,36 @@ describe('HolocronModuleRegisterPlugin', () => {
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.startsWith('(function() {')).toBe(true);
       expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
+      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModuleName);})();')).toBe(true);
       const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
       expect(asyncChunkContents).toContain('() => \'Hello, world\'');
       expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');
+      done();
+    });
+  });
+
+  it('should registerModule with provided `moduleName` and `holocronModuleName`', (done) => {
+    expect.assertions(1);
+    const outputFileName = 'webpack-test-output-async.js';
+    const moduleName = 'some-module';
+    const holocronModuleName = `holocronModule-${moduleName}`;
+    webpackOptions = {
+      ...webpackOptions,
+      plugins: [new HolocronModuleRegisterPlugin(moduleName, holocronModuleName)],
+    };
+    const options = merge(webpackOptions, {
+      mode: 'development',
+      entry: path.join(fixturesPath, 'ModuleWithAsyncImport.js'),
+      output: {
+        filename: outputFileName,
+      },
+    });
+
+    webpack(options, (err, stats) => {
+      if (err) done.fail(err);
+      if (stats.hasErrors()) done.fail(stats.toJson().errors);
+      const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
+      expect(fileContents.endsWith(`Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`)).toBe(true);
       done();
     });
   });
