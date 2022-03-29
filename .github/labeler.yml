@@ -1,3 +1,7 @@
+# Add one app team review label to any pull requests
+one-app-team-review-requested:
+  - *
+  
 # Add 'holocron' label to any file changes in the holocron package
 holocron:
   - packages/holocron/*
@@ -31,7 +35,3 @@ workflow:
 # Add 'github-template' label to any changes in .github/ISSUE_TEMPLATE
 github-template:
   - .github/ISSUE_TEMPLATE/*
-
-# Add one app team review label to any pull requests
-one-app-team-review-requested:
-  - '*'
