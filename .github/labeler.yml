@@ -1,6 +1,6 @@
 # Add one app team review label to any pull requests
 one-app-team-review-requested:
-  - *
+  - '*'
   
 # Add 'holocron' label to any file changes in the holocron package
 holocron:
