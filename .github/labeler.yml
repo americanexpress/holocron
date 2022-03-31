@@ -32,6 +32,6 @@ workflow:
 github-template:
   - .github/ISSUE_TEMPLATE/*
 
-# Add one app team review label to any pull requests
+# Add one app team review label to any pull requests im getting tired of this 
 one-app-team-review-requested:
   - /**/*
