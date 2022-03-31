@@ -16,6 +16,7 @@
  * Check the versions of node & npm against the package.json "engines" list
  * as this might run on node@0.12.x please don't use ES6
  */
+
 // ES6 features
 /* eslint-disable prefer-arrow-callback, prefer-template */
 
