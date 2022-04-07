@@ -20,8 +20,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          persist-credentials: false
-          ref: main
+          token: ${{ secrets.PA_TOKEN }}
       - name: Node Install
         uses: actions/setup-node@v1
         with:
@@ -38,5 +37,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
         run: |-
+          git config user.name "${{ secrets.GIT_AUTHOR_NAME }}"
+          git config user.email "${{ secrets.GIT_AUTHOR_EMAIL }}"
           echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
           yarn lerna:publish
