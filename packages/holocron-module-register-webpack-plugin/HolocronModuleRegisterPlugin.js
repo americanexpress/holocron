@@ -15,14 +15,15 @@
 const { ConcatSource } = require('webpack-sources');
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 
-function HolocronModuleRegisterPlugin(moduleName) {
+function HolocronModuleRegisterPlugin(moduleName, holocronModuleName = 'holocronModuleName') {
   this.moduleName = moduleName;
+  this.holocronModuleName = holocronModuleName;
   this.options = {};
 }
 module.exports = HolocronModuleRegisterPlugin;
 
 HolocronModuleRegisterPlugin.prototype.apply = function apply(compiler) {
-  const { moduleName, options } = this;
+  const { moduleName, holocronModuleName, options } = this;
   compiler.hooks.compilation.tap('HolocronModuleRegisterPlugin', (compilation) => {
     compilation.hooks.optimizeChunkAssets.tapAsync('HolocronModuleRegisterPlugin', (chunks, callback) => {
       chunks.forEach((chunk) => {
@@ -36,7 +37,7 @@ HolocronModuleRegisterPlugin.prototype.apply = function apply(compiler) {
               '\n',
               compilation.assets[file],
               '\n',
-              `Holocron.registerModule("${moduleName}", holocronModule);})();`
+              `Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`
             );
           });
       });
