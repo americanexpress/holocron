@@ -25,7 +25,7 @@ const HolocronModuleRegisterPlugin = require('../HolocronModuleRegisterPlugin');
 const fixturesPath = path.join(__dirname, '../__fixtures__');
 const buildPath = path.join(fixturesPath, 'build');
 
-let webpackOptions = {
+const webpackOptions = {
   entry: path.join(fixturesPath, 'SomeModule.js'),
   output: {
     path: buildPath,
@@ -111,11 +111,11 @@ describe('HolocronModuleRegisterPlugin', () => {
     const outputFileName = 'webpack-test-output-async.js';
     const moduleName = 'some-module';
     const holocronModuleName = `holocronModule-${moduleName}`;
-    webpackOptions = {
+    const webpackOptionsWithPlugins = {
       ...webpackOptions,
       plugins: [new HolocronModuleRegisterPlugin(moduleName, holocronModuleName)],
     };
-    const options = merge(webpackOptions, {
+    const options = merge(webpackOptionsWithPlugins, {
       mode: 'development',
       entry: path.join(fixturesPath, 'ModuleWithAsyncImport.js'),
       output: {
