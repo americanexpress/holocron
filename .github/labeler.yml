@@ -34,4 +34,4 @@ github-template:
 
 # Add one app team review label to any pull requests
 one-app-team-review-requested:
-  - '*'
+  - '**/*'
