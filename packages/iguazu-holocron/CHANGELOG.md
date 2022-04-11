@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/americanexpress/holocron/compare/v1.2.1...v1.2.2) (2022-04-11)
+
+**Note:** Version bump only for package iguazu-holocron
+
+
+
+
+
 ## [1.2.1](https://github.com/americanexpress/holocron/compare/v1.1.5...v1.2.1) (2022-02-10)
 
 **Note:** Version bump only for package iguazu-holocron
