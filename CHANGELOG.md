@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/americanexpress/holocron/compare/v1.2.1...v1.2.2) (2022-04-11)
+
+
+### Bug Fixes
+
+* **labeler-workflow:** proper globing ([#119](https://github.com/americanexpress/holocron/issues/119)) ([6b71f71](https://github.com/americanexpress/holocron/commit/6b71f7165308e81e813bb5977e74ca118af1e421))
+* **lazy-loading:** fixed webpack filename clashing issue ([#104](https://github.com/americanexpress/holocron/issues/104)) ([fa84f13](https://github.com/americanexpress/holocron/commit/fa84f133886a2ae5bf7f185505e86a059e9ab948))
+* **release:** addressed PR comments ([45d0c12](https://github.com/americanexpress/holocron/commit/45d0c1231c9dc355560def8e1ba0f128d5c6edb0))
+
+
+
+
+
 ## [1.2.1](https://github.com/americanexpress/holocron/compare/v1.1.5...v1.2.1) (2022-02-10)
 
 

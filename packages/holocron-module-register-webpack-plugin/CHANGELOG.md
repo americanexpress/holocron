@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/americanexpress/holocron/compare/v1.2.1...v1.2.2) (2022-04-11)
+
+
+### Bug Fixes
+
+* **lazy-loading:** fixed webpack filename clashing issue ([#104](https://github.com/americanexpress/holocron/issues/104)) ([fa84f13](https://github.com/americanexpress/holocron/commit/fa84f133886a2ae5bf7f185505e86a059e9ab948))
+
+
+
+
+
 ## [1.2.1](https://github.com/americanexpress/holocron/compare/v1.1.5...v1.2.1) (2022-02-10)
 
 **Note:** Version bump only for package holocron-module-register-webpack-plugin
