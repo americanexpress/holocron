@@ -52,7 +52,7 @@ describe('HolocronModuleRegisterPlugin', () => {
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.startsWith('(function() {')).toBe(true);
       expect(fileContents).toContain('const SomeModule = () => null;');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModuleName);})();')).toBe(true);
+      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
       done();
     });
   });
@@ -74,7 +74,7 @@ describe('HolocronModuleRegisterPlugin', () => {
       if (stats.hasErrors()) done.fail(stats.toJson().errors);
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents).toContain('()=>null');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModuleName);')).toBe(true);
+      expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModule);')).toBe(true);
       done();
     });
   });
@@ -98,7 +98,7 @@ describe('HolocronModuleRegisterPlugin', () => {
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.startsWith('(function() {')).toBe(true);
       expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModuleName);})();')).toBe(true);
+      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
       const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
       expect(asyncChunkContents).toContain('() => \'Hello, world\'');
       expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');
