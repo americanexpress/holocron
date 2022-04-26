@@ -15,7 +15,7 @@
 const { ConcatSource } = require('webpack-sources');
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 
-function HolocronModuleRegisterPlugin(moduleName, holocronModuleName = 'holocronModuleName') {
+function HolocronModuleRegisterPlugin(moduleName, holocronModuleName = 'holocronModule') {
   this.moduleName = moduleName;
   this.holocronModuleName = holocronModuleName;
   this.options = {};

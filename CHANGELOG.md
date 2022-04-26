@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.3](https://github.com/americanexpress/holocron/compare/v1.2.2...v1.2.3) (2022-04-13)
+
+
+### Bug Fixes
+
+* **ModuleName:** use correct default for old bundler ([#123](https://github.com/americanexpress/holocron/issues/123)) ([f694c0e](https://github.com/americanexpress/holocron/commit/f694c0ec2f1c89d5491e9e4a2c1bcc5cb65ab8fc))
+
+
+
+
+
 ## [1.2.2](https://github.com/americanexpress/holocron/compare/v1.2.1...v1.2.2) (2022-04-11)
 
 
