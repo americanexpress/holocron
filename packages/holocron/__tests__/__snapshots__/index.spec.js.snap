@@ -6,6 +6,7 @@ Object {
   "composeModules": [Function],
   "createHolocronStore": [Function],
   "failedToLoad": [Function],
+  "forceLoadModule": [Function],
   "getLoadError": [Function],
   "getLoadingPromise": [Function],
   "getModule": [Function],
