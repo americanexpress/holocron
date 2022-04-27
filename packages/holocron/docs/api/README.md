@@ -633,8 +633,8 @@ This function can allow a browser to re-fetch a module directly, without requiri
 
 | name | type | required | value |
 |---|---|---|---|
-| `moduleName` | `string` | `true` | The name of the module to try to reload |
-| `moduleData` | `object` | `true` | The moduleData object that stores the url, and integrity for all modules |
+| `moduleName` | `String` | `true` | The name of the module to try to reload |
+| `moduleData` | `Object` | `true` | The URLs and integrity values for all the module |
 
 
 ##### Usage
