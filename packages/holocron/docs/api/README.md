@@ -623,9 +623,9 @@ These functions are exposed to allow more advanced uses of Holocron.
 
 #### `forceLoadModule`
 
-Re-loads a modules source code, re-injects it into the page, and return its top level export.
+Reloads a modules source code, reinjects it into the page, and return its top level export.
 
-This function can allow a browser to re-fetch a module directly, without requiring a page load.
+This function can allow a browser to refetch a module directly, without requiring a page load.
 
 > Note: you should not need to call this function yourself to load modules into the browser under most use cases. Instead, use the duck `loadModule`.
 
