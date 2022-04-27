@@ -646,6 +646,7 @@ import { forceLoadModule, getModuleMap } from 'holocron';
 
 export const MyComponent = (props) => {
   const [LoadedModule, setLoadedModule] = React.useState(null);
+
   React.useEffect(async () => {
     const moduleData = getModuleMap().getIn(['modules', moduleName]);
     const MyModule = await forceLoadModule('my-module', moduleData);
