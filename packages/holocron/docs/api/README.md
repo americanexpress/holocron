@@ -31,6 +31,8 @@ available on the server. We have organized them as such.
   - [`getLoadError`](#getLoadError)
   - [`isLoading`](#isloading)
   - [`getLoadingPromise`](#getloadingpromise)
+- [Advanced Functions](#advanced-functions)
+  - [`forceLoadModule`](#forceloadmodule)
 
 ### App-level Functions
 
@@ -609,6 +611,53 @@ const getModulesToUpdate = (
   !areModuleEntriesEqual(curr[moduleName], next[moduleName])
         || someOtherLogic(moduleName))
 );
+```
+
+<!--ONE-DOCS-ID end-->
+
+### Advanced Functions
+
+These functions are exposed to allow more advanced uses of Holocron.
+
+<!--ONE-DOCS-ID id="forceLoadModule" start-->
+
+#### `forceLoadModule`
+
+Reloads a modules source code, reinjects it into the page, and return its top level export.
+
+This function can allow a browser to refetch a module directly, without requiring a page load.
+
+> Note: you should not need to call this function yourself to load modules into the browser under most use cases. Instead, use the duck `loadModule`.
+
+##### Arguments
+
+| name | type | required | value |
+|---|---|---|---|
+| `moduleName` | `String` | `true` | The name of the module to try to reload |
+| `moduleData` | `Object` | `true` | The URLs and integrity values for all the module |
+
+
+##### Usage
+
+Directly load a fresh instance of a module. Note: Under normal use cases, use RenderModule to render a module in JSX.
+
+```js
+import { forceLoadModule, getModuleMap } from 'holocron';
+
+export const MyComponent = (props) => {
+  const [LoadedModule, setLoadedModule] = React.useState(null);
+
+  React.useEffect(async () => {
+    const moduleData = getModuleMap().getIn(['modules', 'my-module']);
+    const MyModule = await forceLoadModule('my-module', moduleData);
+    setLoadedModule(MyModule);
+  })
+  
+  return LoadedModule || (
+    <LoadedModule {...props} />
+  );
+}
+
 ```
 
 <!--ONE-DOCS-ID end-->
