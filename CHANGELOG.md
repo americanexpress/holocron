@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/americanexpress/holocron/compare/v1.2.3...v1.3.0) (2022-06-07)
+
+
+### Features
+
+* **forceLoadModule:** expose loadModule function for browsers ([#124](https://github.com/americanexpress/holocron/issues/124)) ([2d0fee6](https://github.com/americanexpress/holocron/commit/2d0fee60633eca1a604f9f9dd11da2ca1d0d964d))
+
+
+
+
+
 ## [1.2.3](https://github.com/americanexpress/holocron/compare/v1.2.2...v1.2.3) (2022-04-13)
 
 
