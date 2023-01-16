@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 American Express Travel Related Services Company, Inc.
+ * Copyright 2023 American Express Travel Related Services Company, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -27,7 +27,6 @@ import requireFromString from 'require-from-string';
  * @param {number} options.maxSockets limit of sockets
  * @param {(url: string) => boolean} options.isInBlockList checks if asset url is in block list
  * @param {(url: string) => void} options.addToBlockList adds asset url into block list
- * @returns 
  */
 const createLoader = ({
   context,
@@ -40,7 +39,7 @@ const createLoader = ({
 
   /**
    * Module Map data
-   * @typedef {Object} ModuleMapData 
+   * @typedef {Object} ModuleMapData
    * @property {string} url
    * @property {string} integrity
    */
@@ -48,14 +47,13 @@ const createLoader = ({
   /**
    * module-map.json type
    * @typedef {Object} ModuleMap
-   * @property {ModuleMapData} node 
-   * @property {ModuleMapData} browser 
+   * @property {ModuleMapData} node
+   * @property {ModuleMapData} browser
    */
-
 
   /**
    * fetches assets (e.g. module, external)
-   * @param {string} assetUrl 
+   * @param {string} assetUrl
    * @returns {Promise<Response>}
    */
   function fetchAssetContent(assetUrl) {
@@ -88,7 +86,7 @@ const createLoader = ({
 
   /**
    * checks response status and throws error
-   * @param {Response} response 
+   * @param {Response} response
    */
   function checkStatusAndMaybeThrowError(response) {
     if (response.status < 200 || response.status >= 300) {
@@ -99,15 +97,15 @@ const createLoader = ({
   }
 
   /**
-   * @callback OnLoad 
-   * @param {{ assetName: string, asset: any }} data 
+   * @callback OnLoad
+   * @param {{ assetName: string, asset: any }} data
    */
 
   /**
    * Loads a Module
-   * @param {string} assetName 
-   * @param {ModuleMap} moduleMap 
-   * @param {OnLoad} onLoad 
+   * @param {string} assetName
+   * @param {ModuleMap} moduleMap
+   * @param {OnLoad} onLoad
    */
   async function loader(
     assetName,
@@ -162,7 +160,7 @@ const createLoader = ({
     }
   }
 
-  return loader
-}
+  return loader;
+};
 
-export default createLoader
+export default createLoader;

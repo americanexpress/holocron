@@ -30,9 +30,9 @@ function getExternalBlockList() {
   return externalBlockList;
 }
 
-function registerExternal(externalName, external) {
-  externals = externals.set(externalName, addHigherOrderComponent(external));
-}
+// function registerExternal(externalName, external) {
+//   externals = externals.set(externalName, addHigherOrderComponent(external));
+// }
 
 function getExternal(externalName, altExternals) {
   if (altExternals) {
@@ -63,7 +63,7 @@ export {
   addToExternalBlockList,
   isExternalInBlockList,
   getExternalBlockList,
-  registerExternal,
+  // registerExternal,
   getExternal,
   getExternals,
   getExternalMap,

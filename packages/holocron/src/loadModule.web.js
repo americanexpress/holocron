@@ -12,55 +12,15 @@
  * under the License.
  */
 
+import createLoader from './loader.web';
 import { getModule, getModuleMap } from './moduleRegistry';
 
-// Ignoring this for now because it does nothing
-/* istanbul ignore next */
-function onScriptComplete() {
-  // Do nothing for now
-}
+export default createLoader({
+  context: 'module',
+  getAsset: getModule,
+  clientCacheRevision: () => {
+    const revision = getModuleMap().get('clientCacheRevision', getModuleMap().get('key'));
 
-export default function loadModule(moduleName, moduleData) {
-  return new Promise((resolve, reject) => {
-    if (typeof moduleName !== 'string') {
-      throw new TypeError('loadModule: moduleName must be a string');
-    }
-
-    if (typeof moduleData !== 'object') {
-      throw new TypeError('loadModule: moduleData must be an object');
-    }
-
-    // eslint-disable-next-line no-underscore-dangle
-    const integrity = moduleData.getIn([window.__holocron_module_bundle_type__, 'integrity']);
-    // eslint-disable-next-line no-underscore-dangle
-    const url = moduleData.getIn([window.__holocron_module_bundle_type__, 'url']);
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    const head = global.document.getElementsByTagName('head')[0];
-    const script = global.document.createElement('script');
-    script.type = 'text/javascript';
-    script.charset = 'utf-8';
-    script.async = true;
-    script.timeout = 120000;
-
-    script.crossOrigin = 'anonymous';
-
-    if (isProduction) {
-      script.integrity = integrity;
-    }
-    const clientCacheRevision = getModuleMap().get('clientCacheRevision', getModuleMap().get('key'));
-    script.src = isProduction && clientCacheRevision ? `${url}?clientCacheRevision=${clientCacheRevision}` : url;
-    const timeout = setTimeout(onScriptComplete, 120000);
-    script.addEventListener('error', (event) => {
-      clearTimeout(timeout);
-      reject(event.message);
-    });
-
-    script.addEventListener('load', () => {
-      clearTimeout(timeout);
-      resolve(getModule(moduleName));
-    });
-
-    head.appendChild(script);
-  });
-}
+    return typeof revision === 'string' || typeof revision === 'number' ? revision : null;
+  },
+});

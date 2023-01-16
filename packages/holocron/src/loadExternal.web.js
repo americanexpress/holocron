@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 American Express Travel Related Services Company, Inc.
+ * Copyright 2019 American Express Travel Related Services Company, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,13 +12,15 @@
  * under the License.
  */
 
-import createLoader from './loader.node';
-import { isExternalInBlockList, addToExternalBlockList } from './externalRegistry';
+import createLoader from './loader.web';
+import { getExternal } from './externalRegistry';
 
 export default createLoader({
   context: 'external',
-  maxRetries: Number(process.env.HOLOCRON_SERVER_MAX_EXTERNALS_RETRY) || 3,
-  maxSockets: Number(process.env.HOLOCRON_SERVER_MAX_SIM_EXTERNALS_FETCH) || 30,
-  isInBlockList: isExternalInBlockList,
-  addToBlockList: addToExternalBlockList,
+  getAsset: getExternal,
+  // clientCacheRevision: () => {
+  //   const revision = getModuleMap().get('clientCacheRevision', getModuleMap().get('key'));
+
+  //   return typeof revision === 'string' || typeof revision === 'number' ? revision : null;
+  // },
 });

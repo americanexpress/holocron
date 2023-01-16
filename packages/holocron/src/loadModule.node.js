@@ -21,4 +21,4 @@ export default createLoader({
   maxSockets: Number(process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH) || 30,
   isInBlockList: isModuleInBlockList,
   addToBlockList: addToModuleBlockList,
-})
+});
