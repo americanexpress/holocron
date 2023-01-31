@@ -16,3 +16,9 @@ export {
   default as updateModuleRegistry,
   areModuleEntriesEqual,
 } from '../updateModuleRegistry';
+
+export {
+  registerSharedExternal,
+  loadSharedExternal,
+  getExternal,
+} from '../externals.node';
