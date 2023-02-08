@@ -474,6 +474,41 @@ describe('holocronModule', () => {
     expect(tree).toMatchSnapshot();
   });
 
+  it('should pass the moduleState to the module by default, if a reducer and name are specified', () => {
+    const reducer = () => fromJS({ mockKey: 'mockValue' });
+    const Module = holocronModule({
+      name: 'mock-module',
+      reducer,
+    })(({ moduleState }) => <div>{JSON.stringify(moduleState)}|{typeof moduleState}</div>);
+    const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { mockKey: 'mockValue' } } }));
+    const component = renderer.create(
+      <Provider store={mockStore}>
+        <Module />
+      </Provider>
+    );
+    const tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('should not pass the moduleState to the module if options.provideModuleState is passed as false', () => {
+    const reducer = () => fromJS({ mockKey: 'mockValue' });
+    const Module = holocronModule({
+      name: 'mock-module',
+      reducer,
+      options: {
+        provideModuleState: false,
+      },
+    })(({ moduleState }) => <div>{JSON.stringify(moduleState)}|{typeof moduleState}</div>);
+    const mockStore = createStore((state) => state, fromJS({ modules: { 'mock-module': { mockKey: 'mockValue' } } }));
+    const component = renderer.create(
+      <Provider store={mockStore}>
+        <Module />
+      </Provider>
+    );
+    const tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
   it('should gracefully handle module state missing from store', () => {
     const reducer = () => fromJS({ x: 2 });
     const Module = holocronModule({
