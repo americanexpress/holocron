@@ -37,13 +37,6 @@ exports[`holocronModule should gracefully handle module state missing from store
 </div>
 `;
 
-exports[`holocronModule should not pass the moduleState to the module if options.provideModuleState is passed as false 1`] = `
-<div>
-  |
-  undefined
-</div>
-`;
-
 exports[`holocronModule should pass mergeProps to connect if it is specified 1`] = `
 <div>
   3
@@ -51,22 +44,6 @@ exports[`holocronModule should pass mergeProps to connect if it is specified 1`]
   4
    = 
   12
-</div>
-`;
-
-exports[`holocronModule should pass the moduleState to the module by default, if a reducer and name are specified 1`] = `
-<div>
-  {"mockKey":"mockValue"}
-  |
-  object
-</div>
-`;
-
-exports[`holocronModule should pass the moduleState to the module if options is passed without the \`provideModuleState\` key for backwards compatibility 1`] = `
-<div>
-  {"mockKey":"mockValue"}
-  |
-  object
 </div>
 `;
 
