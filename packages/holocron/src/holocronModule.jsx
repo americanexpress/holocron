@@ -94,7 +94,7 @@ export default function holocronModule({
   shouldModuleReload,
   loadModuleData,
   mergeProps,
-  options = { provideModuleState: true },
+  options = { },
 } = {}) {
   return function wrapWithHolocron(WrappedComponent) {
     const HolocronModuleWrapper = (props) => {
@@ -160,8 +160,8 @@ export default function holocronModule({
 
     if (reducer && name) {
       HolocronModuleWrapper[REDUCER_KEY] = reducer;
-      // TODO: make this default as a breaking performance feature in the next major version
-      if (options.provideModuleState) {
+      // TODO: make this off default as a breaking performance feature in the next major version
+      if (!('provideModuleState' in options) || options.provideModuleState !== false) {
         const getModuleState = createSelector(
           (state) => state.getIn(
             [MODULES_STORE_KEY, name],

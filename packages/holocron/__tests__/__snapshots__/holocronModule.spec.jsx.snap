@@ -62,6 +62,14 @@ exports[`holocronModule should pass the moduleState to the module by default, if
 </div>
 `;
 
+exports[`holocronModule should pass the moduleState to the module if options is passed without the \`provideModuleState\` key for backwards compatibility 1`] = `
+<div>
+  {"mockKey":"mockValue"}
+  |
+  object
+</div>
+`;
+
 exports[`holocronModule should provide the module state as a plain JS prop if a reducer is provided 1`] = `
 <div>
   value
