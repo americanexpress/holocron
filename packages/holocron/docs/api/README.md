@@ -231,6 +231,8 @@ export const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(co
 ]));
 ```
 
+Any module being composed can abort the composition of all modules requested by throwing an error with the property `abortComposeModules` set to `true`.
+
 <!--ONE-DOCS-ID end-->
 
 <!--ONE-DOCS-ID id="loadModule" start-->
