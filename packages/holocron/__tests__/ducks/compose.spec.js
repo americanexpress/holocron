@@ -27,6 +27,7 @@ describe('composeModules', () => {
   });
 
   it('should recursively load submodules', () => {
+    expect.assertions(3);
     const thunk = composeModules([
       { name: 'sub-module-a', props: { someParam: 'x' } },
       { name: 'sub-module-b' },
@@ -54,6 +55,7 @@ describe('composeModules', () => {
   });
 
   it('should resolve even if module load failed', () => {
+    expect.assertions(1);
     const thunk = composeModules([{ name: 'my-submodule' }]);
 
     // Disabling global-require rule because it is required for jest mockImplementationOnce
@@ -70,6 +72,7 @@ describe('composeModules', () => {
   });
 
   it('should work with modules that use loadModuleData', () => {
+    expect.assertions(2);
     const loadModuleData = jest.fn(() => Promise.resolve('loadModuleData resolve'));
     const fakeModule = { holocron: { loadModuleData } };
     require('../../src/ducks/load').loadModule // eslint-disable-line global-require
@@ -87,6 +90,31 @@ describe('composeModules', () => {
           store, module: fakeModule, ownProps: { some: 'props' }, fetchClient,
         });
         expect(loadModuleDataResolve).toEqual('loadModuleData resolve');
+      });
+  });
+
+  it('should allow modules to abort without waiting for other modules to load', () => {
+    expect.assertions(2);
+    const error = new Error('loadModuleData reject');
+    error.abortComposeModules = true;
+    const abortingModule = { holocron: { loadModuleData: () => Promise.reject(error) } };
+    let resolveOtherPromise;
+    const otherPromise = new Promise((resolve) => { resolveOtherPromise = resolve; });
+    const otherModule = { holocron: { loadModuleData: () => otherPromise } };
+
+    require('../../src/ducks/load').loadModule // eslint-disable-line global-require
+      .mockImplementationOnce(() => Promise.resolve(otherModule))
+      .mockImplementationOnce(() => Promise.resolve(abortingModule));
+
+    const dispatch = (x) => x;
+    const getState = () => null;
+    const thunk = composeModules([{ name: 'my-submodule', props: { some: 'props' } }]);
+    const fetchClient = jest.fn();
+
+    return thunk(dispatch, getState, { fetchClient })
+      .catch((err) => {
+        expect(err).toBe(error);
+        resolveOtherPromise();
       });
   });
 });
