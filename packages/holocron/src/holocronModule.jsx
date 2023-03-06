@@ -94,7 +94,7 @@ export default function holocronModule({
   shouldModuleReload,
   loadModuleData,
   mergeProps,
-  mapStateToProps = () => {},
+  mapStateToProps = () => ({}),
   options = {},
 } = {}) {
   return function wrapWithHolocron(WrappedComponent) {
