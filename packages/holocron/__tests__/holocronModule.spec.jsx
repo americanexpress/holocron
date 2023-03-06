@@ -199,6 +199,36 @@ describe('holocronModule', () => {
     expect(tree).toMatchSnapshot();
   });
 
+  it('should provide state configured by mapStateToProps when a reducer is proveded', () => {
+    const reducer = (state) => state;
+    const Module = holocronModule({
+      name: 'mock-module',
+      reducer,
+      mapStateToProps: () => ({ mapStateToPropsProp: 'mapStateToPropsProp' }),
+    })(({ mapStateToPropsProp }) => <div>{mapStateToPropsProp}</div>);
+    const mockStore = createStore(
+      (state) => state,
+      fromJS({ modules: { 'mock-module': { key: 'value' } } })
+    );
+    const component = renderer.create(<Module store={mockStore} />);
+    const tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('should provide state configured by mapStateToProps when a reducer is NOT proveded', () => {
+    const Module = holocronModule({
+      name: 'mock-module',
+      mapStateToProps: () => ({ mapStateToPropsProp: 'mapStateToPropsProp' }),
+    })(({ mapStateToPropsProp }) => <div>{mapStateToPropsProp}</div>);
+    const mockStore = createStore(
+      (state) => state,
+      fromJS({ modules: { 'mock-module': { key: 'value' } } })
+    );
+    const component = renderer.create(<Module store={mockStore} />);
+    const tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
   it('should not rerender if module state has not changed', () => {
     const renderSpy = jest.fn();
     const moduleReducer = (state) => state || {};
