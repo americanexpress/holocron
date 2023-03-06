@@ -274,6 +274,7 @@ A [higher order component (HOC)] for registering a load function and/or reducer 
 | `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
 | `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
+| `mapStateToProps` | `(state) => Object` | `false` | Passed down to Redux connect. This enables `shouldModuleReload` to have access to state. |
 | `options` | `Object` | `false` | Additional options |
 
 ##### Usage
