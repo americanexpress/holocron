@@ -173,7 +173,7 @@ export default function holocronModule({
 
         mapModuleStateToProps = (state, ownProps) => {
           const moduleState = getModuleState(state);
-          return { moduleState, ...mapStateToProps(state, ownProps) };
+          return { ...mapStateToProps(state, ownProps), moduleState };
         };
       }
     }
