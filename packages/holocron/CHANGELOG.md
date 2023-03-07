@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/americanexpress/holocron/compare/v1.4.0...v1.5.0) (2023-03-07)
+
+
+### Features
+
+* **compose:** allow modules to abort composeModules ([#137](https://github.com/americanexpress/holocron/issues/137)) ([5cad922](https://github.com/americanexpress/holocron/commit/5cad922a1bdf3483c487610440f6ab5a7a3cb8d5))
+
+
+
+
+
 # [1.4.0](https://github.com/americanexpress/holocron/compare/v1.3.0...v1.4.0) (2023-02-15)
 
 
