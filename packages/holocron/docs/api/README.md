@@ -90,15 +90,22 @@ The optional `holocron` object set to the parent React Component inside a Holocr
 
 ##### Properties
 
-| name | type | required | value |
-|---|---|---|---|
-| `name` | `String` | `true` | The name of your Holocron module |
-| `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
-| `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
-| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
-| `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
-| `options` | `Object` | `false` | Additional options |
-| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead.
+| name                   | type                                                                           | required | value                                                                                                 |
+|------------------------|--------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------|
+| `name`                 | `String`                                                                       | `true`   | The name of your Holocron module                                                                      |
+| `reducer`              | `(state, action) => newState`                                                  | `false`  | The Redux reducer to register when your module is loaded. *Requires a `name`*                         |
+| `loadModuleData`       | `({ store, fetchClient, ownProps, module }) => Promise`                        | `false`  | A function that fetches data required by your module                                                  |
+| `shouldModuleReload`   | `(oldProps, newProps) => Boolean`                                              | `false`  | A function to determine if your `loadModuleData` and or `load` function should be called again        |
+| `mergeProps`           | `(stateProps, dispatchProps, ownProps) => Object`                              | `false`  | Passed down to Redux connect                                                                          |
+| `options`              | `Object`                                                                       | `false`  | Additional options, see below                                                                         |
+| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false`  | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
+
+###### options object
+
+| name                   | type       | default | required | value                                                                                                                                |
+|------------------------|------------|---------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `ssr` *☠️ Deprecated*  | `Boolean`  | falsy   | `false`  | enable the (deprecated) load function to be called on the server                                                                     |
+| `provideModuleState`   | `Boolean`  | truthy  | `false`  | if specified as `false` the module will not be passed `moduleState` as a prop. This will be the default to falsy in future versions. |
 
 #### Usage
 
@@ -224,6 +231,8 @@ export const loadModuleData = ({ store: { dispatch }, ownProps }) => dispatch(co
 ]));
 ```
 
+Any module being composed can abort the composition of all modules requested by throwing an error with the property `abortComposeModules` set to `true`.
+
 <!--ONE-DOCS-ID end-->
 
 <!--ONE-DOCS-ID id="loadModule" start-->
@@ -267,6 +276,7 @@ A [higher order component (HOC)] for registering a load function and/or reducer 
 | `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
 | `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
 | `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
+| `mapStateToProps` | `(state) => Object` | `false` | Passed down to Redux connect. This enables `shouldModuleReload` to have access to state. |
 | `options` | `Object` | `false` | Additional options |
 
 ##### Usage

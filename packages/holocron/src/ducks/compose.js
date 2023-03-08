@@ -52,7 +52,10 @@ export function composeModules(moduleConfigs) {
 
           return Promise.resolve();
         })
-        .catch((error) => error);
+        .catch((error) => {
+          if (error.abortComposeModules) throw error;
+          return error;
+        });
     });
     return Promise.all(modulePromises);
   };
