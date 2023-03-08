@@ -94,6 +94,7 @@ export default function holocronModule({
   shouldModuleReload,
   loadModuleData,
   mergeProps,
+  mapStateToProps = () => ({}),
   options = {},
 } = {}) {
   return function wrapWithHolocron(WrappedComponent) {
@@ -152,7 +153,7 @@ export default function holocronModule({
       HolocronModuleWrapper[LOAD_KEY] = load;
     }
 
-    let mapModuleStateToProps;
+    let mapModuleStateToProps = mapStateToProps;
 
     if (reducer && !name) {
       console.warn(`The Holocron Config in '${getModuleDisplayName(getModuleName(WrappedComponent, name))}' requires a 'name' when passing a 'reducer'.\nThe 'reducer' will not be added to the Redux Store without a 'name'.`);
@@ -170,10 +171,10 @@ export default function holocronModule({
           (moduleState) => moduleState.toJS()
         );
 
-        mapModuleStateToProps = ((state) => {
+        mapModuleStateToProps = (state, ownProps) => {
           const moduleState = getModuleState(state);
-          return { moduleState };
-        });
+          return { ...mapStateToProps(state, ownProps), moduleState };
+        };
       }
     }
 
