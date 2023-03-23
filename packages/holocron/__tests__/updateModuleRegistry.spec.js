@@ -485,6 +485,7 @@ describe('updateModuleRegistry', () => {
 
   it('resolves with accepted and rejected modules when detailedResponse is selected', async () => {
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
+    jest.spyOn(console, 'error').mockImplementation((x) => x);
     // occurs first time updateModuleRegistry is called
     resetModuleRegistry({}, {});
     loadModule.mockImplementationOnce(mockLoadModule);
@@ -550,7 +551,22 @@ describe('updateModuleRegistry', () => {
           },
         },
       },
-      rejectedModules: ['reject-this-module'],
+      rejectedModules: {
+        'reject-this-module': {
+          node: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.node.js',
+            integrity: '5234',
+          },
+          browser: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.browser.js',
+            integrity: '77534664',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.legacy.browser.js',
+            integrity: '6435',
+          },
+        },
+      },
     });
   });
 
