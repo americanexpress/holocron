@@ -39,13 +39,14 @@ export default async function updateModuleRegistry({
   onModuleLoad = () => null,
   batchModulesToUpdate = (x) => [x],
   getModulesToUpdate = defaultGetModulesToUpdate,
+  listRejectedModules,
 }) {
   const currentModuleMap = getModuleMap().toJS();
   const modulesToUpdate = batchModulesToUpdate(
     getModulesToUpdate(currentModuleMap.modules || {}, unsanitizedModuleMap.modules)
   );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
-  const problemModules = [];
+  const rejectedModules = [];
   let successfullyLoadedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
     const previouslyResolvedModules = await acc;
     const newlyResolvedModules = await Promise.allSettled(moduleBatch.map(
@@ -67,7 +68,7 @@ export default async function updateModuleRegistry({
             // eslint-disable-next-line no-console
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
           }
-          problemModules.push(moduleName);
+          rejectedModules.push(moduleName);
           return Promise.reject(e);
         }
       }
@@ -77,7 +78,7 @@ export default async function updateModuleRegistry({
     ).map(({ value }) => value);
     return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
-  const updatedFlatMap = flatModulesToUpdate.filter((mod) => !problemModules.includes(mod));
+  const updatedFlatMap = flatModulesToUpdate.filter((mod) => !rejectedModules.includes(mod));
   successfullyLoadedModules = successfullyLoadedModules.reduce(
     (acc, module, i) => ({
       ...acc,
@@ -88,7 +89,7 @@ export default async function updateModuleRegistry({
   const newModules = getModules().merge(successfullyLoadedModules);
   const sanitizedModuleMap = { ...unsanitizedModuleMap };
   // Keep working version of modules if they are in the list of problem modules
-  problemModules.forEach((module) => {
+  rejectedModules.forEach((module) => {
     if (currentModuleMap.modules) {
       sanitizedModuleMap.modules[module] = currentModuleMap.modules[module];
     } else {
@@ -99,6 +100,13 @@ export default async function updateModuleRegistry({
     }
   });
   resetModuleRegistry(newModules, sanitizedModuleMap);
-  return updatedFlatMap.reduce((
-    acc, moduleName) => ({ ...acc, [moduleName]: sanitizedModuleMap.modules[moduleName] }), {});
+  const loadedModules = updatedFlatMap.reduce(
+    (acc, moduleName) => ({ ...acc, [moduleName]: sanitizedModuleMap.modules[moduleName] }),
+    {}
+  );
+
+  if (listRejectedModules) {
+    return { loadedModules, rejectedModules };
+  }
+  return loadedModules;
 }
