@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/americanexpress/holocron/compare/v1.5.0...v1.6.0) (2023-03-14)
+
+
+### Features
+
+* **holocronModule:** add mapStateToProps to holocron api ([#138](https://github.com/americanexpress/holocron/issues/138)) ([80194db](https://github.com/americanexpress/holocron/commit/80194dbd0e7b5380e5749de2fa4d256d8b281894))
+
+
+
+
+
 # [1.5.0](https://github.com/americanexpress/holocron/compare/v1.4.0...v1.5.0) (2023-03-07)
 
 

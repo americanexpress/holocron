@@ -35,17 +35,18 @@ function defaultGetModulesToUpdate(curr, next) {
 }
 
 export default async function updateModuleRegistry({
-  moduleMap: unsanitizedModuleMap,
+  moduleMap: nextModuleMap,
   onModuleLoad = () => null,
   batchModulesToUpdate = (x) => [x],
   getModulesToUpdate = defaultGetModulesToUpdate,
+  listRejectedModules,
 }) {
   const currentModuleMap = getModuleMap().toJS();
   const modulesToUpdate = batchModulesToUpdate(
-    getModulesToUpdate(currentModuleMap.modules || {}, unsanitizedModuleMap.modules)
+    getModulesToUpdate(currentModuleMap.modules || {}, nextModuleMap.modules)
   );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
-  const problemModules = [];
+  const rejectedModuleNames = [];
   let successfullyLoadedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
     const previouslyResolvedModules = await acc;
     const newlyResolvedModules = await Promise.allSettled(moduleBatch.map(
@@ -53,12 +54,12 @@ export default async function updateModuleRegistry({
         try {
           const loadedModule = await loadModule(
             moduleName,
-            unsanitizedModuleMap.modules[moduleName],
+            nextModuleMap.modules[moduleName],
             onModuleLoad
           );
           return addHigherOrderComponent(loadedModule);
         } catch (e) {
-          const brokenUrl = unsanitizedModuleMap.modules[moduleName].node.url;
+          const brokenUrl = nextModuleMap.modules[moduleName].node.url;
           if (currentModuleMap.modules && currentModuleMap.modules[moduleName]) {
             const previousUrl = currentModuleMap.modules[moduleName].node.url;
             // eslint-disable-next-line no-console
@@ -67,7 +68,7 @@ export default async function updateModuleRegistry({
             // eslint-disable-next-line no-console
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
           }
-          problemModules.push(moduleName);
+          rejectedModuleNames.push(moduleName);
           return Promise.reject(e);
         }
       }
@@ -77,7 +78,7 @@ export default async function updateModuleRegistry({
     ).map(({ value }) => value);
     return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
-  const updatedFlatMap = flatModulesToUpdate.filter((mod) => !problemModules.includes(mod));
+  const updatedFlatMap = flatModulesToUpdate.filter((mod) => !rejectedModuleNames.includes(mod));
   successfullyLoadedModules = successfullyLoadedModules.reduce(
     (acc, module, i) => ({
       ...acc,
@@ -86,19 +87,31 @@ export default async function updateModuleRegistry({
     {}
   );
   const newModules = getModules().merge(successfullyLoadedModules);
-  const sanitizedModuleMap = { ...unsanitizedModuleMap };
+  const nextModules = { ...nextModuleMap.modules };
   // Keep working version of modules if they are in the list of problem modules
-  problemModules.forEach((module) => {
+  rejectedModuleNames.forEach((module) => {
     if (currentModuleMap.modules) {
-      sanitizedModuleMap.modules[module] = currentModuleMap.modules[module];
+      nextModules[module] = currentModuleMap.modules[module];
     } else {
       // If it doesn't exist in the old module map, that means its being deployed for the first time
       // or holocron is initializing modules for the first time. If there is an issue with the
       // module we should exclude it from the module map entirely.
-      delete sanitizedModuleMap.modules[module];
+      delete nextModules[module];
     }
   });
-  resetModuleRegistry(newModules, sanitizedModuleMap);
-  return updatedFlatMap.reduce((
-    acc, moduleName) => ({ ...acc, [moduleName]: sanitizedModuleMap.modules[moduleName] }), {});
+  resetModuleRegistry(newModules, { ...nextModuleMap, modules: nextModules });
+  const loadedModules = updatedFlatMap.reduce(
+    (acc, moduleName) => ({ ...acc, [moduleName]: nextModules[moduleName] }),
+    {}
+  );
+
+  const rejectedModules = rejectedModuleNames.reduce((acc, module) => ({
+    ...acc,
+    [module]: nextModuleMap.modules[module],
+  }), {});
+
+  if (listRejectedModules) {
+    return { loadedModules, rejectedModules };
+  }
+  return loadedModules;
 }
