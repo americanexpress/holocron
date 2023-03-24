@@ -84,7 +84,7 @@ hydrate(
 
 #### `Module.holocron`
 
-The optional `holocron` object set to the parent React Component inside a Holocron Module determines behavior of state management, data loading, and React prop management. 
+The optional `holocron` object set to the parent React Component inside a Holocron Module determines behavior of state management, data loading, and React prop management.
 
 > A `name` property is required if a `reducer` is set otherwise the `reducer` will not be added to the Redux Store.
 
@@ -201,7 +201,7 @@ export const loadModuleData = ({ store: { dispatch } }) => dispatch(composeModul
 MyModule.holocron = {
   name: 'my-module',
   loadModuleData,
-}
+};
 
 export default MyModule;
 ```
@@ -289,7 +289,7 @@ import { reducer, fetchData } from '../duck';
 
 const HelloWorld = ({ moduleState: { myData } }) => (
   <h1>
-Hello,
+    Hello,
     {myData.name}
   </h1>
 );
@@ -573,6 +573,7 @@ Updates the module registry with a new module map.
 | `onModuleLoad` | `Function` | `false` | The function to call on every module that is loaded |
 | `batchModulesToUpdate` | `modules => Array` | `false` | A function that returns an array of arrays of batches of modules to load |
 | `getModulesToUpdate` | `Function` | `false` | A function that returns an array of which modules should be updated |
+| `listRejectedModules` | `Boolean` | `false` | This changes the response shape to be an object containing both `loadedModules` and `rejectedModules` |
 
 
 ##### Usage
@@ -585,7 +586,7 @@ const onModuleLoad = ({ module, moduleName }) => {
   console.info(`Loaded module ${moduleName}`);
 };
 
-export default async function() {
+export default async function () {
   const moduleMapResponse = await fetch(MODULE_MAP_URL);
   const moduleMap = await moduleMapResponse.json();
   await updateModuleRegistry({
@@ -617,9 +618,8 @@ Compares two module map entries to see if they are equal. This is intended for u
 import { areModuleEntriesEqual } from 'holocron/server';
 
 const getModulesToUpdate = (
-  currentModules, nextModules) => Object.keys(next).filter((moduleName) => (
-  !areModuleEntriesEqual(curr[moduleName], next[moduleName])
-        || someOtherLogic(moduleName))
+  currentModules, nextModules) => Object.keys(next).filter((moduleName) => !areModuleEntriesEqual(curr[moduleName], next[moduleName])
+        || someOtherLogic(moduleName)
 );
 ```
 
@@ -661,12 +661,12 @@ export const MyComponent = (props) => {
     const moduleData = getModuleMap().getIn(['modules', 'my-module']);
     const MyModule = await forceLoadModule('my-module', moduleData);
     setLoadedModule(MyModule);
-  })
-  
+  });
+
   return LoadedModule || (
     <LoadedModule {...props} />
   );
-}
+};
 
 ```
 
