@@ -483,6 +483,93 @@ describe('updateModuleRegistry', () => {
     expect(updatedModules).toMatchSnapshot();
   });
 
+  it('resolves with accepted and rejected modules when detailedResponse is selected', async () => {
+    const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
+    jest.spyOn(console, 'error').mockImplementation((x) => x);
+    // occurs first time updateModuleRegistry is called
+    resetModuleRegistry({}, {});
+    loadModule.mockImplementationOnce(mockLoadModule);
+    loadModule.mockImplementationOnce(async () => { throw new Error('Failed to load module'); });
+    const currentModuleMap = getModuleMap().toJS();
+    const newModuleMap = {
+      ...currentModuleMap,
+      modules: {
+        ...currentModuleMap.modules,
+        'another-module': {
+          node: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.node.js',
+            integrity: '4556',
+          },
+          browser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.browser.js',
+            integrity: '7764',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js',
+            integrity: '34566',
+          },
+        },
+        'reject-this-module': {
+          node: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.node.js',
+            integrity: '5234',
+          },
+          browser: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.browser.js',
+            integrity: '77534664',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.legacy.browser.js',
+            integrity: '6435',
+          },
+        },
+      },
+    };
+
+    const batchModulesToUpdate = (x) => [x];
+    const updatedModules = await updateModuleRegistry({
+      moduleMap: newModuleMap,
+      onModuleLoad,
+      batchModulesToUpdate,
+      listRejectedModules: true,
+    });
+
+    expect(updatedModules).toEqual({
+      loadedModules: {
+        'another-module': {
+          node: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.node.js',
+            integrity: '4556',
+          },
+          browser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.browser.js',
+            integrity: '7764',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js',
+            integrity: '34566',
+          },
+        },
+      },
+      rejectedModules: {
+        'reject-this-module': {
+          node: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.node.js',
+            integrity: '5234',
+          },
+          browser: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.browser.js',
+            integrity: '77534664',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.legacy.browser.js',
+            integrity: '6435',
+          },
+        },
+      },
+    });
+  });
+
   it('should not throw if any of the modules fail to load', async () => {
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
