@@ -565,6 +565,7 @@ describe('updateModuleRegistry', () => {
             url: 'https://example.com/cdn/reject-this-module/2.5.6/reject-this-module.legacy.browser.js',
             integrity: '6435',
           },
+          reasonForRejection: 'Failed to load module',
         },
       },
     });

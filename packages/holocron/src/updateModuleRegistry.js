@@ -46,7 +46,7 @@ export default async function updateModuleRegistry({
     getModulesToUpdate(currentModuleMap.modules || {}, nextModuleMap.modules)
   );
   const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
-  const rejectedModuleNames = [];
+  const rejectedModules = {};
   let successfullyLoadedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
     const previouslyResolvedModules = await acc;
     const newlyResolvedModules = await Promise.allSettled(moduleBatch.map(
@@ -68,7 +68,10 @@ export default async function updateModuleRegistry({
             // eslint-disable-next-line no-console
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
           }
-          rejectedModuleNames.push(moduleName);
+          rejectedModules[moduleName] = {
+            ...nextModuleMap.modules[moduleName],
+            reasonForRejection: e.message,
+          };
           return Promise.reject(e);
         }
       }
@@ -78,6 +81,7 @@ export default async function updateModuleRegistry({
     ).map(({ value }) => value);
     return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
+  const rejectedModuleNames = Object.keys(rejectedModules);
   const updatedFlatMap = flatModulesToUpdate.filter((mod) => !rejectedModuleNames.includes(mod));
   successfullyLoadedModules = successfullyLoadedModules.reduce(
     (acc, module, i) => ({
@@ -104,11 +108,6 @@ export default async function updateModuleRegistry({
     (acc, moduleName) => ({ ...acc, [moduleName]: nextModules[moduleName] }),
     {}
   );
-
-  const rejectedModules = rejectedModuleNames.reduce((acc, module) => ({
-    ...acc,
-    [module]: nextModuleMap.modules[module],
-  }), {});
 
   if (listRejectedModules) {
     return { loadedModules, rejectedModules };
