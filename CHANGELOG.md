@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/americanexpress/holocron/compare/v1.6.0...v1.7.0) (2023-03-27)
+
+
+### Features
+
+* **updateModuleRegistry:** allow rejected modules to be listed ([#140](https://github.com/americanexpress/holocron/issues/140)) ([fd2a468](https://github.com/americanexpress/holocron/commit/fd2a468bea8775796ac36f6ddd4d2fa61a1b140e))
+* **updateModuleRegistry:** include reason for rejection ([#141](https://github.com/americanexpress/holocron/issues/141)) ([a2cd2f8](https://github.com/americanexpress/holocron/commit/a2cd2f83210c7fbc4a8e58ec4c506c5ef28cb531))
+
+
+
+
+
 # [1.6.0](https://github.com/americanexpress/holocron/compare/v1.5.0...v1.6.0) (2023-03-14)
 
 
