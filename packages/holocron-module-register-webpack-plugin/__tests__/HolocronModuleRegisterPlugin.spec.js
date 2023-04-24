@@ -20,7 +20,13 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const crypto = require('crypto');
 const HolocronModuleRegisterPlugin = require('../HolocronModuleRegisterPlugin');
+
+// Monkey Patch for unsupported hash algorithm. Needed to support Node >=17.
+// https://github.com/webpack/webpack/issues/13572#issuecomment-923736472
+const originalCreateHash = crypto.createHash;
+crypto.createHash = (algorithm) => originalCreateHash(algorithm === 'md4' ? 'sha256' : algorithm);
 
 const fixturesPath = path.join(__dirname, '../__fixtures__');
 const buildPath = path.join(fixturesPath, 'build');
