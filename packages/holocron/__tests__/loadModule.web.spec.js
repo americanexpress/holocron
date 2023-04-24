@@ -15,27 +15,40 @@
 import { fromJS } from 'immutable';
 import loadModule from '../src/loadModule.web';
 import { resetModuleRegistry } from '../src/moduleRegistry';
+import { setRequiredExternalsRegistry } from '../src/externalRegistry';
 
 let mockElement;
-let map;
+let errorWhenLoadingScript;
 
-jest.spyOn(document, 'createElement').mockImplementation(() => mockElement);
-jest.spyOn(document, 'getElementsByTagName').mockImplementation(() => [{ appendChild: () => null }]);
+const createElementSpy = jest
+  .spyOn(document, 'createElement')
+  .mockImplementation(() => mockElement);
+jest
+  .spyOn(document, 'getElementsByTagName')
+  .mockImplementation(() => [{ appendChild: () => null }]);
 // eslint-disable-next-line no-underscore-dangle
 window.__holocron_module_bundle_type__ = 'browser';
 
+const eventListenerMock = jest.fn((event, cb) => {
+  if (errorWhenLoadingScript && event === 'error') {
+    cb(errorWhenLoadingScript);
+  }
+  if (!errorWhenLoadingScript && event === 'load') {
+    cb();
+  }
+});
+
 describe('loadModule.web', () => {
   beforeEach(() => {
-    map = {};
+    jest.clearAllMocks();
+    errorWhenLoadingScript = undefined;
     mockElement = {
-      addEventListener: jest.fn((event, cb) => {
-        map[event] = cb;
-      }),
+      addEventListener: eventListenerMock,
     };
   });
 
-  it('should add crossorigin to scripts', () => {
-    loadModule(
+  it('should add crossorigin to scripts', async () => {
+    await loadModule(
       'my-module',
       fromJS({
         node: {
@@ -55,9 +68,9 @@ describe('loadModule.web', () => {
     expect(mockElement.crossOrigin).toBe('anonymous');
   });
 
-  it('should add the correct integrity to scripts if NODE_ENV is production', () => {
+  it('should add the correct integrity to scripts if NODE_ENV is production', async () => {
     process.env.NODE_ENV = 'production';
-    loadModule(
+    await loadModule(
       'my-module',
       fromJS({
         node: {
@@ -77,10 +90,10 @@ describe('loadModule.web', () => {
     expect(mockElement.integrity).toBe('234');
   });
 
-  it('should not add integrity to scripts if NODE_ENV is development', () => {
+  it('should not add integrity to scripts if NODE_ENV is development', async () => {
     process.env.NODE_ENV = 'development';
 
-    loadModule(
+    await loadModule(
       'my-module',
       fromJS({
         node: {
@@ -123,39 +136,36 @@ describe('loadModule.web', () => {
   });
 
   it('should reject with a helpful error when module data is not an object', async () => {
-    await expect(
-      loadModule(
-        'my-module',
-        undefined
-      )
-    ).rejects.toMatchSnapshot();
+    await expect(loadModule('my-module', undefined)).rejects.toMatchSnapshot();
   });
 
-  it('should reject with the error on error', () => {
-    const loadPromise = loadModule(
-      'erroring-module',
-      fromJS({
-        node: {
-          url: 'https://example.com/cdn/erroring-module/1.0.0/erroring-module.node.js',
-          integrity: '123',
-        },
-        browser: {
-          url: 'https://example.com/cdn/erroring-module/1.0.0/erroring-module.browser.js',
-          integrity: '234',
-        },
-        legacyBrowser: {
-          url: 'https://example.com/cdn/erroring-module/1.0.0/erroring-module.legacy.browser.js',
-          integrity: '344',
-        },
-      })
-    );
-    const loadError = new Error('failed to load module');
-    expect(mockElement.addEventListener.mock.calls[0][0]).toBe('error');
-    expect(mockElement.addEventListener.mock.calls[0][1](loadError)).toBeUndefined();
-    return expect(loadPromise).rejects.toBe(loadError.message);
+  it('rejects with error when script errors', async () => {
+    errorWhenLoadingScript = new Error('failed to load module');
+
+    try {
+      await loadModule(
+        'erroring-module',
+        fromJS({
+          node: {
+            url: 'https://example.com/cdn/erroring-module/1.0.0/erroring-module.node.js',
+            integrity: '123',
+          },
+          browser: {
+            url: 'https://example.com/cdn/erroring-module/1.0.0/erroring-module.browser.js',
+            integrity: '234',
+          },
+          legacyBrowser: {
+            url: 'https://example.com/cdn/erroring-module/1.0.0/erroring-module.legacy.browser.js',
+            integrity: '344',
+          },
+        })
+      );
+    } catch (error) {
+      expect(error).toBe(errorWhenLoadingScript.message);
+    }
   });
 
-  it('should resolve with the module on load', () => {
+  it('should resolve with the module on load', async () => {
     const LoadingModule = () => 'hello';
     resetModuleRegistry(
       {
@@ -180,7 +190,7 @@ describe('loadModule.web', () => {
         },
       }
     );
-    const loadPromise = loadModule(
+    const loadingModule = await loadModule(
       'loading-module',
       fromJS({
         node: {
@@ -197,9 +207,7 @@ describe('loadModule.web', () => {
         },
       })
     );
-    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
-    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    return expect(loadPromise).resolves.toBe(LoadingModule);
+    return expect(loadingModule).toBe(LoadingModule);
   });
 
   it('should add the module map clientCacheRevision to the script tag src for cache busting purposes if NODE_ENV is production', async () => {
@@ -229,7 +237,7 @@ describe('loadModule.web', () => {
         },
       }
     );
-    loadModule(
+    await loadModule(
       'loading-module',
       fromJS({
         node: {
@@ -246,9 +254,9 @@ describe('loadModule.web', () => {
         },
       })
     );
-    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
-    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=key123');
+    expect(mockElement.src).toBe(
+      'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=key123'
+    );
     expect(new URL(mockElement.src).search).toBe('?clientCacheRevision=key123');
   });
 
@@ -279,7 +287,8 @@ describe('loadModule.web', () => {
         },
       }
     );
-    loadModule(
+
+    await loadModule(
       'loading-module',
       fromJS({
         node: {
@@ -296,9 +305,10 @@ describe('loadModule.web', () => {
         },
       })
     );
-    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
-    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=key456');
+
+    expect(mockElement.src).toBe(
+      'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=key456'
+    );
     expect(new URL(mockElement.src).search).toBe('?clientCacheRevision=key456');
   });
 
@@ -330,7 +340,7 @@ describe('loadModule.web', () => {
         },
       }
     );
-    loadModule(
+    await loadModule(
       'loading-module',
       fromJS({
         node: {
@@ -347,9 +357,10 @@ describe('loadModule.web', () => {
         },
       })
     );
-    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
-    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=abc');
+
+    expect(mockElement.src).toBe(
+      'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js?clientCacheRevision=abc'
+    );
     expect(new URL(mockElement.src).search).toBe('?clientCacheRevision=abc');
   });
 
@@ -380,7 +391,7 @@ describe('loadModule.web', () => {
         },
       }
     );
-    loadModule(
+    await loadModule(
       'loading-module',
       fromJS({
         node: {
@@ -397,9 +408,9 @@ describe('loadModule.web', () => {
         },
       })
     );
-    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
-    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
+    expect(mockElement.src).toBe(
+      'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js'
+    );
     expect(new URL(mockElement.src).search).toBe('');
   });
 
@@ -429,7 +440,7 @@ describe('loadModule.web', () => {
         },
       }
     );
-    loadModule(
+    await loadModule(
       'loading-module',
       fromJS({
         node: {
@@ -446,9 +457,114 @@ describe('loadModule.web', () => {
         },
       })
     );
-    expect(mockElement.addEventListener.mock.calls[1][0]).toBe('load');
-    expect(mockElement.addEventListener.mock.calls[1][1]()).toBeUndefined();
-    expect(mockElement.src).toBe('https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js');
+    expect(mockElement.src).toBe(
+      'https://example.com/cdn/loading-module/1.0.0/loading-module.browser.js'
+    );
     expect(new URL(mockElement.src).search).toBe('');
+  });
+
+  describe('when module requires fallbacks', () => {
+    let mockElementFirst;
+    let mockElementSecond;
+    let mockElementThird;
+
+    beforeAll(() => {
+      setRequiredExternalsRegistry({
+        'my-module': {
+          'this-dep': {
+            filename: 'this-dep.js',
+            semanticRange: '^2.2.0',
+            integrity: '321',
+            version: '2.3.1',
+          },
+          'that-dep': {
+            filename: 'that-dep.js',
+            semanticRange: '^2.2.0',
+            integrity: '123',
+            version: '2.3.1',
+          },
+        },
+      });
+    });
+
+    beforeEach(() => {
+      mockElementFirst = { addEventListener: eventListenerMock };
+      mockElementSecond = { addEventListener: eventListenerMock };
+      mockElementThird = { addEventListener: eventListenerMock };
+
+      resetModuleRegistry(
+        {
+          'my-module': () => 'hello',
+        },
+        {
+          modules: {
+            'my-module': {
+              baseUrl: 'https://example.com/cdn/my-module/1.0.0/',
+              browser: {
+                url: 'https://example.com/cdn/my-module/1.0.0/my-module.browser.js',
+                integrity: '234',
+              },
+            },
+          },
+        }
+      );
+    });
+
+    it('creates scripts for modules externals', async () => {
+      createElementSpy
+        .mockImplementationOnce(() => mockElementFirst)
+        .mockImplementationOnce(() => mockElementSecond)
+        .mockImplementationOnce(() => mockElementThird);
+
+      await loadModule(
+        'my-module',
+        fromJS({
+          browser: {
+            url: 'https://example.com/cdn/my-module/1.0.0/my-module.browser.js',
+            integrity: '234',
+          },
+        })
+      );
+
+      expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.js');
+      expect(mockElementSecond.src).toBe('https://example.com/cdn/my-module/1.0.0/that-dep.js');
+      expect(mockElementThird.src).toBe(
+        'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
+      );
+    });
+
+    it('waits for fallback scripts to finish loading before loading module script', async () => {
+      let finallyLoadSlowScript;
+      const slowMockElement = {
+        addEventListener: (event, cb) => {
+          if (event === 'load') {
+            finallyLoadSlowScript = cb;
+          }
+        },
+      };
+      createElementSpy
+        .mockImplementationOnce(() => mockElementFirst)
+        .mockImplementationOnce(() => slowMockElement)
+        .mockImplementationOnce(() => mockElementThird);
+
+      const loadModulePromise = loadModule(
+        'my-module',
+        fromJS({
+          browser: {
+            url: 'https://example.com/cdn/my-module/1.0.0/my-module.browser.js',
+            integrity: '234',
+          },
+        })
+      );
+
+      expect(createElementSpy).toHaveBeenCalledTimes(2);
+      expect(mockElementThird.src).toBeUndefined();
+      finallyLoadSlowScript();
+      await loadModulePromise;
+      expect(createElementSpy).toHaveBeenCalledTimes(3);
+      expect(mockElementThird.src).toBe(
+        'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
+      );
+    });
   });
 });

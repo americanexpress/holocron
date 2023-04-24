@@ -25,6 +25,15 @@ available on the server. We have organized them as such.
   - [`getModules`](#getmodules)
   - [`getModuleMap`](#getmodulemap)
   - [`setModuleMap`](#setmodulemap)
+- [External Registry](#external-registry)
+  - [`validateExternal`](#validateExternal)
+  - [`registerExternal`](#registerExternal)
+  - [`getExternal`](#getExternal)
+  - [`addRequiredExternal`](#addRequiredExternal)
+  - [`getUnregisteredRequiredExternals`](#getUnregisteredRequiredExternals)
+  - [`getRequiredExternals`](#getRequiredExternals)
+  - [`getRequiredExternalsRegistry`](#getRequiredExternalsRegistry)
+  - [`setRequiredExternalsRegistry`](#setRequiredExternalsRegistry)
 - [Selectors](#selectors)
   - [`isLoaded`](#isloaded)
   - [`failedToLoad`](#failedToLoad)
@@ -424,6 +433,21 @@ import { setModuleMap } from 'holocron';
 
 setModuleMap(newModuleMap);
 ```
+
+
+### External Registry
+
+These functions relate to managing the external registry across Holocron modules.
+
+#### `validateExternal`
+#### `registerExternal`
+#### `getExternal`
+#### `addRequiredExternal`
+#### `getUnregisteredRequiredExternals`
+#### `getRequiredExternals`
+#### `getRequiredExternalsRegistry`
+#### `setRequiredExternalsRegistry`
+
 
 <!--ONE-DOCS-ID end-->
 
