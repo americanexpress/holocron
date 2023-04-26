@@ -30,7 +30,7 @@ describe('externalRegistry', () => {
   it('maintains registry of required external fallbacks', () => {
     externalRegistry.addRequiredExternal({
       moduleName: 'child-module-a',
-      externalName: 'this-version',
+      name: 'this-version',
       version: '1.2.3',
       semanticRange: '^1.2.0',
       filename: 'this-version.js',
@@ -39,7 +39,7 @@ describe('externalRegistry', () => {
 
     externalRegistry.addRequiredExternal({
       moduleName: 'child-module-a',
-      externalName: 'that-dep',
+      name: 'that-dep',
       version: '2.3.1',
       semanticRange: '^2.2.0',
       filename: 'this-dep.js',
@@ -48,7 +48,7 @@ describe('externalRegistry', () => {
 
     externalRegistry.addRequiredExternal({
       moduleName: 'child-module-b',
-      externalName: 'this-version',
+      name: 'this-version',
       version: '1.2.4',
       semanticRange: '^1.2.0',
       filename: 'this-version.js',
@@ -89,7 +89,7 @@ describe('externalRegistry', () => {
       const moduleName = 'child-module-a';
       externalRegistry.addRequiredExternal({
         moduleName,
-        externalName: 'some-dep',
+        name: 'some-dep',
         version: '1.2.3',
         semanticRange: '^1.2.0',
         filename: 'some-dep.js',
@@ -98,7 +98,7 @@ describe('externalRegistry', () => {
 
       externalRegistry.addRequiredExternal({
         moduleName,
-        externalName: 'that-dep',
+        name: 'that-dep',
         version: '1.2.4',
         semanticRange: '^1.2.0',
         filename: 'that-dep.js',
@@ -139,7 +139,7 @@ describe('externalRegistry', () => {
 
       externalRegistry.addRequiredExternal({
         moduleName,
-        externalName: 'some-dep',
+        name: 'some-dep',
         version: '1.2.3',
         semanticRange: '^1.2.0',
         filename: 'some-dep.js',
@@ -148,7 +148,7 @@ describe('externalRegistry', () => {
 
       externalRegistry.addRequiredExternal({
         moduleName,
-        externalName: 'that-dep',
+        name: 'that-dep',
         version: '1.2.4',
         semanticRange: '^1.2.0',
         filename: 'that-dep.js',
@@ -183,10 +183,10 @@ describe('externalRegistry', () => {
 
     it('does not accidentally match different registered version', () => {
       const moduleName = 'child-module-a';
-      const externalName = 'some-dep';
+      const name = 'some-dep';
       externalRegistry.addRequiredExternal({
         moduleName,
-        externalName,
+        name,
         version: '1.0.0',
         semanticRange: '^1.0.0',
         filename: 'some-dep.js',
@@ -194,7 +194,7 @@ describe('externalRegistry', () => {
       });
 
       externalRegistry.registerExternal({
-        name: externalName,
+        name,
         version: '1.2.3',
       });
 

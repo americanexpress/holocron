@@ -37,9 +37,9 @@ import {
   registerExternal,
   getExternal,
   addRequiredExternal,
-  getRequiredExternalsRegistry,
   getRequiredExternals,
   getUnregisteredRequiredExternals,
+  getRequiredExternalsRegistry,
   setRequiredExternalsRegistry,
 } from './externalRegistry';
 

@@ -39,10 +39,10 @@ function hasExternalLoaded({ name, version }) {
 }
 
 function addRequiredExternal({
-  moduleName, externalName, version, semanticRange, filename, integrity,
+  moduleName, name, version, semanticRange, filename, integrity,
 }) {
-  console.warn('registering fallback: ', moduleName, externalName, version, semanticRange, filename, integrity);
-  requiredModuleExternals = requiredModuleExternals.setIn([moduleName, externalName], fromJS({
+  console.warn('registering fallback: ', moduleName, name, version, semanticRange, filename, integrity);
+  requiredModuleExternals = requiredModuleExternals.setIn([moduleName, name], fromJS({
     version,
     semanticRange,
     filename,
@@ -53,7 +53,11 @@ function addRequiredExternal({
 function getRequiredExternals(moduleName) {
   return Object.entries(
     requiredModuleExternals.get(moduleName, iMap()).toJS()
-  ).map(([externalName, rest]) => ({ moduleName, name: externalName, ...rest }));
+  ).map(([name, rest]) => ({
+    moduleName,
+    name,
+    ...rest,
+  }));
 }
 
 function getRequiredExternalsRegistry() {
