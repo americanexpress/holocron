@@ -41,7 +41,6 @@ function hasExternalLoaded({ name, version }) {
 function addRequiredExternal({
   moduleName, name, version, semanticRange, filename, integrity,
 }) {
-  console.warn('registering fallback: ', moduleName, name, version, semanticRange, filename, integrity);
   requiredModuleExternals = requiredModuleExternals.setIn([moduleName, name], fromJS({
     version,
     semanticRange,
