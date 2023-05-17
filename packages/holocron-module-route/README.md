@@ -156,7 +156,6 @@ const MyModule = () => { /* jsx */ };
 MyModule.childRoutes = (store) => (
   <ModuleRoute
     path="some-path"
-    title={store.getState().get('pageTitle')}
     onEnter={authenticate}
     moduleName="someModule"
   />
