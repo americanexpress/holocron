@@ -56,17 +56,13 @@ function createScript({ url, integrity, onLoad = noop }) {
 function loadModuleFallbackExternals(moduleName) {
   const fallbacks = getUnregisteredRequiredExternals(moduleName);
   const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
-  return fallbacks.map(({ filename, integrity }) => createScript({
+  return Promise.all(fallbacks.map(({ filename, integrity }) => createScript({
     url: `${baseUrl}${filename}`,
     integrity,
-  }));
+  })));
 }
 
 async function loadModule(moduleName, moduleData) {
-  // first load all module fallbacks.
-  // possible race condition if two modules require the same fallback and version.
-  await Promise.all(loadModuleFallbackExternals(moduleName));
-
   if (typeof moduleName !== 'string') {
     throw new TypeError('loadModule: moduleName must be a string');
   }
@@ -74,6 +70,9 @@ async function loadModule(moduleName, moduleData) {
   if (typeof moduleData !== 'object') {
     throw new TypeError('loadModule: moduleData must be an object');
   }
+  // first load all module fallbacks.
+  // possible race condition if two modules require the same fallback and version.
+  await loadModuleFallbackExternals(moduleName);
   // then load the module script.
   const integrity = moduleData.getIn([
     // eslint-disable-next-line no-underscore-dangle
