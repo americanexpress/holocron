@@ -15,7 +15,7 @@
 import { getModule, getModuleMap } from './moduleRegistry';
 import { getUnregisteredRequiredExternals } from './externalRegistry';
 
-const noop = () => {};
+const noop = () => { };
 
 function createScript({ url, integrity, onLoad = noop }) {
   const script = global.document.createElement('script');
@@ -56,6 +56,7 @@ function createScript({ url, integrity, onLoad = noop }) {
 function loadModuleFallbackExternals(moduleName) {
   const fallbacks = getUnregisteredRequiredExternals(moduleName);
   const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
+
   return Promise.all(fallbacks.map(({ filename, integrity }) => createScript({
     url: `${baseUrl}${filename}`,
     integrity,

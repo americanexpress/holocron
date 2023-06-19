@@ -19,15 +19,32 @@ import { Agent as HttpsAgent } from 'https';
 import ssri from 'ssri';
 import requireFromString from 'require-from-string';
 
-import { isModuleInBlockList, addToModuleBlockList } from './moduleRegistry';
+import { getUnregisteredRequiredExternals, validateExternal, addRequiredExternal, registerExternal } from './externalRegistry';
+import { isModuleInBlockList, addToModuleBlockList, getModuleMap, registerModuleUsingExternals } from './moduleRegistry';
 
 const maxRetries = Number(process.env.HOLOCRON_SERVER_MAX_MODULES_RETRY) || 3;
 const maxSockets = Number(process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH) || 30;
 const agentOptions = { maxSockets };
 
-function fetchModuleContent(moduleUrl) {
+/**
+ * Checks a request's response status throws an error
+ * with status as error message
+ * @param {object} response Http Response object
+ */
+const checkStatus = (response) => {
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(response.statusText || response.status);
+  }
+}
+
+/**
+ * Fetches asset from CDN. Automatically retries when request fails
+ * @param {string} assetUrl
+ * @returns {Promise<string>}
+ */
+const fetchAsset = async (assetUrl) => {
   let tries = 0;
-  const { protocol } = parseUrl(moduleUrl);
+  const { protocol } = parseUrl(assetUrl);
 
   if (process.env.NODE_ENV === 'production') {
     assert(protocol === 'https:', 'HTTPS must be used to load modules in production');
@@ -37,34 +54,185 @@ function fetchModuleContent(moduleUrl) {
     ? new HttpAgent(agentOptions)
     : new HttpsAgent(agentOptions);
 
-  const fetchModuleContentAttempt = () => fetch(moduleUrl, { agent })
-    .catch((err) => {
+  const fetchAssetAttempt = async () => {
+    let response;
+
+    try {
+      response = await fetch(assetUrl, { agent });
+    } catch (err) {
       tries += 1;
+
       if (tries > maxRetries) {
         throw err;
       }
-      console.warn(`Encountered error fetching module at ${moduleUrl}: ${err.message}\nRetrying (${tries})...`);
-      return fetchModuleContentAttempt();
-    });
 
-  return fetchModuleContentAttempt();
+      console.warn(`Encountered error fetching module at ${assetUrl}: ${err.message}\nRetrying (${tries})...`);
+
+      return fetchAssetAttempt();
+    }
+
+    checkStatus(response);
+
+    return response.text();
+  };
+
+  return fetchAssetAttempt();
 }
 
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
+/**
+ * Fetches a node module from url. It uses 'requireFromString'
+ * to load the module from a string
+ * @param {string} url CDN url
+ * @param {string} integrity Integrity hash
+ * @param {object} context Node Module context
+ * @param {string} context.name Node Module name
+ * @param {string} context.type Node Module type (e.g. holocron module, external  etc)
+ * @returns Node Module as module
+ */
+const fetchNodeModule = async (url, integrity, context) => {
+  try {
+    const moduleString = await fetchAsset(url);
+
+    if (process.env.NODE_ENV === 'production') {
+      const actualSRI = ssri.fromData(
+        moduleString,
+        { algorithms: ['sha256', 'sha384'] }
+      ).toString();
+
+      assert(integrity === actualSRI, `SRI for module at ${url} must match SRI in module map.\n Expected ${integrity}, received ${actualSRI}`);
+    }
+
+    return requireFromString(moduleString, url);
+  } catch (err) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn([
+        `${context.type} "${context.name}" at "${url}" failed to execute.`,
+        `\t[Error Message]: "${err.message}"`,
+        'Please fix any errors and wait for it to be reloaded.'
+      ].join('\n'));
+    } else if (err.shouldBlockModuleReload !== false) {
+      addToModuleBlockList(url);
+
+      console.warn(`${context.type} at ${url} added to blocklist: ${err.message}`);
+    }
+    throw err;
+  }
+}
+
+/**
+ * Loads Fallback Externals for a module
+ * @param {string} baseUrl path to the assets
+ * @param {string} moduleName module name
+ */
+const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
+  const fallbacks = getUnregisteredRequiredExternals(moduleName);
+
+  await Promise.all(
+    fallbacks.map(async ({ name, version, integrity }) => {
+      const externalModule = await fetchNodeModule(`${baseUrl}${name}.node.js`, integrity, {
+        type: 'External Fallback',
+        name,
+      });
+
+      registerExternal({ name, version, module: externalModule });
+    })
+  );
+}
+
+/**
+ * Validates Required Externals
+ * @param {object} params
+ * @param {object} params.requiredExternals Required Externals
+ * @param {string} params.moduleName module name
+ * @param {object} params.providedExternals Provided Externals
+ * @param {boolean} params.enableUnlistedExternalFallbacks flag to enable external fallbacks
+ */
+const validateRequiredExternals = ({
+  requiredExternals,
+  moduleName,
+  providedExternals,
+  enableUnlistedExternalFallbacks,
+}) => {
+  const messages = [];
+  let moduleCanBeSafelyLoaded = true;
+  const fallbackExternals = [];
+
+  Object.keys(requiredExternals).forEach((externalName) => {
+    const providedExternal = providedExternals[externalName];
+    const requiredExternal = requiredExternals[externalName];
+    // handle older requiredExternals api
+    const semanticRange = requiredExternal.semanticRange || requiredExternal;
+    const { version, name, integrity } = requiredExternal;
+    const fallbackExternalAvailable = !!name && !!version;
+    const fallbackBlockedByRootModule = !!providedExternal && !providedExternal.fallbackEnabled;
+
+    if (!providedExternal) {
+      messages.push(`External '${externalName}' is required by ${moduleName}, but is not provided by the root module`);
+      if (!enableUnlistedExternalFallbacks) {
+        moduleCanBeSafelyLoaded = false;
+      }
+    } else if (
+      !validateExternal({
+        providedVersion: providedExternal.version,
+        requestedRange: semanticRange,
+      })
+    ) {
+      messages.push(`${externalName}@${semanticRange} is required by ${moduleName}, but the root module provides ${providedExternal.version}`);
+
+      if (fallbackBlockedByRootModule || !fallbackExternalAvailable) {
+        moduleCanBeSafelyLoaded = false;
+      }
+    }
+
+    if (fallbackExternalAvailable) {
+      fallbackExternals.push({
+        moduleName,
+        name,
+        version,
+        semanticRange,
+        integrity,
+      });
+    }
+  });
+
+  if (messages.length > 0) {
+    if (moduleCanBeSafelyLoaded || (process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS === 'true')) {
+      console.warn(messages.join('\n'));
+    } else {
+      throw new Error(messages.join('\n'));
+    }
+
+    fallbackExternals.forEach((external) => {
+      addRequiredExternal(external);
+    });
+  }
+}
+
+/**
+ * Fetches Module Config. Returns null if does not exist or an error has occured
+ * @param {string} baseUrl path to the assets
+ * @returns {Promise<object | null>}
+ */
+const fetchModuleConfig = async (baseUrl) => {
+  const moduleConfigUrl = `${baseUrl}module-config.json`
+
+  try {
+    const moduleConfigStr = await fetchAsset(moduleConfigUrl);
+    const moduleConfig = JSON.parse(moduleConfigStr);
+
+    return moduleConfig;
+  } catch (err) {
+    console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', err)
   }
 
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
+  return null;
 }
 
-export default async function loadModule(
+const loadModule = async (
   moduleName,
-  { node: { integrity, url } },
+  { node: { integrity, url }, baseUrl },
   onModuleLoad = () => null
-) {
+) => {
   try {
     assert(typeof moduleName === 'string', 'moduleName must be a string');
 
@@ -72,30 +240,34 @@ export default async function loadModule(
       throw new Error(`module at ${url} previously failed to load, will not attempt to reload.`);
     }
 
-    const moduleResponse = await fetchModuleContent(url);
-    let nodeModule;
+    const rootModule = global.getTenantRootModule?.();
 
-    try {
-      checkStatus(moduleResponse);
-      const moduleString = await moduleResponse.text();
-      if (process.env.NODE_ENV === 'production') {
-        const actualSRI = ssri.fromData(
-          moduleString,
-          { algorithms: ['sha256', 'sha384'] }
-        ).toString();
+    if (rootModule) {
+      const rootModuleConfig = rootModule.appConfig;
+      const { requiredExternals } = (await fetchModuleConfig(baseUrl)) || {};
 
-        assert(integrity === actualSRI, `SRI for module at ${url} must match SRI in module map.\n Expected ${integrity}, received ${actualSRI}`);
+      if (requiredExternals) {
+        const {
+          providedExternals: rootProvidedExternals,
+          enableUnlistedExternalFallbacks,
+        } = rootModuleConfig;
+
+        validateRequiredExternals({
+          moduleName,
+          requiredExternals,
+          providedExternals: rootProvidedExternals || {},
+          enableUnlistedExternalFallbacks,
+        });
+        registerModuleUsingExternals(moduleName);
+
+        await loadModuleFallbackExternals(baseUrl, moduleName);
       }
-      nodeModule = requireFromString(moduleString, url);
-    } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Holocron module "%s" at "%s" failed to execute.\n\t[Error Message]: "%s"\nPlease fix any errors and wait for it to be reloaded.', moduleName, url, err.message);
-      } else if (err.shouldBlockModuleReload !== false) {
-        addToModuleBlockList(url);
-        console.warn(`Holocron module at ${url} added to blocklist: ${err.message}`);
-      }
-      throw err;
     }
+
+    const nodeModule = await fetchNodeModule(url, integrity, {
+      type: 'Holocron module',
+      name: moduleName,
+    });
 
     onModuleLoad({
       moduleName,
@@ -106,6 +278,9 @@ export default async function loadModule(
   } catch (e) {
     console.log(`Failed to load Holocron module at ${url}`);
     console.log(e.stack);
+
     throw e;
   }
 }
+
+export default loadModule;

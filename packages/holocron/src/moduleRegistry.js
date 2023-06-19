@@ -12,34 +12,35 @@
  * under the License.
  */
 
-import { fromJS, List } from 'immutable';
+import { fromJS, List, Set as ImmutableSet } from 'immutable';
 import holocronModule from './holocronModule';
 
 let modules = fromJS({});
 let moduleMap = fromJS({});
 let moduleBlockList = List();
+let modulesUsingExternals = ImmutableSet();
 
-function addToModuleBlockList(moduleUrl) {
+export function addToModuleBlockList(moduleUrl) {
   moduleBlockList = moduleBlockList.push(moduleUrl);
 }
 
-function isModuleInBlockList(moduleUrl) {
+export function isModuleInBlockList(moduleUrl) {
   return moduleBlockList.find((value) => value === moduleUrl);
 }
 
-function getModuleBlockList() {
+export function getModuleBlockList() {
   return moduleBlockList;
 }
 
-function addHigherOrderComponent(module) {
+export function addHigherOrderComponent(module) {
   return holocronModule({ loadModuleData: module.loadModuleData, ...module.holocron })(module);
 }
 
-function registerModule(moduleName, module) {
+export function registerModule(moduleName, module) {
   modules = modules.set(moduleName, addHigherOrderComponent(module));
 }
 
-function getModule(moduleName, altModules) {
+export function getModule(moduleName, altModules) {
   if (altModules) {
     return altModules.get(moduleName);
   }
@@ -47,32 +48,35 @@ function getModule(moduleName, altModules) {
   return modules.get(moduleName);
 }
 
-function getModules() {
+export function getModules() {
   return modules;
 }
 
-function getModuleMap() {
+export function getModuleMap() {
   return moduleMap;
 }
 
-function setModuleMap(newModuleMap) {
+export function setModuleMap(newModuleMap) {
   moduleMap = fromJS(newModuleMap);
 }
 
-function resetModuleRegistry(newModules, newModuleMap) {
+export function resetModuleRegistry(newModules, newModuleMap) {
   modules = fromJS(newModules);
   setModuleMap(newModuleMap);
 }
 
-export {
-  addToModuleBlockList,
-  getModuleBlockList,
-  isModuleInBlockList,
-  registerModule,
-  getModule,
-  getModules,
-  getModuleMap,
-  setModuleMap,
-  resetModuleRegistry,
-  addHigherOrderComponent,
-};
+export function registerModuleUsingExternals(moduleName) {
+  modulesUsingExternals = modulesUsingExternals.add(moduleName);
+}
+
+export function clearModulesUsingExternals() {
+  modulesUsingExternals = modulesUsingExternals.clear();
+}
+
+export function getModulesUsingExternals() {
+  return modulesUsingExternals.toJS();
+}
+
+export function setModulesUsingExternals(moduleNames) {
+  modulesUsingExternals = ImmutableSet(moduleNames);
+}

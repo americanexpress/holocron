@@ -69,6 +69,7 @@ function setRequiredExternalsRegistry(newRequiredModuleExternals) {
 
 function getUnregisteredRequiredExternals(moduleName) {
   const fallbacks = getRequiredExternals(moduleName);
+
   return fallbacks.filter(
     ({ name, version }) => !hasExternalLoaded({ name, version })
   );

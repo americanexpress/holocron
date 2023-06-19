@@ -19,6 +19,9 @@ import {
   getModules,
   getModuleMap,
   setModuleMap,
+  clearModulesUsingExternals,
+  getModulesUsingExternals,
+  setModulesUsingExternals,
 } from './moduleRegistry';
 import {
   loadModule,
@@ -36,6 +39,7 @@ import {
   validateExternal,
   registerExternal,
   getExternal,
+  getExternals,
   addRequiredExternal,
   getRequiredExternals,
   getUnregisteredRequiredExternals,
@@ -64,9 +68,13 @@ export {
   validateExternal,
   registerExternal,
   getExternal,
+  getExternals,
   addRequiredExternal,
   getRequiredExternalsRegistry,
   getRequiredExternals,
   getUnregisteredRequiredExternals,
   setRequiredExternalsRegistry,
+  clearModulesUsingExternals,
+  getModulesUsingExternals,
+  setModulesUsingExternals,
 };
