@@ -19,8 +19,10 @@ import { Agent as HttpsAgent } from 'https';
 import ssri from 'ssri';
 import requireFromString from 'require-from-string';
 
-import { getUnregisteredRequiredExternals, validateExternal, addRequiredExternal, registerExternal } from './externalRegistry';
-import { isModuleInBlockList, addToModuleBlockList, getModuleMap, registerModuleUsingExternals } from './moduleRegistry';
+import {
+  getUnregisteredRequiredExternals, validateExternal, addRequiredExternal, registerExternal,
+} from './externalRegistry';
+import { isModuleInBlockList, addToModuleBlockList, registerModuleUsingExternals } from './moduleRegistry';
 
 const maxRetries = Number(process.env.HOLOCRON_SERVER_MAX_MODULES_RETRY) || 3;
 const maxSockets = Number(process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH) || 30;
@@ -32,10 +34,10 @@ const agentOptions = { maxSockets };
  * @param {object} response Http Response object
  */
 const checkStatus = (response) => {
-  if (response.status < 200 || response.status >= 300) {
+  if (!response.ok) {
     throw new Error(response.statusText || response.status);
   }
-}
+};
 
 /**
  * Fetches asset from CDN. Automatically retries when request fails
@@ -43,7 +45,6 @@ const checkStatus = (response) => {
  * @returns {Promise<string>}
  */
 const fetchAsset = async (assetUrl) => {
-  let tries = 0;
   const { protocol } = parseUrl(assetUrl);
 
   if (process.env.NODE_ENV === 'production') {
@@ -54,21 +55,19 @@ const fetchAsset = async (assetUrl) => {
     ? new HttpAgent(agentOptions)
     : new HttpsAgent(agentOptions);
 
-  const fetchAssetAttempt = async () => {
+  const fetchAssetAttempt = async (tries) => {
     let response;
 
     try {
       response = await fetch(assetUrl, { agent });
     } catch (err) {
-      tries += 1;
-
       if (tries > maxRetries) {
         throw err;
       }
 
       console.warn(`Encountered error fetching module at ${assetUrl}: ${err.message}\nRetrying (${tries})...`);
 
-      return fetchAssetAttempt();
+      return fetchAssetAttempt(tries + 1);
     }
 
     checkStatus(response);
@@ -76,8 +75,8 @@ const fetchAsset = async (assetUrl) => {
     return response.text();
   };
 
-  return fetchAssetAttempt();
-}
+  return fetchAssetAttempt(1);
+};
 
 /**
  * Fetches a node module from url. It uses 'requireFromString'
@@ -108,7 +107,7 @@ const fetchNodeModule = async (url, integrity, context) => {
       console.warn([
         `${context.type} "${context.name}" at "${url}" failed to execute.`,
         `\t[Error Message]: "${err.message}"`,
-        'Please fix any errors and wait for it to be reloaded.'
+        'Please fix any errors and wait for it to be reloaded.',
       ].join('\n'));
     } else if (err.shouldBlockModuleReload !== false) {
       addToModuleBlockList(url);
@@ -117,7 +116,7 @@ const fetchNodeModule = async (url, integrity, context) => {
     }
     throw err;
   }
-}
+};
 
 /**
  * Loads Fallback Externals for a module
@@ -137,7 +136,7 @@ const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
       registerExternal({ name, version, module: externalModule });
     })
   );
-}
+};
 
 /**
  * Validates Required Externals
@@ -179,7 +178,7 @@ const validateRequiredExternals = ({
     ) {
       messages.push(`${externalName}@${semanticRange} is required by ${moduleName}, but the root module provides ${providedExternal.version}`);
 
-      if (fallbackBlockedByRootModule || !fallbackExternalAvailable) {
+      if (fallbackBlockedByRootModule) {
         moduleCanBeSafelyLoaded = false;
       }
     }
@@ -206,7 +205,7 @@ const validateRequiredExternals = ({
       addRequiredExternal(external);
     });
   }
-}
+};
 
 /**
  * Fetches Module Config. Returns null if does not exist or an error has occured
@@ -214,7 +213,7 @@ const validateRequiredExternals = ({
  * @returns {Promise<object | null>}
  */
 const fetchModuleConfig = async (baseUrl) => {
-  const moduleConfigUrl = `${baseUrl}module-config.json`
+  const moduleConfigUrl = `${baseUrl}module-config.json`;
 
   try {
     const moduleConfigStr = await fetchAsset(moduleConfigUrl);
@@ -222,11 +221,11 @@ const fetchModuleConfig = async (baseUrl) => {
 
     return moduleConfig;
   } catch (err) {
-    console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', err)
+    console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', err);
   }
 
   return null;
-}
+};
 
 const loadModule = async (
   moduleName,
@@ -240,11 +239,11 @@ const loadModule = async (
       throw new Error(`module at ${url} previously failed to load, will not attempt to reload.`);
     }
 
-    const rootModule = global.getTenantRootModule?.();
+    const rootModule = global.getTenantRootModule ? global.getTenantRootModule() : null;
 
     if (rootModule) {
       const rootModuleConfig = rootModule.appConfig;
-      const { requiredExternals } = (await fetchModuleConfig(baseUrl)) || {};
+      const { requiredExternals } = await fetchModuleConfig(baseUrl) || {};
 
       if (requiredExternals) {
         const {
@@ -281,6 +280,6 @@ const loadModule = async (
 
     throw e;
   }
-}
+};
 
 export default loadModule;

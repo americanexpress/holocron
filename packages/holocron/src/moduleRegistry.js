@@ -20,27 +20,27 @@ let moduleMap = fromJS({});
 let moduleBlockList = List();
 let modulesUsingExternals = ImmutableSet();
 
-export function addToModuleBlockList(moduleUrl) {
+function addToModuleBlockList(moduleUrl) {
   moduleBlockList = moduleBlockList.push(moduleUrl);
 }
 
-export function isModuleInBlockList(moduleUrl) {
+function isModuleInBlockList(moduleUrl) {
   return moduleBlockList.find((value) => value === moduleUrl);
 }
 
-export function getModuleBlockList() {
+function getModuleBlockList() {
   return moduleBlockList;
 }
 
-export function addHigherOrderComponent(module) {
+function addHigherOrderComponent(module) {
   return holocronModule({ loadModuleData: module.loadModuleData, ...module.holocron })(module);
 }
 
-export function registerModule(moduleName, module) {
+function registerModule(moduleName, module) {
   modules = modules.set(moduleName, addHigherOrderComponent(module));
 }
 
-export function getModule(moduleName, altModules) {
+function getModule(moduleName, altModules) {
   if (altModules) {
     return altModules.get(moduleName);
   }
@@ -48,35 +48,52 @@ export function getModule(moduleName, altModules) {
   return modules.get(moduleName);
 }
 
-export function getModules() {
+function getModules() {
   return modules;
 }
 
-export function getModuleMap() {
+function getModuleMap() {
   return moduleMap;
 }
 
-export function setModuleMap(newModuleMap) {
+function setModuleMap(newModuleMap) {
   moduleMap = fromJS(newModuleMap);
 }
 
-export function resetModuleRegistry(newModules, newModuleMap) {
+function resetModuleRegistry(newModules, newModuleMap) {
   modules = fromJS(newModules);
   setModuleMap(newModuleMap);
 }
 
-export function registerModuleUsingExternals(moduleName) {
+function registerModuleUsingExternals(moduleName) {
   modulesUsingExternals = modulesUsingExternals.add(moduleName);
 }
 
-export function clearModulesUsingExternals() {
+function clearModulesUsingExternals() {
   modulesUsingExternals = modulesUsingExternals.clear();
 }
 
-export function getModulesUsingExternals() {
+function getModulesUsingExternals() {
   return modulesUsingExternals.toJS();
 }
 
-export function setModulesUsingExternals(moduleNames) {
+function setModulesUsingExternals(moduleNames) {
   modulesUsingExternals = ImmutableSet(moduleNames);
 }
+
+export {
+  addToModuleBlockList,
+  isModuleInBlockList,
+  getModuleBlockList,
+  addHigherOrderComponent,
+  registerModule,
+  getModule,
+  getModules,
+  getModuleMap,
+  setModuleMap,
+  resetModuleRegistry,
+  registerModuleUsingExternals,
+  clearModulesUsingExternals,
+  getModulesUsingExternals,
+  setModulesUsingExternals,
+};

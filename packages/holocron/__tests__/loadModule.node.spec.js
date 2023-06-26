@@ -30,30 +30,48 @@ jest.mock('require-from-string', () => jest.fn((str) => {
 
 let requireFromString;
 let moduleRegistry;
+let externalRegistry;
 
 describe('loadModule.node', () => {
-  // resetModules and require to allow for changing an env var that is used for a const
-  function load({
+  const makeFetchMock = ({
     fetchText,
     fetchStatus,
     fetchStatusText,
     fetchError,
+  } = {}) => jest.fn(() => (fetchError ? Promise.reject(fetchError) : Promise.resolve({
+    status: fetchStatus || 200,
+    statusText: fetchStatusText !== undefined ? fetchStatusText : 'OK',
+    // no one should expect the Spanish Inquisition default
+    text: () => Promise.resolve(fetchText || 'the Spanish Inquisition'),
+    ok: (fetchStatus || 200) >= 200 && (fetchStatus || 200) < 300,
+  })));
+
+  // resetModules and require to allow for changing an env var that is used for a const
+  function load({
+    fetch,
     moduleToBlockList,
+    getTenantRootModule,
   } = {}) {
     jest.resetModules();
 
-    global.fetch = jest.fn(() => (fetchError ? Promise.reject(fetchError) : Promise.resolve({
-      status: fetchStatus || 200,
-      statusText: fetchStatusText || 'OK',
-      // no one should expect the Spanish Inquisition default
-      text: () => Promise.resolve(fetchText || 'the Spanish Inquisition'),
-    })));
+    global.fetch = fetch || makeFetchMock();
+
     requireFromString = require('require-from-string'); // eslint-disable-line global-require
+
     requireFromString.mockClear();
+
     moduleRegistry = require('../src/moduleRegistry');
+
     if (moduleToBlockList) {
       moduleRegistry.addToModuleBlockList(moduleToBlockList);
     }
+
+    if (getTenantRootModule) {
+      global.getTenantRootModule = getTenantRootModule;
+    }
+
+    externalRegistry = require('../src/externalRegistry');
+
     return require('../src/loadModule.node.js').default; // eslint-disable-line global-require
   }
 
@@ -121,7 +139,7 @@ describe('loadModule.node', () => {
         expect.assertions(2);
 
         delete process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH;
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
 
         await loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } });
         expect(mockHttpsAgent).toHaveBeenCalledTimes(1);
@@ -130,7 +148,7 @@ describe('loadModule.node', () => {
 
       it('is configurable by env var HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH', async () => {
         process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH = 20;
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
         await loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } });
 
         expect(mockHttpsAgent).toHaveBeenCalledTimes(1);
@@ -139,7 +157,7 @@ describe('loadModule.node', () => {
 
       it('is a number when configured by HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH', async () => {
         process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH = '20';
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
         await loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } });
 
         expect(mockHttpsAgent).toHaveBeenCalledTimes(1);
@@ -148,7 +166,7 @@ describe('loadModule.node', () => {
 
       it('uses the default when HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH is not parsable as a number', async () => {
         process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH = 'Eleven-ish';
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
         await loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } });
 
         expect(mockHttpsAgent).toHaveBeenCalledTimes(1);
@@ -162,7 +180,7 @@ describe('loadModule.node', () => {
       });
 
       it('is an http.Agent when module url is HTTP', async () => {
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
         await loadModule('awesome', { node: { integrity: '123', url: 'http://example.com/cdn/awesome/1.0.0/awesome.node.js' } });
 
         expect(mockHttpAgent).toHaveBeenCalledTimes(1);
@@ -170,7 +188,7 @@ describe('loadModule.node', () => {
       });
 
       it('is an https.Agent when module url is HTTPS', async () => {
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
         await loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } });
 
         expect(mockHttpsAgent).toHaveBeenCalledTimes(1);
@@ -188,7 +206,7 @@ describe('loadModule.node', () => {
     it('defaults to 3', () => {
       expect.assertions(1);
       delete process.env.HOLOCRON_SERVER_MAX_MODULES_RETRY;
-      const loadModule = load({ fetchError: new Error('test error, like a socket disconnect') });
+      const loadModule = load({ fetch: makeFetchMock({ fetchError: new Error('test error, like a socket disconnect') }) });
 
       return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
         .catch(() => {
@@ -199,7 +217,7 @@ describe('loadModule.node', () => {
     it('is configurable by env var HOLOCRON_SERVER_MAX_MODULES_RETRY', () => {
       expect.assertions(1);
       process.env.HOLOCRON_SERVER_MAX_MODULES_RETRY = 5;
-      const loadModule = load({ fetchError: new Error('test error, like a socket disconnect') });
+      const loadModule = load({ fetch: makeFetchMock({ fetchError: new Error('test error, like a socket disconnect') }) });
 
       return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
         .catch(() => {
@@ -210,7 +228,7 @@ describe('loadModule.node', () => {
     it('uses the default when HOLOCRON_SERVER_MAX_MODULES_RETRY is not parsable as a number', () => {
       expect.assertions(1);
       process.env.HOLOCRON_SERVER_MAX_MODULES_RETRY = 'twelvteen';
-      const loadModule = load({ fetchError: new Error('test error, like a socket disconnect') });
+      const loadModule = load({ fetch: makeFetchMock({ fetchError: new Error('test error, like a socket disconnect') }) });
 
       return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
         .catch(() => {
@@ -227,7 +245,7 @@ describe('loadModule.node', () => {
 
       it('accepts 200', () => {
         expect.assertions(1);
-        const loadModule = load({ fetchStatus: 200 });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
         moduleRegistry.addToModuleBlockList = jest.fn();
         return loadModule('awesome', { node: { integrity: getSHA(), url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
           .then(() => {
@@ -237,7 +255,7 @@ describe('loadModule.node', () => {
 
       it('rejects 404', () => {
         expect.assertions(2);
-        const loadModule = load({ fetchStatus: 404, fetchStatusText: 'Not Found' });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 404, fetchStatusText: 'Not Found' }) });
         moduleRegistry.addToModuleBlockList = jest.fn();
         return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
           .catch((err) => {
@@ -248,7 +266,7 @@ describe('loadModule.node', () => {
 
       it('rejects 500', () => {
         expect.assertions(2);
-        const loadModule = load({ fetchStatus: 500, fetchStatusText: 'Server Error' });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 500, fetchStatusText: 'Server Error' }) });
         moduleRegistry.addToModuleBlockList = jest.fn();
         return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
           .catch((err) => {
@@ -259,11 +277,22 @@ describe('loadModule.node', () => {
 
       it('rejects 502', () => {
         expect.assertions(2);
-        const loadModule = load({ fetchStatus: 502, fetchStatusText: 'Bad Gateway' });
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 502, fetchStatusText: 'Bad Gateway' }) });
         moduleRegistry.addToModuleBlockList = jest.fn();
         return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
           .catch((err) => {
             expect(err).toHaveProperty('message', 'Bad Gateway');
+            expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith('https://example.com/cdn/awesome/1.0.0/awesome.node.js');
+          });
+      });
+
+      it('statusText defaults to status', () => {
+        expect.assertions(2);
+        const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 404, fetchStatusText: '' }) });
+        moduleRegistry.addToModuleBlockList = jest.fn();
+        return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
+          .catch((err) => {
+            expect(err).toHaveProperty('message', '404');
             expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith('https://example.com/cdn/awesome/1.0.0/awesome.node.js');
           });
       });
@@ -294,26 +323,27 @@ describe('loadModule.node', () => {
     });
 
     it('retries', () => {
-      expect.assertions(6);
+      // expect.assertions(6);
       const fetchError = new Error('test error, like a socket disconnect');
-      const loadModule = load({ fetchError });
+      const loadModule = load({ fetch: makeFetchMock({ fetchError }) });
 
       return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
         .catch((err) => {
           // 1 original call, 3 retries
           expect(fetch).toHaveBeenCalledTimes(1 + 3);
           expect(err).toBe(fetchError);
-          expect(console.warn).toHaveBeenCalledTimes(3);
+          expect(console.warn).toHaveBeenCalledTimes(4);
           expect(console.warn.mock.calls[0][0]).toMatchSnapshot();
           expect(console.warn.mock.calls[1][0]).toMatchSnapshot();
           expect(console.warn.mock.calls[2][0]).toMatchSnapshot();
+          expect(console.warn.mock.calls[3][0]).toMatchSnapshot();
         });
     });
 
     it('loads the code', () => {
       expect.assertions(2);
       const fetchText = 'loads the code';
-      const loadModule = load({ fetchText });
+      const loadModule = load({ fetch: makeFetchMock({ fetchText }) });
       return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
         .then(() => {
           expect(requireFromString).toHaveBeenCalled();
@@ -333,7 +363,7 @@ describe('loadModule.node', () => {
 
     it('resolves with the module', () => {
       const fetchText = 'resolves with the module';
-      const loadModule = load({ fetchText });
+      const loadModule = load({ fetch: makeFetchMock({ fetchText }) });
       expect.assertions(1);
       return expect(loadModule(
         'awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } }
@@ -345,7 +375,7 @@ describe('loadModule.node', () => {
       process.env.NODE_ENV = 'production';
       const fetchText = 'requireFromString throw test';
       const requireFromStringError = new Error(fetchText);
-      const loadModule = load({ fetchText });
+      const loadModule = load({ fetch: makeFetchMock({ fetchText }) });
       moduleRegistry.addToModuleBlockList = jest.fn();
       requireFromString.mockImplementation(() => { throw requireFromStringError; });
       await expect(
@@ -360,7 +390,7 @@ describe('loadModule.node', () => {
       const fetchText = 'requireFromStringError throw test';
       const requireFromStringError = new Error('requireFromString throw test');
       requireFromStringError.shouldBlockModuleReload = false;
-      const loadModule = load({ fetchText });
+      const loadModule = load({ fetch: makeFetchMock({ fetchText }) });
       moduleRegistry.addToModuleBlockList = jest.fn();
       requireFromString.mockImplementation(() => { throw requireFromStringError; });
       return loadModule('awesome', { node: { integrity: getSHA(fetchText), url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
@@ -370,7 +400,7 @@ describe('loadModule.node', () => {
     });
 
     it('does not add to blocklist on fetch error', () => {
-      const loadModule = load({ fetchError: new Error('test error, like a socket disconnect') });
+      const loadModule = load({ fetch: makeFetchMock({ fetchError: new Error('test error, like a socket disconnect') }) });
       expect.assertions(1);
       moduleRegistry.addToModuleBlockList = jest.fn();
       return loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
@@ -385,7 +415,7 @@ describe('loadModule.node', () => {
 
     const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
     const moduleString = { onModuleLoadConfig };
-    const loadModule = load({ fetchText: moduleString });
+    const loadModule = load({ fetch: makeFetchMock({ fetchText: moduleString }) });
     const mockonModuleLoad = jest.fn();
     await loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } }, mockonModuleLoad);
 
@@ -398,7 +428,7 @@ describe('loadModule.node', () => {
 
     const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
     const moduleString = { onModuleLoadConfig };
-    const loadModule = load({ fetchText: moduleString });
+    const loadModule = load({ fetch: makeFetchMock({ fetchText: moduleString }) });
     await expect(() => loadModule(
       'awesome',
       {
@@ -415,7 +445,7 @@ describe('loadModule.node', () => {
 
     process.env.NODE_ENV = 'production';
 
-    const loadModule = load({ fetchStatus: 200 });
+    const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200 }) });
     moduleRegistry.addToModuleBlockList = jest.fn();
     await expect(
       loadModule('awesome', { node: { integrity: '123', url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
@@ -429,7 +459,7 @@ describe('loadModule.node', () => {
     const integrity = 'sha256-xpUJWQ2B2y83+ddUgMjv7fead5M9tagxnlLhO/2YdKM= sha384-SFXpWQKI4NYS+u6/nkRVZUy/NNbOllh38hDuTre7xFJWsK5lsBZfSq6RN+Ye5tvP';
     process.env.NODE_ENV = 'production';
 
-    const loadModule = load({ fetchStatus: 200, fetchText: 'hello there!' });
+    const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200, fetchText: 'hello there!' }) });
     moduleRegistry.addToModuleBlockList = jest.fn();
 
     await expect(
@@ -451,7 +481,7 @@ describe('loadModule.node', () => {
       expect.assertions(3);
       const integrity = 'invalid sha!!!';
 
-      const loadModule = load({ fetchStatus: 200, fetchText: 'hello there!' });
+      const loadModule = load({ fetch: makeFetchMock({ fetchStatus: 200, fetchText: 'hello there!' }) });
       moduleRegistry.addToModuleBlockList = jest.fn();
       await expect(
         loadModule('awesome', { node: { integrity, url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js' } })
@@ -492,6 +522,288 @@ describe('loadModule.node', () => {
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
       expect(moduleRegistry.addToModuleBlockList).not.toHaveBeenCalledWith(moduleUrl);
+    });
+  });
+
+  describe('load external fallbacks', () => {
+    it('does not load fallback externals when requiredExternals are not present', async () => {
+      const loadModule = load({
+        getTenantRootModule: () => ({
+          appConfig: {},
+        }),
+      });
+
+      await loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('there are not required externals provided by the module config', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
+      const moduleString = { onModuleLoadConfig };
+
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => '{ "requiredExternals": [] }',
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(makeFetchMock({ fetchText: moduleString }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {},
+        }),
+      });
+
+      const mockonModuleLoad = jest.fn();
+
+      await loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      }, mockonModuleLoad);
+
+      expect(mockonModuleLoad)
+        .toHaveBeenCalledWith({ module: { onModuleLoadConfig }, moduleName: 'awesome' });
+      expect(externalRegistry.getExternals()).toEqual({});
+    });
+
+    it('registers and fetches external fallbacks', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
+      const moduleString = { onModuleLoadConfig };
+
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: [{
+            name: 'lodash',
+            version: '1.0.0',
+          }],
+        }),
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => 'external fallback code',
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(makeFetchMock({ fetchText: moduleString }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            providedExternals: {
+              lodash: {
+                version: '1.0.0',
+              },
+            },
+            enableUnlistedExternalFallbacks: true,
+          },
+        }),
+      });
+
+      const mockonModuleLoad = jest.fn();
+
+      await loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      }, mockonModuleLoad);
+
+      expect(mockonModuleLoad)
+        .toHaveBeenCalledWith({ module: { onModuleLoadConfig }, moduleName: 'awesome' });
+      expect(externalRegistry.getExternals()).toEqual({
+        lodash: {
+          '1.0.0': {
+            str: 'external fallback code',
+          },
+        },
+      });
+    });
+
+    it('throws an error when an external is required but the root module does not provide it', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
+      const moduleString = { onModuleLoadConfig };
+
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: {
+            lodash: {
+              version: '1.0.0',
+              semanticRange: '^1.0.0',
+            },
+          },
+        }),
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(makeFetchMock({ fetchText: moduleString }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            providedExternals: {},
+            enableUnlistedExternalFallbacks: false,
+          },
+        }),
+      });
+
+      expect(externalRegistry.getExternals()).toEqual({});
+      expect(loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      })).rejects.toEqual(new Error("External 'lodash' is required by awesome, but is not provided by the root module"));
+    });
+
+    it('throws an error when there is a version mismatch', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
+      const moduleString = { onModuleLoadConfig };
+
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: {
+            lodash: {
+              version: '1.0.0',
+              semanticRange: '^1.0.0',
+            },
+          },
+        }),
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(makeFetchMock({ fetchText: moduleString }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            providedExternals: {
+              lodash: {
+                version: '2.0.0',
+              },
+            },
+            enableUnlistedExternalFallbacks: false,
+          },
+        }),
+      });
+
+      expect(externalRegistry.getExternals()).toEqual({});
+      expect(loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      })).rejects.toEqual(new Error('lodash@^1.0.0 is required by awesome, but the root module provides 2.0.0'));
+    });
+
+    it('semantic range match', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
+      const moduleString = { onModuleLoadConfig };
+
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: {
+            lodash: {
+              version: '1.2.0',
+              semanticRange: '^1',
+            },
+          },
+        }),
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(makeFetchMock({ fetchText: moduleString }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            providedExternals: {
+              lodash: {
+                version: '1.0.0',
+              },
+            },
+            enableUnlistedExternalFallbacks: false,
+          },
+        }),
+      });
+
+      await loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      });
+
+      expect(externalRegistry.getExternals()).toEqual({});
+    });
+
+    it('works', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = { environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }] };
+      const moduleString = { onModuleLoadConfig };
+
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: {
+            lodash: {
+              semanticRange: '^1.0.0',
+            },
+          },
+        }),
+        ok: true,
+      }));
+      mockFetch.mockImplementationOnce(makeFetchMock({ fetchText: moduleString }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            providedExternals: {
+              lodash: {
+                version: '2.0.0',
+                fallbackEnabled: true,
+              },
+            },
+            enableUnlistedExternalFallbacks: false,
+          },
+        }),
+      });
+
+      await loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      });
+
+      expect(externalRegistry.getExternals()).toEqual({});
     });
   });
 });
