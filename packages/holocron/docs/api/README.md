@@ -26,11 +26,8 @@ available on the server. We have organized them as such.
   - [`getModuleMap`](#getmodulemap)
   - [`setModuleMap`](#setmodulemap)
 - [External Registry](#external-registry)
-  - [`validateExternal`](#validateExternal)
   - [`registerExternal`](#registerExternal)
   - [`getExternal`](#getExternal)
-  - [`addRequiredExternal`](#addRequiredExternal)
-  - [`getUnregisteredRequiredExternals`](#getUnregisteredRequiredExternals)
   - [`getRequiredExternals`](#getRequiredExternals)
   - [`getRequiredExternalsRegistry`](#getRequiredExternalsRegistry)
   - [`setRequiredExternalsRegistry`](#setRequiredExternalsRegistry)
@@ -439,28 +436,6 @@ setModuleMap(newModuleMap);
 
 These functions relate to managing the external registry across Holocron modules.
 
-#### `validateExternal`
-
-Returns a boolean. Use to validate if a semantic version is satisfied by provided semantic range.
-
-##### Arguments
-
-`validateExternal` takes the following named arguments:
-
-| name              | type     | required | value                                                   |
-| ----------------- | -------- | -------- | ------------------------------------------------------- |
-| `providedVersion` | `String` | `true`   | semantic version                                        |
-| `requestedRange`  | `String` | `true`   | semantic range to validate the provided version against |
-
-
-##### Usage
-
-```js
-const thisIsValid = validateExternal({ providedVersion: '1.2.3', requestedRange: '^1.0.0' });
-const thisIsNotValid = validateExternal({ providedVersion: '1.2.3', requestedRange: '^2.0.0' });
-```
-
-
 #### `registerExternal`
 
 Used to register an external dependency.
@@ -507,36 +482,6 @@ Retrieve the external from registry.
 const thisDep = getExternal({ name: 'this-dep', version: '1.2.3' });
 ```
 
-#### `addRequiredExternal`
-
-Add details for tracking a Holocron modules external.
-
-##### Arguments
-
-`addRequiredExternal` takes the following named arguments:
-
-| name            | type     | required | value                                   |
-| --------------- | -------- | -------- | --------------------------------------- |
-| `moduleName`    | `String` | `true`   | Name of module external is required for |
-| `name`          | `String` | `true`   | Name of the external                    |
-| `version`       | `String` | `true`   | Version of the available external       |
-| `semanticRange` | `String` | `true`   | Semantic range of required external     |
-| `filename`      | `String` | `true`   | Filename of fallback                    |
-| `integrity`     | `String` | `true`   | Integrity value of external             |
-
-
-##### Usage
-
-```js
-addRequiredExternal({
-  moduleName: 'my-module',
-  name: 'this-dep',
-  version: '1.2.3',
-  semanticRange: '^1.1.1',
-  integrity: 'sha123-45678912345abcdefg',
-});
-```
-
 #### `getRequiredExternals`
 
 Return all the required externals for Holocron module.
@@ -551,28 +496,6 @@ Return all the required externals for Holocron module.
 
 ```js
 const moduleAExternals = getRequiredExternals('module-a');
-expect(moduleAExternals).toEqual([{
-  moduleName: 'module-a',
-  name: 'this-dep',
-  version: '1.2.3',
-  semanticRange: '^1.1.1',
-  integrity: 'sha123-45678912345abcdefg',
-}]);
-```
-
-#### `getUnregisteredRequiredExternals`
-
-Return external data for each external which has not been registered
-
-##### Arguments
-| name         | type     | required | value                   |
-| ------------ | -------- | -------- | ----------------------- |
-| `moduleName` | `String` | `true`   | Name of Holocron module |
-
-##### Usage
-
-```js
-const moduleAExternals = getUnregisteredRequiredExternals('module-a');
 expect(moduleAExternals).toEqual([{
   moduleName: 'module-a',
   name: 'this-dep',

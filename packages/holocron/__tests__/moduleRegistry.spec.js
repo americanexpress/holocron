@@ -27,7 +27,6 @@ import {
   registerModuleUsingExternals,
   clearModulesUsingExternals,
   getModulesUsingExternals,
-  setModulesUsingExternals,
 } from '../src/moduleRegistry';
 
 describe('moduleRegistry', () => {
@@ -142,14 +141,6 @@ describe('moduleRegistry', () => {
       registerModuleUsingExternals('awesome');
 
       expect(getModulesUsingExternals()).toEqual(['awesome']);
-    });
-  });
-
-  describe('setModulesUsingExternals', () => {
-    it('sets multiple modules', () => {
-      setModulesUsingExternals(['awesome', 'module']);
-
-      expect(getModulesUsingExternals()).toEqual(['awesome', 'module']);
     });
   });
 });

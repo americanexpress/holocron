@@ -28,31 +28,34 @@ describe('externalRegistry', () => {
   });
 
   it('maintains registry of required external fallbacks', () => {
-    externalRegistry.addRequiredExternal({
+    externalRegistry.setModulesRequiredExternals({
       moduleName: 'child-module-a',
-      name: 'this-version',
-      version: '1.2.3',
-      semanticRange: '^1.2.0',
-      filename: 'this-version.js',
-      integrity: '12345hash',
+      externals: {
+        'this-version': {
+          name: 'this-version',
+          version: '1.2.3',
+          semanticRange: '^1.2.0',
+          integrity: '12345hash',
+        },
+        'that-dep': {
+          name: 'that-dep',
+          version: '2.3.1',
+          semanticRange: '^2.2.0',
+          integrity: '12345hash',
+        },
+      },
     });
 
-    externalRegistry.addRequiredExternal({
-      moduleName: 'child-module-a',
-      name: 'that-dep',
-      version: '2.3.1',
-      semanticRange: '^2.2.0',
-      filename: 'this-dep.js',
-      integrity: '12345hash',
-    });
-
-    externalRegistry.addRequiredExternal({
+    externalRegistry.setModulesRequiredExternals({
       moduleName: 'child-module-b',
-      name: 'this-version',
-      version: '1.2.4',
-      semanticRange: '^1.2.0',
-      filename: 'this-version.js',
-      integrity: '123456hash',
+      externals: {
+        'this-version': {
+          name: 'this-version',
+          version: '1.2.4',
+          semanticRange: '^1.2.0',
+          integrity: '123456hash',
+        },
+      },
     });
 
     expect(externalRegistry.getRequiredExternalsRegistry())
@@ -60,22 +63,22 @@ describe('externalRegistry', () => {
       Object {
         "child-module-a": Object {
           "that-dep": Object {
-            "filename": "this-dep.js",
             "integrity": "12345hash",
+            "name": "that-dep",
             "semanticRange": "^2.2.0",
             "version": "2.3.1",
           },
           "this-version": Object {
-            "filename": "this-version.js",
             "integrity": "12345hash",
+            "name": "this-version",
             "semanticRange": "^1.2.0",
             "version": "1.2.3",
           },
         },
         "child-module-b": Object {
           "this-version": Object {
-            "filename": "this-version.js",
             "integrity": "123456hash",
+            "name": "this-version",
             "semanticRange": "^1.2.0",
             "version": "1.2.4",
           },
@@ -87,29 +90,28 @@ describe('externalRegistry', () => {
   describe('getRequiredExternals', () => {
     it('returns all required fallbacks externals for a module', () => {
       const moduleName = 'child-module-a';
-      externalRegistry.addRequiredExternal({
+      externalRegistry.setModulesRequiredExternals({
         moduleName,
-        name: 'some-dep',
-        version: '1.2.3',
-        semanticRange: '^1.2.0',
-        filename: 'some-dep.js',
-        integrity: '12345hash',
-      });
-
-      externalRegistry.addRequiredExternal({
-        moduleName,
-        name: 'that-dep',
-        version: '1.2.4',
-        semanticRange: '^1.2.0',
-        filename: 'that-dep.js',
-        integrity: '123456hash',
+        externals: {
+          'some-dep': {
+            name: 'some-dep',
+            version: '1.2.3',
+            semanticRange: '^1.2.0',
+            integrity: '12345hash',
+          },
+          'that-dep': {
+            name: 'that-dep',
+            version: '1.2.4',
+            semanticRange: '^1.2.0',
+            integrity: '123456hash',
+          },
+        },
       });
 
       expect(externalRegistry.getRequiredExternals(moduleName))
         .toMatchInlineSnapshot(`
         Array [
           Object {
-            "filename": "some-dep.js",
             "integrity": "12345hash",
             "moduleName": "child-module-a",
             "name": "some-dep",
@@ -117,7 +119,6 @@ describe('externalRegistry', () => {
             "version": "1.2.3",
           },
           Object {
-            "filename": "that-dep.js",
             "integrity": "123456hash",
             "moduleName": "child-module-a",
             "name": "that-dep",
@@ -137,22 +138,22 @@ describe('externalRegistry', () => {
         externalRegistry.getUnregisteredRequiredExternals(moduleName)
       ).toMatchInlineSnapshot('Array []');
 
-      externalRegistry.addRequiredExternal({
+      externalRegistry.setModulesRequiredExternals({
         moduleName,
-        name: 'some-dep',
-        version: '1.2.3',
-        semanticRange: '^1.2.0',
-        filename: 'some-dep.js',
-        integrity: '12345hash',
-      });
-
-      externalRegistry.addRequiredExternal({
-        moduleName,
-        name: 'that-dep',
-        version: '1.2.4',
-        semanticRange: '^1.2.0',
-        filename: 'that-dep.js',
-        integrity: '123456hash',
+        externals: {
+          'some-dep': {
+            name: 'some-dep',
+            version: '1.2.3',
+            semanticRange: '^1.2.0',
+            integrity: '12345hash',
+          },
+          'that-dep': {
+            name: 'that-dep',
+            version: '1.2.4',
+            semanticRange: '^1.2.0',
+            integrity: '123456hash',
+          },
+        },
       });
 
       externalRegistry.registerExternal({
@@ -165,7 +166,6 @@ describe('externalRegistry', () => {
         .toMatchInlineSnapshot(`
         Array [
           Object {
-            "filename": "that-dep.js",
             "integrity": "123456hash",
             "moduleName": "child-module-a",
             "name": "that-dep",
@@ -184,13 +184,16 @@ describe('externalRegistry', () => {
     it('does not accidentally match different registered version', () => {
       const moduleName = 'child-module-a';
       const name = 'some-dep';
-      externalRegistry.addRequiredExternal({
+      externalRegistry.setModulesRequiredExternals({
         moduleName,
-        name,
-        version: '1.0.0',
-        semanticRange: '^1.0.0',
-        filename: 'some-dep.js',
-        integrity: '12345hash',
+        externals: {
+          [name]: {
+            name,
+            version: '1.0.0',
+            semanticRange: '^1.0.0',
+            integrity: '12345hash',
+          },
+        },
       });
 
       externalRegistry.registerExternal({
@@ -202,7 +205,6 @@ describe('externalRegistry', () => {
         .toMatchInlineSnapshot(`
         Array [
           Object {
-            "filename": "some-dep.js",
             "integrity": "12345hash",
             "moduleName": "child-module-a",
             "name": "some-dep",
@@ -251,7 +253,7 @@ describe('externalRegistry', () => {
       externalRegistry.setRequiredExternalsRegistry({
         'child-module-a': {
           'that-dep': {
-            filename: 'this-dep.js',
+            name: 'this-dep.js',
             semanticRange: '^2.2.0',
             integrity: '12345hash',
             version: '2.3.1',
@@ -259,7 +261,7 @@ describe('externalRegistry', () => {
         },
         'child-module-b': {
           'this-version': {
-            filename: 'this-version.js',
+            name: 'this-version.js',
             semanticRange: '^1.2.0',
             integrity: '123456hash',
             version: '1.2.4',

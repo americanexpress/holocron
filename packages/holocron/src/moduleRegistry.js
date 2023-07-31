@@ -77,10 +77,6 @@ function getModulesUsingExternals() {
   return modulesUsingExternals.toJS();
 }
 
-function setModulesUsingExternals(moduleNames) {
-  modulesUsingExternals = ImmutableSet(moduleNames);
-}
-
 export {
   addToModuleBlockList,
   isModuleInBlockList,
@@ -95,5 +91,4 @@ export {
   registerModuleUsingExternals,
   clearModulesUsingExternals,
   getModulesUsingExternals,
-  setModulesUsingExternals,
 };

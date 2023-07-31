@@ -20,7 +20,12 @@ import ssri from 'ssri';
 import requireFromString from 'require-from-string';
 
 import {
-  getUnregisteredRequiredExternals, validateExternal, addRequiredExternal, registerExternal,
+  getUnregisteredRequiredExternals,
+  validateExternal,
+  registerExternal,
+  clearModulesRequiredExternals,
+  setModulesRequiredExternals,
+  getRequiredExternalsRegistry,
 } from './externalRegistry';
 import { isModuleInBlockList, addToModuleBlockList, registerModuleUsingExternals } from './moduleRegistry';
 
@@ -154,7 +159,7 @@ const validateRequiredExternals = ({
 }) => {
   const messages = [];
   let moduleCanBeSafelyLoaded = true;
-  const fallbackExternals = [];
+  const moduleExternals = {};
 
   Object.keys(requiredExternals).forEach((externalName) => {
     const providedExternal = providedExternals[externalName];
@@ -184,31 +189,29 @@ const validateRequiredExternals = ({
     }
 
     if (fallbackExternalAvailable) {
-      fallbackExternals.push({
-        moduleName,
+      moduleExternals[name] = {
         name,
         version,
         semanticRange,
         integrity,
-      });
+      };
     }
   });
 
   if (messages.length > 0) {
     if (moduleCanBeSafelyLoaded || (process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS === 'true')) {
+      // eslint-disable-next-line no-console
       console.warn(messages.join('\n'));
     } else {
       throw new Error(messages.join('\n'));
     }
 
-    fallbackExternals.forEach((external) => {
-      addRequiredExternal(external);
-    });
+    setModulesRequiredExternals({ moduleName, externals: moduleExternals });
   }
 };
 
 /**
- * Fetches Module Config. Returns null if does not exist or an error has occured
+ * Fetches Module Config. Returns null if does not exist or an error has occurred
  * @param {string} baseUrl path to the assets
  * @returns {Promise<object | null>}
  */
@@ -232,6 +235,9 @@ const loadModule = async (
   { node: { integrity, url }, baseUrl },
   onModuleLoad = () => null
 ) => {
+  const oldRequiredExternals = getRequiredExternalsRegistry()[moduleName];
+  clearModulesRequiredExternals(moduleName);
+
   try {
     assert(typeof moduleName === 'string', 'moduleName must be a string');
 
@@ -257,8 +263,9 @@ const loadModule = async (
           providedExternals: rootProvidedExternals || {},
           enableUnlistedExternalFallbacks,
         });
-        registerModuleUsingExternals(moduleName);
 
+        // TODO: should register and load fallbacks after onModuleLoad
+        registerModuleUsingExternals(moduleName);
         await loadModuleFallbackExternals(baseUrl, moduleName);
       }
     }
@@ -277,6 +284,8 @@ const loadModule = async (
   } catch (e) {
     console.log(`Failed to load Holocron module at ${url}`);
     console.log(e.stack);
+
+    setModulesRequiredExternals({ moduleName, externals: oldRequiredExternals });
 
     throw e;
   }

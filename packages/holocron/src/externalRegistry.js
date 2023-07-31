@@ -38,15 +38,12 @@ function hasExternalLoaded({ name, version }) {
   return registeredExternals.hasIn([name, version]);
 }
 
-function addRequiredExternal({
-  moduleName, name, version, semanticRange, filename, integrity,
-}) {
-  requiredModuleExternals = requiredModuleExternals.setIn([moduleName, name], fromJS({
-    version,
-    semanticRange,
-    filename,
-    integrity,
-  }));
+function clearModulesRequiredExternals(moduleName) {
+  requiredModuleExternals = requiredModuleExternals.set(moduleName, iMap());
+}
+
+function setModulesRequiredExternals({ moduleName, externals }) {
+  requiredModuleExternals = requiredModuleExternals.set(moduleName, fromJS(externals));
 }
 
 function getRequiredExternals(moduleName) {
@@ -80,9 +77,10 @@ export {
   registerExternal,
   getExternal,
   getExternals,
-  addRequiredExternal,
   getUnregisteredRequiredExternals,
   getRequiredExternals,
   getRequiredExternalsRegistry,
   setRequiredExternalsRegistry,
+  setModulesRequiredExternals,
+  clearModulesRequiredExternals,
 };

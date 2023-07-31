@@ -60,6 +60,7 @@ describe('loadModule.node', () => {
 
     requireFromString.mockClear();
 
+    // eslint-disable-next-line global-require
     moduleRegistry = require('../src/moduleRegistry');
 
     if (moduleToBlockList) {
@@ -70,6 +71,7 @@ describe('loadModule.node', () => {
       global.getTenantRootModule = getTenantRootModule;
     }
 
+    // eslint-disable-next-line global-require
     externalRegistry = require('../src/externalRegistry');
 
     return require('../src/loadModule.node.js').default; // eslint-disable-line global-require
@@ -760,6 +762,128 @@ describe('loadModule.node', () => {
       });
 
       expect(externalRegistry.getExternals()).toEqual({});
+    });
+
+    it('clears modules previous fallbacks when being loaded', async () => {
+      const mockFetch = jest.fn();
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: {
+            'my-dep': {
+              name: 'my-dep',
+              integrity: '1234',
+              version: '1.0.1',
+              semanticRange: '^1.0.0',
+            },
+          },
+        }),
+        ok: true,
+      }));
+
+      mockFetch.mockImplementation(() => Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => JSON.stringify({}),
+      }));
+
+      // load module
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            enableUnlistedExternalFallbacks: true,
+          },
+        }),
+      });
+
+      // set fallback registry
+      externalRegistry.setRequiredExternalsRegistry({
+        'my-module': {
+          demoDep: { semanticRange: '^1.2.3' },
+        },
+      });
+
+      await loadModule('my-module', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/my-module/1.0.0/my-module.node.js',
+        },
+      });
+
+      const fallbackExternalsRegistry = externalRegistry.getRequiredExternalsRegistry();
+      expect(fallbackExternalsRegistry).toEqual({
+        'my-module': {
+          'my-dep': {
+            name: 'my-dep',
+            integrity: '1234',
+            version: '1.0.1',
+            semanticRange: '^1.0.0',
+          },
+        },
+      });
+    });
+
+    it('reverts external registry when onModuleLoad fails', async () => {
+      const mockFetch = jest.fn();
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 200,
+        statusText: 'OK',
+        text: () => JSON.stringify({
+          requiredExternals: {
+            myDep: {
+              name: 'my-dep',
+              integrity: '1234',
+              version: '1.0.1',
+              semanticRange: '^1.0.0',
+            },
+          },
+        }),
+        ok: true,
+      }));
+
+      mockFetch.mockImplementation(() => Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => JSON.stringify({}),
+      }));
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            enableUnlistedExternalFallbacks: true,
+          },
+        }),
+      });
+
+      externalRegistry.setRequiredExternalsRegistry({
+        'my-module': {
+          demoDep: { semanticRange: '^1.2.3' },
+        },
+      });
+      const onModuleLoadError = () => {
+        throw new Error('not a valid module');
+      };
+
+      await expect(loadModule(
+        'my-module',
+        {
+          node: {
+            integrity: '123',
+            url: 'https://example.com/cdn/my-module/1.0.0/my-module.node.js',
+          },
+        },
+        onModuleLoadError
+      )).rejects.toThrow();
+
+      const fallbackExternalsRegistry = externalRegistry.getRequiredExternalsRegistry();
+      expect(fallbackExternalsRegistry).toEqual({
+        'my-module': {
+          demoDep: { semanticRange: '^1.2.3' },
+        },
+      });
     });
 
     it('works', async () => {

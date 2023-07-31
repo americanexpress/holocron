@@ -21,7 +21,6 @@ import {
   setModuleMap,
   clearModulesUsingExternals,
   getModulesUsingExternals,
-  setModulesUsingExternals,
 } from './moduleRegistry';
 import {
   loadModule,
@@ -36,13 +35,10 @@ import RenderModule from './RenderModule';
 import holocronModule from './publicHolocronModule';
 import forceLoadModule from './loadModule.web';
 import {
-  validateExternal,
   registerExternal,
   getExternal,
   getExternals,
-  addRequiredExternal,
   getRequiredExternals,
-  getUnregisteredRequiredExternals,
   getRequiredExternalsRegistry,
   setRequiredExternalsRegistry,
 } from './externalRegistry';
@@ -65,16 +61,12 @@ export {
   RenderModule,
   holocronModule,
   forceLoadModule,
-  validateExternal,
   registerExternal,
   getExternal,
   getExternals,
-  addRequiredExternal,
   getRequiredExternalsRegistry,
   getRequiredExternals,
-  getUnregisteredRequiredExternals,
   setRequiredExternalsRegistry,
   clearModulesUsingExternals,
   getModulesUsingExternals,
-  setModulesUsingExternals,
 };
