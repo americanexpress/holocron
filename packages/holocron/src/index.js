@@ -37,7 +37,7 @@ import forceLoadModule from './loadModule.web';
 import {
   registerExternal,
   getExternal,
-  getExternals,
+  getRegisteredExternals,
   getRequiredExternals,
   getRequiredExternalsRegistry,
   setRequiredExternalsRegistry,
@@ -63,7 +63,7 @@ export {
   forceLoadModule,
   registerExternal,
   getExternal,
-  getExternals,
+  getRegisteredExternals,
   getRequiredExternalsRegistry,
   getRequiredExternals,
   setRequiredExternalsRegistry,

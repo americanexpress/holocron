@@ -144,6 +144,49 @@ const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
 };
 
 /**
+ * Validates Legacy Required Externals
+ * @param {object} params
+ * @param {object} params.nodeModule Holocron module
+ * @param {string} params.moduleName module name
+ * @param {object} params.providedExternals Provided Externals
+ */
+const validateLegacyRequiredExternals = ({
+  moduleName,
+  nodeModule,
+  providedExternals = {},
+}) => {
+  const { requiredExternals } = nodeModule.appConfig || {};
+  if (requiredExternals) {
+    const messages = [];
+
+    Object.entries(requiredExternals).forEach(([externalName, requestedExternalVersion]) => {
+      const providedExternal = providedExternals[externalName];
+
+      if (!providedExternal) {
+        messages.push(`External '${externalName}' is required by ${moduleName}, but is not provided by the root module`);
+      } else if (!validateExternal({
+        providedVersion: providedExternal.version,
+        requestedRange: requestedExternalVersion,
+      })) {
+        const failedExternalMessage = `${externalName}@${requestedExternalVersion} is required by ${moduleName}, but the root module provides ${providedExternal.version}`;
+        if (process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS) {
+          // eslint-disable-next-line no-console
+          console.warn(failedExternalMessage);
+        } else {
+          messages.push(failedExternalMessage);
+        }
+      }
+    });
+
+    if (messages.length > 0) {
+      throw new Error(messages.join('\n'));
+    }
+
+    registerModuleUsingExternals(moduleName);
+  }
+};
+
+/**
  * Validates Required Externals
  * @param {object} params
  * @param {object} params.requiredExternals Required Externals
@@ -164,9 +207,9 @@ const validateRequiredExternals = ({
   Object.keys(requiredExternals).forEach((externalName) => {
     const providedExternal = providedExternals[externalName];
     const requiredExternal = requiredExternals[externalName];
-    // handle older requiredExternals api
-    const semanticRange = requiredExternal.semanticRange || requiredExternal;
-    const { version, name, integrity } = requiredExternal;
+    const {
+      version, name, integrity, semanticRange,
+    } = requiredExternal;
     const fallbackExternalAvailable = !!name && !!version;
     const fallbackBlockedByRootModule = !!providedExternal && !providedExternal.fallbackEnabled;
 
@@ -208,6 +251,7 @@ const validateRequiredExternals = ({
 
     setModulesRequiredExternals({ moduleName, externals: moduleExternals });
   }
+  registerModuleUsingExternals(moduleName);
 };
 
 /**
@@ -235,6 +279,7 @@ const loadModule = async (
   { node: { integrity, url }, baseUrl },
   onModuleLoad = () => null
 ) => {
+  let moduleConfig;
   const oldRequiredExternals = getRequiredExternalsRegistry()[moduleName];
   clearModulesRequiredExternals(moduleName);
 
@@ -247,16 +292,17 @@ const loadModule = async (
 
     const rootModule = global.getTenantRootModule ? global.getTenantRootModule() : null;
 
+    // if no root module, module being loaded should be root.
     if (rootModule) {
-      const rootModuleConfig = rootModule.appConfig;
-      const { requiredExternals } = await fetchModuleConfig(baseUrl) || {};
+      const {
+        providedExternals: rootProvidedExternals,
+        enableUnlistedExternalFallbacks,
+      } = rootModule.appConfig;
+
+      moduleConfig = await fetchModuleConfig(baseUrl);
+      const { requiredExternals } = moduleConfig || {};
 
       if (requiredExternals) {
-        const {
-          providedExternals: rootProvidedExternals,
-          enableUnlistedExternalFallbacks,
-        } = rootModuleConfig;
-
         validateRequiredExternals({
           moduleName,
           requiredExternals,
@@ -264,8 +310,7 @@ const loadModule = async (
           enableUnlistedExternalFallbacks,
         });
 
-        // TODO: should register and load fallbacks after onModuleLoad
-        registerModuleUsingExternals(moduleName);
+        // this is required before loading module
         await loadModuleFallbackExternals(baseUrl, moduleName);
       }
     }
@@ -279,6 +324,15 @@ const loadModule = async (
       moduleName,
       module: nodeModule,
     });
+
+    // validate legacy required externals -- remove in next major
+    if (rootModule && !moduleConfig) {
+      validateLegacyRequiredExternals({
+        moduleName,
+        nodeModule,
+        providedExternals: rootModule.appConfig && rootModule.appConfig.providedExternals,
+      });
+    }
 
     return nodeModule;
   } catch (e) {

@@ -235,7 +235,7 @@ describe('externalRegistry', () => {
       modules: noOp,
     });
 
-    expect(externalRegistry.getExternals()).toMatchInlineSnapshot(`
+    expect(externalRegistry.getRegisteredExternals()).toMatchInlineSnapshot(`
       Object {
         "some-dep": Object {
           "1.2.3": [Function],
@@ -307,6 +307,56 @@ describe('externalRegistry', () => {
           requestedRange: '^1.2.0',
         })
       ).toBeFalsy();
+    });
+  });
+
+  describe('clearModulesRequiredExternals', () => {
+    it('removes required externals for given module', () => {
+      externalRegistry.setModulesRequiredExternals({
+        moduleName: 'child-module-a',
+        externals: {
+          'this-version': {
+            name: 'this-version',
+            version: '1.2.3',
+            semanticRange: '^1.2.0',
+            integrity: '12345hash',
+          },
+          'that-dep': {
+            name: 'that-dep',
+            version: '2.3.1',
+            semanticRange: '^2.2.0',
+            integrity: '12345hash',
+          },
+        },
+      });
+
+      externalRegistry.setModulesRequiredExternals({
+        moduleName: 'child-module-b',
+        externals: {
+          'this-version': {
+            name: 'this-version',
+            version: '1.2.4',
+            semanticRange: '^1.2.0',
+            integrity: '123456hash',
+          },
+        },
+      });
+
+      externalRegistry.clearModulesRequiredExternals('child-module-a');
+      expect(externalRegistry.getRequiredExternalsRegistry())
+        .toMatchInlineSnapshot(`
+        Object {
+          "child-module-a": Object {},
+          "child-module-b": Object {
+            "this-version": Object {
+              "integrity": "123456hash",
+              "name": "this-version",
+              "semanticRange": "^1.2.0",
+              "version": "1.2.4",
+            },
+          },
+        }
+      `);
     });
   });
 });

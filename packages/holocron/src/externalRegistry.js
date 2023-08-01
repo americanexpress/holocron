@@ -18,7 +18,7 @@ import semver from 'semver';
 let registeredExternals = iMap();
 let requiredModuleExternals = iMap();
 
-function getExternals() {
+function getRegisteredExternals() {
   return registeredExternals.toJS();
 }
 
@@ -76,7 +76,7 @@ export {
   validateExternal,
   registerExternal,
   getExternal,
-  getExternals,
+  getRegisteredExternals,
   getUnregisteredRequiredExternals,
   getRequiredExternals,
   getRequiredExternalsRegistry,
