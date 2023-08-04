@@ -526,8 +526,8 @@ describe('loadModule.web', () => {
         })
       );
 
-      expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.js');
-      expect(mockElementSecond.src).toBe('https://example.com/cdn/my-module/1.0.0/that-dep.js');
+      expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.browser.js');
+      expect(mockElementSecond.src).toBe('https://example.com/cdn/my-module/1.0.0/that-dep.browser.js');
       expect(mockElementThird.src).toBe(
         'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
       );

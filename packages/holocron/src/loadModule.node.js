@@ -39,6 +39,7 @@ const agentOptions = { maxSockets };
  * @param {object} response Http Response object
  */
 const checkStatus = (response) => {
+  // TODO: If 404, error could mention old bundler and recommend upgrading
   if (!response.ok) {
     throw new Error(response.statusText || response.status);
   }
@@ -282,7 +283,6 @@ const loadModule = async (
   let moduleConfig;
   const oldRequiredExternals = getRequiredExternalsRegistry()[moduleName];
   clearModulesRequiredExternals(moduleName);
-
   try {
     assert(typeof moduleName === 'string', 'moduleName must be a string');
 
@@ -336,7 +336,7 @@ const loadModule = async (
 
     return nodeModule;
   } catch (e) {
-    console.log(`Failed to load Holocron module at ${url}`);
+    console.log(`Failed to load Holocron module at ${url}`, e);
     console.log(e.stack);
 
     setModulesRequiredExternals({ moduleName, externals: oldRequiredExternals });
