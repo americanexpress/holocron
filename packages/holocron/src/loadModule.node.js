@@ -48,9 +48,10 @@ const checkStatus = (response) => {
 /**
  * Fetches asset from CDN. Automatically retries when request fails
  * @param {string} assetUrl
+ * @param {boolean} parseAsJson
  * @returns {Promise<string>}
  */
-const fetchAsset = async (assetUrl) => {
+const fetchAsset = async (assetUrl, parseAsJson) => {
   const { protocol } = parseUrl(assetUrl);
 
   if (process.env.NODE_ENV === 'production') {
@@ -70,15 +71,13 @@ const fetchAsset = async (assetUrl) => {
       if (tries > maxRetries) {
         throw err;
       }
-
       console.warn(`Encountered error fetching module at ${assetUrl}: ${err.message}\nRetrying (${tries})...`);
 
       return fetchAssetAttempt(tries + 1);
     }
 
     checkStatus(response);
-
-    return response.text();
+    return parseAsJson ? response.json() : response.text();
   };
 
   return fetchAssetAttempt(1);
@@ -134,12 +133,12 @@ const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
 
   await Promise.all(
     fallbacks.map(async ({ name, version, integrity }) => {
-      const externalModule = await fetchNodeModule(`${baseUrl}${name}.node.js`, integrity, {
+      const fallbackDependency = await fetchNodeModule(`${baseUrl}${name}.node.js`, integrity, {
         type: 'External Fallback',
         name,
       });
 
-      registerExternal({ name, version, module: externalModule });
+      registerExternal({ name, version, module: fallbackDependency });
     })
   );
 };
@@ -147,16 +146,16 @@ const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
 /**
  * Validates Legacy Required Externals
  * @param {object} params
- * @param {object} params.nodeModule Holocron module
+ * @param {object} params.holocronModule Holocron module
  * @param {string} params.moduleName module name
  * @param {object} params.providedExternals Provided Externals
  */
 const validateLegacyRequiredExternals = ({
   moduleName,
-  nodeModule,
+  holocronModule,
   providedExternals = {},
 }) => {
-  const { requiredExternals } = nodeModule.appConfig || {};
+  const { requiredExternals } = holocronModule.appConfig || {};
   if (requiredExternals) {
     const messages = [];
 
@@ -243,7 +242,7 @@ const validateRequiredExternals = ({
   });
 
   if (messages.length > 0) {
-    if (moduleCanBeSafelyLoaded || (process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS === 'true')) {
+    if (moduleCanBeSafelyLoaded || process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS === 'true') {
       // eslint-disable-next-line no-console
       console.warn(messages.join('\n'));
     } else {
@@ -264,10 +263,7 @@ const fetchModuleConfig = async (baseUrl) => {
   const moduleConfigUrl = `${baseUrl}module-config.json`;
 
   try {
-    const moduleConfigStr = await fetchAsset(moduleConfigUrl);
-    const moduleConfig = JSON.parse(moduleConfigStr);
-
-    return moduleConfig;
+    return await fetchAsset(moduleConfigUrl, true);
   } catch (err) {
     console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', err);
   }
@@ -285,7 +281,6 @@ const loadModule = async (
   clearModulesRequiredExternals(moduleName);
   try {
     assert(typeof moduleName === 'string', 'moduleName must be a string');
-
     if (isModuleInBlockList(url)) {
       throw new Error(`module at ${url} previously failed to load, will not attempt to reload.`);
     }
@@ -300,8 +295,8 @@ const loadModule = async (
       } = rootModule.appConfig;
 
       moduleConfig = await fetchModuleConfig(baseUrl);
-      const { requiredExternals } = moduleConfig || {};
 
+      const { requiredExternals } = moduleConfig || {};
       if (requiredExternals) {
         validateRequiredExternals({
           moduleName,
@@ -315,26 +310,26 @@ const loadModule = async (
       }
     }
 
-    const nodeModule = await fetchNodeModule(url, integrity, {
+    const holocronModule = await fetchNodeModule(url, integrity, {
       type: 'Holocron module',
       name: moduleName,
     });
 
     onModuleLoad({
       moduleName,
-      module: nodeModule,
+      module: holocronModule,
     });
 
     // validate legacy required externals -- remove in next major
     if (rootModule && !moduleConfig) {
       validateLegacyRequiredExternals({
         moduleName,
-        nodeModule,
+        holocronModule,
         providedExternals: rootModule.appConfig && rootModule.appConfig.providedExternals,
       });
     }
 
-    return nodeModule;
+    return holocronModule;
   } catch (e) {
     console.log(`Failed to load Holocron module at ${url}`, e);
     console.log(e.stack);

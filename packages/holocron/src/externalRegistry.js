@@ -15,7 +15,12 @@
 import { Map as iMap, fromJS } from 'immutable';
 import semver from 'semver';
 
+// This registry tracks each external and its version that
+// is loaded and available for modules to use.
 let registeredExternals = iMap();
+
+// This registry tracks all the required fallbacks for each
+// module to successfully load.
 let requiredModuleExternals = iMap();
 
 function getRegisteredExternals() {
@@ -39,7 +44,7 @@ function hasExternalLoaded({ name, version }) {
 }
 
 function clearModulesRequiredExternals(moduleName) {
-  requiredModuleExternals = requiredModuleExternals.set(moduleName, iMap());
+  requiredModuleExternals = requiredModuleExternals.delete(moduleName);
 }
 
 function setModulesRequiredExternals({ moduleName, externals }) {

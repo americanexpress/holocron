@@ -226,23 +226,23 @@ describe('externalRegistry', () => {
     externalRegistry.registerExternal({
       name: 'some-dep',
       version: '2.0.0',
-      modules: noOp,
+      module: noOp,
     });
 
     externalRegistry.registerExternal({
       name: 'that-dep',
       version: '0.0.1-alpha.0.1',
-      modules: noOp,
+      module: noOp,
     });
 
     expect(externalRegistry.getRegisteredExternals()).toMatchInlineSnapshot(`
       Object {
         "some-dep": Object {
           "1.2.3": [Function],
-          "2.0.0": undefined,
+          "2.0.0": [Function],
         },
         "that-dep": Object {
-          "0.0.1-alpha.0.1": undefined,
+          "0.0.1-alpha.0.1": [Function],
         },
       }
     `);
@@ -346,7 +346,6 @@ describe('externalRegistry', () => {
       expect(externalRegistry.getRequiredExternalsRegistry())
         .toMatchInlineSnapshot(`
         Object {
-          "child-module-a": Object {},
           "child-module-b": Object {
             "this-version": Object {
               "integrity": "123456hash",

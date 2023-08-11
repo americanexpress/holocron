@@ -47,6 +47,7 @@ describe('loadModule.node', () => {
       statusText: fetchStatusText !== undefined ? fetchStatusText : 'OK',
       // no one should expect the Spanish Inquisition default
       text: () => Promise.resolve(fetchText || 'the Spanish Inquisition'),
+      json: () => Promise.resolve(JSON.parse(fetchText || 'the Spanish Inquisition')),
       ok: (fetchStatus || 200) >= 200 && (fetchStatus || 200) < 300,
     }))
   );
@@ -788,10 +789,10 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => '{ "requiredExternals": [] }',
+        json: () => '{ "requiredExternals": [] }',
         ok: true,
-      })
-      );
+      }));
+
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -833,7 +834,7 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => JSON.stringify({
+        json: () => ({
           requiredExternals: [
             {
               name: 'lodash',
@@ -842,15 +843,14 @@ describe('loadModule.node', () => {
           ],
         }),
         ok: true,
-      })
-      );
+      }));
+
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      })
-      );
+      }));
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -862,6 +862,7 @@ describe('loadModule.node', () => {
             providedExternals: {
               lodash: {
                 version: '1.0.0',
+                module: '1234',
               },
             },
             enableUnlistedExternalFallbacks: true,
@@ -905,7 +906,7 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => JSON.stringify({
+        json: () => ({
           requiredExternals: {
             lodash: {
               version: '1.0.0',
@@ -926,12 +927,13 @@ describe('loadModule.node', () => {
           appConfig: {
             providedExternals: {},
             enableUnlistedExternalFallbacks: false,
+            module: '1234',
           },
         }),
       });
 
       expect(externalRegistry.getRegisteredExternals()).toEqual({});
-      expect(
+      await expect(
         loadModule('awesome', {
           node: {
             integrity: '123',
@@ -955,7 +957,7 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => JSON.stringify({
+        json: () => ({
           requiredExternals: {
             lodash: {
               version: '1.0.0',
@@ -978,6 +980,7 @@ describe('loadModule.node', () => {
               lodash: {
                 version: '2.0.0',
                 fallbackEnabled: false,
+                module: '1234',
               },
             },
             enableUnlistedExternalFallbacks: false,
@@ -986,7 +989,7 @@ describe('loadModule.node', () => {
       });
 
       expect(externalRegistry.getRegisteredExternals()).toEqual({});
-      expect(
+      await expect(
         loadModule('awesome', {
           node: {
             integrity: '123',
@@ -1010,7 +1013,7 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => JSON.stringify({
+        json: () => ({
           requiredExternals: {
             lodash: {
               version: '1.2.0',
@@ -1032,6 +1035,7 @@ describe('loadModule.node', () => {
             providedExternals: {
               lodash: {
                 version: '1.0.0',
+                module: '1234',
               },
             },
             enableUnlistedExternalFallbacks: false,
@@ -1049,12 +1053,14 @@ describe('loadModule.node', () => {
       expect(externalRegistry.getRegisteredExternals()).toEqual({});
     });
 
-    it('clears modules previous fallbacks when being loaded', async () => {
+    it('clears modules previous fallbacks from registry when being loaded', async () => {
       const mockFetch = jest.fn();
-      mockFetch.mockImplementationOnce(() => Promise.resolve({
+
+      mockFetch.mockImplementation(() => Promise.resolve({
+        ok: true,
         status: 200,
-        statusText: 'OK',
-        text: () => JSON.stringify({
+        text: () => ({}),
+        json: () => ({
           requiredExternals: {
             'my-dep': {
               name: 'my-dep',
@@ -1064,16 +1070,7 @@ describe('loadModule.node', () => {
             },
           },
         }),
-        ok: true,
-      })
-      );
-
-      mockFetch.mockImplementation(() => Promise.resolve({
-        ok: true,
-        status: 200,
-        text: () => JSON.stringify({}),
-      })
-      );
+      }));
 
       // load module
       const loadModule = load({
@@ -1117,7 +1114,7 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => JSON.stringify({
+        json: () => ({
           requiredExternals: {
             myDep: {
               name: 'my-dep',
@@ -1185,31 +1182,27 @@ describe('loadModule.node', () => {
       const moduleString = { onModuleLoadConfig };
 
       // mock fetching moduleConfig file
-      mockFetch.mockImplementationOnce(() => Promise.resolve({
-        status: 200,
-        statusText: 'OK',
-        text: () => JSON.stringify({
-          requiredExternals: {
-            lodash: {
-              semanticRange: '^1.0.0',
-              name: 'lodash',
-              version: '1.2.3',
-              integrity: '12345',
+      mockFetch.mockImplementationOnce(
+        makeFetchMock({
+          fetchText: JSON.stringify({
+            requiredExternals: {
+              lodash: {
+                semanticRange: '^1.0.0',
+                name: 'lodash',
+                version: '1.2.3',
+                integrity: '12345',
+              },
             },
-          },
-        }),
-        ok: true,
-      })
+          }),
+        })
       );
-
       // mock fetch for fallback external file
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      })
-      );
+      }));
 
       // mock fetch for module code
       mockFetch.mockImplementationOnce(
@@ -1224,6 +1217,7 @@ describe('loadModule.node', () => {
               lodash: {
                 version: '2.0.0',
                 fallbackEnabled: true,
+                module: '1234',
               },
             },
             enableUnlistedExternalFallbacks: false,

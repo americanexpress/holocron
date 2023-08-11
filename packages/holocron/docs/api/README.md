@@ -448,7 +448,7 @@ Used to register an external dependency.
 | --------- | -------- | -------- | -------------------------------------------- |
 | `name`    | `String` | `true`   | The name of the external being registered    |
 | `version` | `String` | `true`   | The version of the external being registered |
-| `module`  | `any`    | `true`   | The external to be registered                |
+| `module`    | `any`    | `true`   | The external to be registered                |
 
 
 ##### Usage
@@ -512,7 +512,23 @@ Returns the complete registry of required externals.
 ##### Usage
 
 ```js
-getRequiredExternalsRegistry();
+const externalRegistry = getRequiredExternalsRegistry();
+expect(externalRegistry).toEqual({
+  'module-name': {
+    'some-dependency': {
+      integrity: '12345hash',
+      name: 'some-dependency',
+      semanticRange: '^1.2.3',
+      version: '1.3.2',
+    },
+    'another-dependency': {
+      integrity: '54321hash',
+      name: 'another-dependency',
+      semanticRange: '^2.2.3',
+      version: '2.3.2',
+    },
+  },
+});
 ```
 
 #### `setRequiredExternalsRegistry`
