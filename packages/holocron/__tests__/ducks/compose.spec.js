@@ -16,6 +16,8 @@ import { LOAD_KEY } from '../../src/ducks/constants';
 
 import { composeModules } from '../../src/ducks/compose';
 
+const consoleError = jest.spyOn(console, 'error');
+
 jest.mock('../../src/ducks/load', () => ({
   loadModule: jest.fn(() => Promise.resolve({})),
 }));
@@ -68,6 +70,11 @@ describe('composeModules', () => {
     return thunk(dispatch)
       .then(([error]) => {
         expect(error).toBe(moduleLoadError);
+        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(consoleError).toHaveBeenCalledWith(
+          'Error while attempting to call \'load\' or \'loadModuleData\' inside composeModules for my-submodule.',
+          error
+        );
       });
   });
 
@@ -114,6 +121,11 @@ describe('composeModules', () => {
     return thunk(dispatch, getState, { fetchClient })
       .catch((err) => {
         expect(err).toBe(error);
+        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(consoleError).toHaveBeenCalledWith(
+          'Error while attempting to call \'load\' or \'loadModuleData\' inside composeModules for my-submodule.',
+          error
+        );
         resolveOtherPromise();
       });
   });
