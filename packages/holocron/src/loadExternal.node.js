@@ -13,12 +13,12 @@
  */
 
 import createLoader from './loader.node';
-import { isModuleInBlockList, addToModuleBlockList } from './moduleRegistry';
+import { isExternalInBlockList, addToExternalBlockList } from './externalRegistry';
 
 export default createLoader({
-  context: 'module',
-  maxRetries: Number(process.env.HOLOCRON_SERVER_MAX_MODULES_RETRY) || 3,
-  maxSockets: Number(process.env.HOLOCRON_SERVER_MAX_SIM_MODULES_FETCH) || 30,
-  isInBlockList: isModuleInBlockList,
-  addToBlockList: addToModuleBlockList,
+  context: 'external',
+  maxRetries: Number(process.env.HOLOCRON_SERVER_MAX_EXTERNALS_RETRY) || 3,
+  maxSockets: Number(process.env.HOLOCRON_SERVER_MAX_SIM_EXTERNALS_FETCH) || 30,
+  isInBlockList: isExternalInBlockList,
+  addToBlockList: addToExternalBlockList,
 })
