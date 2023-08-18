@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/americanexpress/holocron/compare/v1.7.0...v1.8.0) (2023-08-18)
+
+
+### Features
+
+* **compose:** add console error ([#148](https://github.com/americanexpress/holocron/issues/148)) ([d9977d7](https://github.com/americanexpress/holocron/commit/d9977d731e1c5829eb0253ac0ef33bb1e5424fbd))
+* **externals-registry:** manage module external dependencies ([#143](https://github.com/americanexpress/holocron/issues/143)) ([f66aebf](https://github.com/americanexpress/holocron/commit/f66aebfe192d88cf10e3f2a0ea4ec6911a8b8a29))
+
+
+
+
+
 # [1.7.0](https://github.com/americanexpress/holocron/compare/v1.6.0...v1.7.0) (2023-03-27)
 
 

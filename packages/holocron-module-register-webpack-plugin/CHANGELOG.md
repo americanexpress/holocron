@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/americanexpress/holocron/compare/v1.7.0...v1.8.0) (2023-08-18)
+
+**Note:** Version bump only for package holocron-module-register-webpack-plugin
+
+
+
+
+
 # [1.4.0](https://github.com/americanexpress/holocron/compare/v1.3.0...v1.4.0) (2023-02-15)
 
 **Note:** Version bump only for package holocron-module-register-webpack-plugin
