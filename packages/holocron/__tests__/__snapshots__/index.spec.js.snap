@@ -3,20 +3,28 @@
 exports[`public API should not have anything removed 1`] = `
 Object {
   "RenderModule": [Function],
+  "clearModulesUsingExternals": [Function],
   "composeModules": [Function],
   "createHolocronStore": [Function],
   "failedToLoad": [Function],
   "forceLoadModule": [Function],
+  "getExternal": [Function],
   "getLoadError": [Function],
   "getLoadingPromise": [Function],
   "getModule": [Function],
   "getModuleMap": [Function],
   "getModules": [Function],
+  "getModulesUsingExternals": [Function],
+  "getRegisteredExternals": [Function],
+  "getRequiredExternals": [Function],
+  "getRequiredExternalsRegistry": [Function],
   "holocronModule": [Function],
   "isLoaded": [Function],
   "isLoading": [Function],
   "loadModule": [Function],
+  "registerExternal": [Function],
   "registerModule": [Function],
   "setModuleMap": [Function],
+  "setRequiredExternalsRegistry": [Function],
 }
 `;

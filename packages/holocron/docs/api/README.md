@@ -25,6 +25,12 @@ available on the server. We have organized them as such.
   - [`getModules`](#getmodules)
   - [`getModuleMap`](#getmodulemap)
   - [`setModuleMap`](#setmodulemap)
+- [External Registry](#external-registry)
+  - [`registerExternal`](#registerExternal)
+  - [`getExternal`](#getExternal)
+  - [`getRequiredExternals`](#getRequiredExternals)
+  - [`getRequiredExternalsRegistry`](#getRequiredExternalsRegistry)
+  - [`setRequiredExternalsRegistry`](#setRequiredExternalsRegistry)
 - [Selectors](#selectors)
   - [`isLoaded`](#isloaded)
   - [`failedToLoad`](#failedToLoad)
@@ -413,9 +419,9 @@ Sets the module map
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `newModuleMap` | `Immutable.Map` | `true` | The new module map to replace the existing one |
+| name           | type            | required | value                                          |
+| -------------- | --------------- | -------- | ---------------------------------------------- |
+| `newModuleMap` | `Immutable.Map` | `true`   | The new module map to replace the existing one |
 
 ##### Usage
 
@@ -423,6 +429,130 @@ Sets the module map
 import { setModuleMap } from 'holocron';
 
 setModuleMap(newModuleMap);
+```
+
+
+### External Registry
+
+These functions relate to managing the external registry across Holocron modules.
+
+#### `registerExternal`
+
+Used to register an external dependency.
+
+##### Arguments
+
+`registerExternal` takes the following named arguments:
+
+| name      | type     | required | value                                        |
+| --------- | -------- | -------- | -------------------------------------------- |
+| `name`    | `String` | `true`   | The name of the external being registered    |
+| `version` | `String` | `true`   | The version of the external being registered |
+| `module`    | `any`    | `true`   | The external to be registered                |
+
+
+##### Usage
+
+```js
+const thisDep = require('this-dep');
+
+registerExternal({
+  name: 'this-dep',
+  version: '1.2.3',
+  module: thisDep,
+});
+```
+
+#### `getExternal`
+
+Retrieve the external from registry.
+
+##### Arguments
+
+`getExternal` takes the following named arguments:
+
+| name      | type     | required | value                       |
+| --------- | -------- | -------- | --------------------------- |
+| `name`    | `String` | `true`   | Name of the external wanted |
+| `version` | `String` | `true`   | Version of the external     |
+
+##### Usage
+
+```js
+const thisDep = getExternal({ name: 'this-dep', version: '1.2.3' });
+```
+
+#### `getRequiredExternals`
+
+Return all the required externals for Holocron module.
+
+##### Arguments
+| name         | type     | required | value                   |
+| ------------ | -------- | -------- | ----------------------- |
+| `moduleName` | `String` | `true`   | Name of Holocron module |
+
+
+##### Usage
+
+```js
+const moduleAExternals = getRequiredExternals('module-a');
+expect(moduleAExternals).toEqual([{
+  moduleName: 'module-a',
+  name: 'this-dep',
+  version: '1.2.3',
+  semanticRange: '^1.1.1',
+  integrity: 'sha123-45678912345abcdefg',
+}]);
+```
+
+#### `getRequiredExternalsRegistry`
+
+Returns the complete registry of required externals.
+
+##### Usage
+
+```js
+const externalRegistry = getRequiredExternalsRegistry();
+expect(externalRegistry).toEqual({
+  'module-name': {
+    'some-dependency': {
+      integrity: '12345hash',
+      name: 'some-dependency',
+      semanticRange: '^1.2.3',
+      version: '1.3.2',
+    },
+    'another-dependency': {
+      integrity: '54321hash',
+      name: 'another-dependency',
+      semanticRange: '^2.2.3',
+      version: '2.3.2',
+    },
+  },
+});
+```
+
+#### `setRequiredExternalsRegistry`
+
+Set the contents for the externals registry
+
+##### Arguments
+| name               | type     | required | value                           |
+| ------------------ | -------- | -------- | ------------------------------- |
+| `externalRegistry` | `Object` | `true`   | Data for the externals registry |
+
+##### Usage
+
+```js
+setRequiredExternalsRegistry({
+  [moduleName]: {
+    [externalName]: {
+      version: '1.2.3',
+      semanticRange: '^1.1.1',
+      filename: 'external.js',
+      integrity: 'sri-hash
+    }
+  }
+})
 ```
 
 <!--ONE-DOCS-ID end-->

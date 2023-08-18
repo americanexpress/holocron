@@ -13,54 +13,84 @@
  */
 
 import { getModule, getModuleMap } from './moduleRegistry';
+import { getUnregisteredRequiredExternals } from './externalRegistry';
 
-// Ignoring this for now because it does nothing
-/* istanbul ignore next */
-function onScriptComplete() {
-  // Do nothing for now
-}
+const noop = () => { };
 
-export default function loadModule(moduleName, moduleData) {
-  return new Promise((resolve, reject) => {
-    if (typeof moduleName !== 'string') {
-      throw new TypeError('loadModule: moduleName must be a string');
-    }
+function createScript({ url, integrity, onLoad = noop }) {
+  const script = global.document.createElement('script');
+  const isProduction = process.env.NODE_ENV === 'production';
+  const head = global.document.getElementsByTagName('head')[0];
 
-    if (typeof moduleData !== 'object') {
-      throw new TypeError('loadModule: moduleData must be an object');
-    }
+  script.type = 'text/javascript';
+  script.async = true;
+  script.crossOrigin = 'anonymous';
 
-    // eslint-disable-next-line no-underscore-dangle
-    const integrity = moduleData.getIn([window.__holocron_module_bundle_type__, 'integrity']);
-    // eslint-disable-next-line no-underscore-dangle
-    const url = moduleData.getIn([window.__holocron_module_bundle_type__, 'url']);
-    const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction && integrity) {
+    script.integrity = integrity;
+  }
 
-    const head = global.document.getElementsByTagName('head')[0];
-    const script = global.document.createElement('script');
-    script.type = 'text/javascript';
-    script.charset = 'utf-8';
-    script.async = true;
-    script.timeout = 120000;
+  const clientCacheRevision = getModuleMap().get(
+    'clientCacheRevision',
+    getModuleMap().get('key')
+  );
+  script.src = isProduction && clientCacheRevision
+    ? `${url}?clientCacheRevision=${clientCacheRevision}`
+    : url;
 
-    script.crossOrigin = 'anonymous';
-
-    if (isProduction) {
-      script.integrity = integrity;
-    }
-    const clientCacheRevision = getModuleMap().get('clientCacheRevision', getModuleMap().get('key'));
-    script.src = isProduction && clientCacheRevision ? `${url}?clientCacheRevision=${clientCacheRevision}` : url;
-    const timeout = setTimeout(onScriptComplete, 120000);
+  const listener = new Promise((resolve, reject) => {
     script.addEventListener('error', (event) => {
-      clearTimeout(timeout);
       reject(event.message);
     });
 
     script.addEventListener('load', () => {
-      clearTimeout(timeout);
-      resolve(getModule(moduleName));
+      resolve(onLoad());
     });
+  });
 
-    head.appendChild(script);
+  head.appendChild(script);
+
+  return listener;
+}
+
+function loadModuleFallbackExternals(moduleName) {
+  const fallbacks = getUnregisteredRequiredExternals(moduleName);
+  const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
+
+  return Promise.all(fallbacks.map(({ name, integrity }) => createScript({
+    url: `${baseUrl}${name}.browser.js`,
+    integrity,
+  })));
+}
+
+async function loadModule(moduleName, moduleData) {
+  if (typeof moduleName !== 'string') {
+    throw new TypeError('loadModule: moduleName must be a string');
+  }
+
+  if (typeof moduleData !== 'object') {
+    throw new TypeError('loadModule: moduleData must be an object');
+  }
+  // first load all module fallbacks.
+  // possible race condition if two modules require the same fallback and version.
+  await loadModuleFallbackExternals(moduleName);
+  // then load the module script.
+  const integrity = moduleData.getIn([
+    // eslint-disable-next-line no-underscore-dangle
+    window.__holocron_module_bundle_type__,
+    'integrity',
+  ]);
+  const url = moduleData.getIn([
+    // eslint-disable-next-line no-underscore-dangle
+    window.__holocron_module_bundle_type__,
+    'url',
+  ]);
+
+  return createScript({
+    url,
+    integrity,
+    onLoad: () => getModule(moduleName),
   });
 }
+
+export default loadModule;

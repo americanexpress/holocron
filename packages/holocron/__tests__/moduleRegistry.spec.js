@@ -24,9 +24,16 @@ import {
   resetModuleRegistry,
   setModuleMap,
   addHigherOrderComponent,
+  registerModuleUsingExternals,
+  clearModulesUsingExternals,
+  getModulesUsingExternals,
 } from '../src/moduleRegistry';
 
 describe('moduleRegistry', () => {
+  beforeEach(() => {
+    clearModulesUsingExternals();
+  });
+
   it('should maintain a block list', () => {
     addToModuleBlockList('https://example.com/cdn/bad-module/0.2.0/module.js');
     addToModuleBlockList('https://example.com/cdn/worse-module/0.0.0-46/module.js');
@@ -103,5 +110,37 @@ describe('moduleRegistry', () => {
     resetModuleRegistry(modules, moduleMap);
     expect(is(getModules(), fromJS(modules))).toBe(true);
     expect(is(getModuleMap(), fromJS(moduleMap))).toBe(true);
+  });
+
+  describe('registerModuleUsingExternals', () => {
+    it('registers a module using an external', () => {
+      expect(getModulesUsingExternals()).toEqual([]);
+
+      registerModuleUsingExternals('awesome');
+
+      expect(getModulesUsingExternals()).toEqual(['awesome']);
+    });
+  });
+
+  describe('clearModulesUsingExternals', () => {
+    it('clears the registry', () => {
+      expect(getModulesUsingExternals()).toEqual([]);
+
+      registerModuleUsingExternals('awesome');
+
+      expect(getModulesUsingExternals()).toEqual(['awesome']);
+
+      clearModulesUsingExternals();
+
+      expect(getModulesUsingExternals()).toEqual([]);
+    });
+  });
+
+  describe('getModulesUsingExternals', () => {
+    it('returns registry as array', () => {
+      registerModuleUsingExternals('awesome');
+
+      expect(getModulesUsingExternals()).toEqual(['awesome']);
+    });
   });
 });

@@ -12,12 +12,13 @@
  * under the License.
  */
 
-import { fromJS, List } from 'immutable';
+import { fromJS, List, Set as ImmutableSet } from 'immutable';
 import holocronModule from './holocronModule';
 
 let modules = fromJS({});
 let moduleMap = fromJS({});
 let moduleBlockList = List();
+let modulesUsingExternals = ImmutableSet();
 
 function addToModuleBlockList(moduleUrl) {
   moduleBlockList = moduleBlockList.push(moduleUrl);
@@ -64,15 +65,30 @@ function resetModuleRegistry(newModules, newModuleMap) {
   setModuleMap(newModuleMap);
 }
 
+function registerModuleUsingExternals(moduleName) {
+  modulesUsingExternals = modulesUsingExternals.add(moduleName);
+}
+
+function clearModulesUsingExternals() {
+  modulesUsingExternals = modulesUsingExternals.clear();
+}
+
+function getModulesUsingExternals() {
+  return modulesUsingExternals.toJS();
+}
+
 export {
   addToModuleBlockList,
-  getModuleBlockList,
   isModuleInBlockList,
+  getModuleBlockList,
+  addHigherOrderComponent,
   registerModule,
   getModule,
   getModules,
   getModuleMap,
   setModuleMap,
   resetModuleRegistry,
-  addHigherOrderComponent,
+  registerModuleUsingExternals,
+  clearModulesUsingExternals,
+  getModulesUsingExternals,
 };
