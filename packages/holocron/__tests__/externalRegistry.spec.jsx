@@ -87,6 +87,14 @@ describe('externalRegistry', () => {
     `);
   });
 
+  describe('setModulesRequiredExternals', () => {
+    it('does not set required externals when externals not provided', () => {
+      const moduleName = 'child-module-a';
+      externalRegistry.setModulesRequiredExternals({ moduleName });
+      expect(externalRegistry.getRequiredExternalsRegistry()).toEqual({});
+    });
+  });
+
   describe('getRequiredExternals', () => {
     it('returns all required fallbacks externals for a module', () => {
       const moduleName = 'child-module-a';
@@ -127,6 +135,12 @@ describe('externalRegistry', () => {
           },
         ]
       `);
+    });
+
+    it('returns empty array when no externals are provided', () => {
+      const moduleName = 'child-module-a';
+      externalRegistry.setModulesRequiredExternals({ moduleName, externals: undefined });
+      expect(externalRegistry.getRequiredExternals(moduleName)).toEqual([]);
     });
   });
 
@@ -272,6 +286,11 @@ describe('externalRegistry', () => {
       expect(
         externalRegistry.getRequiredExternalsRegistry
       ).toMatchInlineSnapshot('[Function]');
+    });
+
+    it('does not set registry to undefined', () => {
+      externalRegistry.setRequiredExternalsRegistry();
+      expect(externalRegistry.getRequiredExternalsRegistry()).toEqual({});
     });
   });
 
