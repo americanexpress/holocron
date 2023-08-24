@@ -1,6 +1,6 @@
 {
   "name": "iguazu-holocron",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "keywords": [
     "holocron",
     "amex",
@@ -34,7 +34,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "holocron": "^1.8.0",
+    "holocron": "^1.8.1",
     "iguazu": "^3.0.2",
     "react-redux": "^7.1.1"
   },

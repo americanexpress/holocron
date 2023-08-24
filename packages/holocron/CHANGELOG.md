@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1](https://github.com/americanexpress/holocron/compare/v1.8.0...v1.8.1) (2023-08-24)
+
+
+### Bug Fixes
+
+* **externalRegistry:** prevent undefined entries ([#150](https://github.com/americanexpress/holocron/issues/150)) ([0676c06](https://github.com/americanexpress/holocron/commit/0676c06c656eb2eca35f10cf74ca072c3bd45a6f))
+* **RenderModule:** check module loaded state before rendering ([#149](https://github.com/americanexpress/holocron/issues/149)) ([ac729f2](https://github.com/americanexpress/holocron/commit/ac729f2e836b5c0bea19c7733920149f7398cf96))
+
+
+
+
+
 # [1.8.0](https://github.com/americanexpress/holocron/compare/v1.7.0...v1.8.0) (2023-08-18)
 
 
