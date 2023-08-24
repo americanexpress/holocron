@@ -127,7 +127,6 @@ function setModulesRequiredExternals({ moduleName, externals = {} }) {
  * @returns {array} Modules required externals
  */
 function getRequiredExternals(moduleName) {
-  requiredModuleExternals.get(moduleName, iMap()).toJS();
   return Object.entries(
     requiredModuleExternals.get(moduleName, iMap()).toJS()
   ).map(([name, rest]) => ({
