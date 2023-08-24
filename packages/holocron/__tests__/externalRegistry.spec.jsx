@@ -139,9 +139,9 @@ describe('externalRegistry', () => {
       `);
     });
 
-    it('returns empty array when no externals', () => {
+    it('returns empty array when no externals are provided', () => {
       const moduleName = 'child-module-a';
-      externalRegistry.setModulesRequiredExternals({ moduleName, undefined });
+      externalRegistry.setModulesRequiredExternals({ moduleName, externals: undefined });
       expect(externalRegistry.getRequiredExternals(moduleName)).toEqual([]);
     });
   });
