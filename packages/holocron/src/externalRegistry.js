@@ -117,8 +117,10 @@ function clearModulesRequiredExternals(moduleName) {
  * @param {string} externals.[externalName].semanticRange semantic range module will accept
  * @param {string} externals.[externalName].integrity hash value of fallback external
  */
-function setModulesRequiredExternals({ moduleName, externals = {} }) {
-  requiredModuleExternals = requiredModuleExternals.set(moduleName, fromJS(externals));
+function setModulesRequiredExternals({ moduleName, externals }) {
+  if (externals) {
+    requiredModuleExternals = requiredModuleExternals.set(moduleName, fromJS(externals));
+  }
 }
 
 /**

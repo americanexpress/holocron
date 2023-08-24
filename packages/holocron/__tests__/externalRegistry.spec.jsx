@@ -88,12 +88,10 @@ describe('externalRegistry', () => {
   });
 
   describe('setModulesRequiredExternals', () => {
-    it('does not set externals to undefined', () => {
+    it('does not set required externals when externals not provided', () => {
       const moduleName = 'child-module-a';
       externalRegistry.setModulesRequiredExternals({ moduleName });
-      expect(externalRegistry.getRequiredExternalsRegistry()).toEqual({
-        [moduleName]: {},
-      });
+      expect(externalRegistry.getRequiredExternalsRegistry()).toEqual({});
     });
   });
 
