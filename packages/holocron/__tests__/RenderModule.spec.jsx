@@ -31,6 +31,13 @@ const store = {
   modules: fromJS({
     'my-test-module': MyTestModule,
   }),
+  getState: jest.fn(() => fromJS({
+    holocron: {
+      loaded: {
+        'my-test-module': true,
+      },
+    },
+  })),
 };
 
 describe('RenderModule', () => {
@@ -38,25 +45,32 @@ describe('RenderModule', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  it('should warn when it cannot find a module', () => {
-    expect.assertions(1);
-
-    mount(
-      <ReactReduxContext.Provider value={{ store }}>
-        <RenderModule moduleName="not-in-module-map" />
-      </ReactReduxContext.Provider>
-    );
-    expect(consoleWarn.mock.calls).toMatchSnapshot();
-  });
-
-  it('should render null when it cannot find a module', () => {
-    expect.assertions(1);
+  it('should warn and render null when it cannot find a module in registry', () => {
+    expect.assertions(2);
 
     const tree = mount(
       <ReactReduxContext.Provider value={{ store }}>
         <RenderModule moduleName="not-in-module-map" />
       </ReactReduxContext.Provider>
     );
+    expect(consoleWarn.mock.calls).toMatchSnapshot();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('should warn and render null when module is not loaded', () => {
+    store.getState.mockImplementationOnce(() => fromJS({
+      holocron: {
+        loaded: {},
+      },
+    }));
+    expect.assertions(2);
+
+    const tree = mount(
+      <ReactReduxContext.Provider value={{ store }}>
+        <RenderModule moduleName="not-in-module-map" />
+      </ReactReduxContext.Provider>
+    );
+    expect(consoleWarn.mock.calls).toMatchSnapshot();
     expect(tree).toMatchSnapshot();
   });
 

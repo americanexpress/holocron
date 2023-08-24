@@ -53,17 +53,32 @@ exports[`RenderModule should render a module 1`] = `
 </RenderModule>
 `;
 
-exports[`RenderModule should render null when it cannot find a module 1`] = `
+exports[`RenderModule should warn and render null when it cannot find a module in registry 1`] = `
+Array [
+  Array [
+    "Module not-in-module-map was not found in the holocron module registry",
+  ],
+]
+`;
+
+exports[`RenderModule should warn and render null when it cannot find a module in registry 2`] = `
 <RenderModule
   moduleName="not-in-module-map"
   props={Object {}}
 />
 `;
 
-exports[`RenderModule should warn when it cannot find a module 1`] = `
+exports[`RenderModule should warn and render null when module is not loaded 1`] = `
 Array [
   Array [
     "Module not-in-module-map was not found in the holocron module registry",
   ],
 ]
+`;
+
+exports[`RenderModule should warn and render null when module is not loaded 2`] = `
+<RenderModule
+  moduleName="not-in-module-map"
+  props={Object {}}
+/>
 `;
