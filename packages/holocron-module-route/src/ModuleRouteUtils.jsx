@@ -17,7 +17,7 @@ import { createRoutes } from '@americanexpress/one-app-router';
 // holocron is a peer dependency
 import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
 
-export const addToRouteProps = (route, newProperties) => ({
+export const addToRouteProperties = (route, newProperties) => ({
   ...route,
   props: {
     ...route.props,
@@ -25,20 +25,20 @@ export const addToRouteProps = (route, newProperties) => ({
   },
 });
 
-export const passChildrenProps = (givenRoutes = [], newProperties) => {
+export const passChildrenProperties = (givenRoutes = [], newProperties) => {
   const routes = typeof givenRoutes === 'function' ? givenRoutes(newProperties.store) : givenRoutes;
-  return Array.isArray(routes) ? routes.map((route) => addToRouteProps(route, newProperties))
-    : [addToRouteProps(routes, newProperties)];
+  return Array.isArray(routes) ? routes.map((route) => addToRouteProperties(route, newProperties))
+    : [addToRouteProperties(routes, newProperties)];
 };
 
 export const getRouteIndex = (
   routes, properties
-) => routes && createRoutes(passChildrenProps(routes, properties))[0].indexRoute;
+) => routes && createRoutes(passChildrenProperties(routes, properties))[0].indexRoute;
+
+const capitalizePath = (path) => path[0].toUpperCase() + path.slice(1).toLowerCase();
 
 export const createModuleRoute = (defaultProps, properties) => {
   const { moduleName, store } = properties;
-
-  const capitalizePath = (path) => path[0].toUpperCase() + path.slice(1).toLowerCase();
 
   let moduleRoute = {
     ...defaultProps,
@@ -58,7 +58,7 @@ export const createModuleRoute = (defaultProps, properties) => {
       getChildRoutes(location, callback) {
         store.dispatch(loadModule(moduleName))
           .then(
-            ({ childRoutes }) => callback(null, passChildrenProps(childRoutes, { store }))
+            ({ childRoutes }) => callback(null, passChildrenProperties(childRoutes, { store }))
           )
           .catch(callback);
       },
@@ -100,7 +100,7 @@ export function createModuleRouteFromElement({ type, props }) {
   const route = createModuleRoute(type.defaultProps, props);
   if (route.children) {
     const { store } = props;
-    const children = passChildrenProps(route.children, { store });
+    const children = passChildrenProperties(route.children, { store });
     const childRoutes = createRoutesFromReactChildren(children, route);
 
     if (childRoutes.length > 0) {

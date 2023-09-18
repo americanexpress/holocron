@@ -45,7 +45,10 @@ export default async function updateModuleRegistry({
   const modulesToUpdate = batchModulesToUpdate(
     getModulesToUpdate(currentModuleMap.modules || {}, nextModuleMap.modules)
   );
-  const flatModulesToUpdate = modulesToUpdate.reduce((accumulator, batch) => [...accumulator, ...batch], []);
+  const flatModulesToUpdate = modulesToUpdate.reduce(
+    (accumulator, batch) => [...accumulator, ...batch],
+    []
+  );
   const rejectedModules = {};
   let successfullyLoadedModules = await modulesToUpdate.reduce(async (accumulator, moduleBatch) => {
     const previouslyResolvedModules = await accumulator;
@@ -82,7 +85,9 @@ export default async function updateModuleRegistry({
     return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
   const rejectedModuleNames = Object.keys(rejectedModules);
-  const updatedFlatMap = flatModulesToUpdate.filter((module_) => !rejectedModuleNames.includes(module_));
+  const updatedFlatMap = flatModulesToUpdate.filter(
+    (module_) => !rejectedModuleNames.includes(module_)
+  );
   successfullyLoadedModules = successfullyLoadedModules.reduce(
     (accumulator, module, i) => ({
       ...accumulator,

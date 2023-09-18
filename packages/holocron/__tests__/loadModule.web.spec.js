@@ -24,8 +24,8 @@ const createElementSpy = jest
   .spyOn(document, 'createElement')
   .mockImplementation(() => mockElement);
 jest
-  .spyOn(document, 'getElementsByTagName')
-  .mockImplementation(() => [{ appendChild: () => null }]);
+  .spyOn(document, 'querySelectorAll')
+  .mockImplementation(() => [{ append: () => null }]);
 // eslint-disable-next-line no-underscore-dangle
 window.__holocron_module_bundle_type__ = 'browser';
 

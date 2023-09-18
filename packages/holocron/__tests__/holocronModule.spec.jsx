@@ -292,7 +292,10 @@ describe('holocronModule', () => {
       holocronModule({
         name: 'mock-module',
         load,
-        shouldModuleReload: (currentProperties, nextProperties) => currentProperties.someParam !== nextProperties.someParam,
+        shouldModuleReload: (
+          currentProperties,
+          nextProperties
+        ) => currentProperties.someParam !== nextProperties.someParam,
       })(() => <div>Mock Module</div>)
     );
     const mockStore = createStore(
@@ -326,7 +329,10 @@ describe('holocronModule', () => {
       holocronModule({
         name: 'mock-module',
         load,
-        shouldModuleReload: (currentProperties, nextProperties) => currentProperties.someParam !== nextProperties.someParam,
+        shouldModuleReload: (
+          currentProperties,
+          nextProperties
+        ) => currentProperties.someParam !== nextProperties.someParam,
       })(() => <div>Mock Module</div>)
     );
     const mockStore = createStore(

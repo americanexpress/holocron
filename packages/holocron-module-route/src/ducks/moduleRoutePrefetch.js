@@ -16,12 +16,12 @@ import { match } from '@americanexpress/one-app-router';
 import { composeModules } from 'holocron';
 
 function matchPromisified(options) {
-  return new Promise((res, rej) => {
+  return new Promise((resolve, reject) => {
     match(options, (error, redirectLocation, renderProperties) => {
       if (error) {
-        return rej(error);
+        return reject(error);
       }
-      return res({ renderProps: renderProperties, redirectLocation });
+      return resolve({ renderProps: renderProperties, redirectLocation });
     });
   });
 }

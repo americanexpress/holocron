@@ -36,7 +36,7 @@ jest.mock('../src/loadModule.node', () => {
     resolveWith,
     time
   ) => new Promise(
-    (res) => setTimeout(() => res(resolveWith), time)
+    (resolve) => setTimeout(() => resolve(resolveWith), time)
   );
 
   const makeUpdatedModule = (moduleName, moduleVersion) => function UpdatedModule() {

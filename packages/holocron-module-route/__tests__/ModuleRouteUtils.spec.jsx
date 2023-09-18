@@ -17,8 +17,8 @@ import React from 'react';
 import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
 import ModuleRoute from '../src/ModuleRoute';
 import {
-  addToRouteProps as addToRouteProperties,
-  passChildrenProps as passChildrenProperties,
+  addToRouteProperties,
+  passChildrenProperties,
   getRouteIndex,
   createModuleRoute,
   createModuleRouteFromElement,

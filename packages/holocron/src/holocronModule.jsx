@@ -110,7 +110,11 @@ export default function holocronModule({
         frozenProps: frozenProperties,
         currentLoadCount,
         componentName: getModuleName(WrappedComponent, name),
-        hocInstance: { mounted: isMounted.current, loadCount: loadCountReference.current, setStatus },
+        hocInstance: {
+          mounted: isMounted.current,
+          loadCount: loadCountReference.current,
+          setStatus,
+        },
       });
 
       if (

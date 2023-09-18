@@ -1,3 +1,7 @@
 {
-  "extends": "amex/test"
+  "extends": "amex/test",
+  "rules": {
+    // a number of arguments are functions and need to be set up in the specifications
+    "unicorn/consistent-function-scoping": 0
+  }
 }
