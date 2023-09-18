@@ -12,7 +12,6 @@
  * under the License.
  */
 
-const { ConcatSource } = require('webpack-sources');
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 
 function HolocronModuleRegisterPlugin(moduleName, holocronModuleName = 'holocronModule') {
@@ -31,14 +30,12 @@ HolocronModuleRegisterPlugin.prototype.apply = function apply(compiler) {
         chunk.files
           .filter(ModuleFilenameHelpers.matchObject.bind(undefined, options))
           .forEach((file) => {
-            // eslint-disable-next-line no-param-reassign
-            compilation.assets[file] = new ConcatSource(
-              '(function() {',
-              '\n',
-              compilation.assets[file],
-              '\n',
-              `Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`
-            );
+            const source = compilation.assets[file];
+            // descend into the source and inject the registration within the iife
+            // The last two symbols are always the closing of the iife, then a `;`
+            // Therefore, insert the registration immediately before the iife closes
+            // eslint-disable-next-line no-underscore-dangle
+            source._source._children.splice(source._source._children.length - 2, 0, `;Holocron.registerModule("${moduleName}", ${holocronModuleName});`);
           });
       });
 
