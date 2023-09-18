@@ -52,8 +52,8 @@ jest.mock('../src/loadModule.node', () => {
 describe('updateModuleRegistry', () => {
   const onModuleLoad = jest.fn();
 
-  const getModuleOutputs = (modules) => modules.reduce((acc, module, moduleName) => ({
-    ...acc,
+  const getModuleOutputs = (modules) => modules.reduce((accumulator, module, moduleName) => ({
+    ...accumulator,
     [moduleName]: module,
   }), {});
 
@@ -248,11 +248,11 @@ describe('updateModuleRegistry', () => {
       },
     };
 
-    const batchModulesToUpdate = (moduleNames) => moduleNames.reduce((acc, moduleName) => {
-      const lastArr = acc[acc.length - 1];
-      if (lastArr.length < 2) lastArr.push(moduleName);
-      else acc.push([moduleName]);
-      return acc;
+    const batchModulesToUpdate = (moduleNames) => moduleNames.reduce((accumulator, moduleName) => {
+      const lastArray = accumulator[accumulator.length - 1];
+      if (lastArray.length < 2) lastArray.push(moduleName);
+      else accumulator.push([moduleName]);
+      return accumulator;
     }, [[]]);
 
     const startTime = performance.now();

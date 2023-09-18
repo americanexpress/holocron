@@ -29,11 +29,11 @@ export default function RenderModule({ children, moduleName, props }) {
     return null;
   }
 
-  const propsWithChildren = typeof children !== 'undefined' ? { children, ...props } : props;
+  const propertiesWithChildren = typeof children !== 'undefined' ? { children, ...props } : props;
 
   // propsWithChildren is computed and passed down to this prop
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return <Module {...propsWithChildren} />;
+  return <Module {...propertiesWithChildren} />;
 }
 
 RenderModule.propTypes = {

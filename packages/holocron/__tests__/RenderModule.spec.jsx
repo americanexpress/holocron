@@ -20,9 +20,9 @@ import { fromJS } from 'immutable';
 import RenderModule from '../src/RenderModule';
 
 // eslint-disable-next-line react/prop-types
-const MyTestModule = ({ children, ...otherProps }) => (
+const MyTestModule = ({ children, ...otherProperties }) => (
   <div>
-    {JSON.stringify(otherProps, undefined, 2)}
+    {JSON.stringify(otherProperties, undefined, 2)}
     {children}
   </div>
 );
@@ -88,10 +88,10 @@ describe('RenderModule', () => {
   it('should pass props to the module', () => {
     expect.assertions(1);
 
-    const props = { hello: 'world', foo: 'bar' };
+    const properties = { hello: 'world', foo: 'bar' };
     const tree = mount(
       <ReactReduxContext.Provider value={{ store }}>
-        <RenderModule moduleName="my-test-module" props={props} />
+        <RenderModule moduleName="my-test-module" props={properties} />
       </ReactReduxContext.Provider>
     );
     expect(tree).toMatchSnapshot();

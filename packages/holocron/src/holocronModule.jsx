@@ -26,22 +26,22 @@ import {
 } from './ducks/constants';
 
 // Execute deprecated load function and provide deprecation message
-export function executeLoad({ dispatch, load, ...restProps } = { }) {
+export function executeLoad({ dispatch, load, ...restProperties } = { }) {
   if (load) {
     console.warn('The \'load\' function in holocron has been deprecated. Please use \'loadModuleData\' instead.');
-    return dispatch(load(restProps));
+    return dispatch(load(restProperties));
   }
   return undefined;
 }
 
 // Dispatch loadModuleData inside a thunk if it exists
-export function executeLoadModuleData(loadModuleData, WrappedComponent, props) {
-  const { dispatch, ...restProps } = props;
+export function executeLoadModuleData(loadModuleData, WrappedComponent, properties) {
+  const { dispatch, ...restProperties } = properties;
   if (loadModuleData) {
     return dispatch(async (_, getState, { fetchClient }) => loadModuleData({
       store: { dispatch, getState },
       fetchClient,
-      ownProps: restProps,
+      ownProps: restProperties,
       module: WrappedComponent,
     }));
   }
@@ -94,40 +94,40 @@ export default function holocronModule({
   shouldModuleReload,
   loadModuleData,
   mergeProps,
-  mapStateToProps = () => ({}),
+  mapStateToProps: mapStateToProperties = () => ({}),
   options = {},
 } = {}) {
   return function wrapWithHolocron(WrappedComponent) {
-    const HolocronModuleWrapper = (props) => {
+    const HolocronModuleWrapper = (properties) => {
       const [status, setStatus] = useState('loading');
       const isMounted = useRef(false);
-      const loadCountRef = useRef(0);
-      const prevPropsRef = useRef({});
+      const loadCountReference = useRef(0);
+      const previousPropertiesReference = useRef({});
 
-      const initiateLoad = (currentLoadCount, frozenProps) => executeLoadingFunctions({
+      const initiateLoad = (currentLoadCount, frozenProperties) => executeLoadingFunctions({
         loadModuleData,
         WrappedComponent,
-        frozenProps,
+        frozenProps: frozenProperties,
         currentLoadCount,
         componentName: getModuleName(WrappedComponent, name),
-        hocInstance: { mounted: isMounted.current, loadCount: loadCountRef.current, setStatus },
+        hocInstance: { mounted: isMounted.current, loadCount: loadCountReference.current, setStatus },
       });
 
       if (
-        Object.keys(prevPropsRef.current).length > 0
+        Object.keys(previousPropertiesReference.current).length > 0
         && typeof shouldModuleReload === 'function'
-        && shouldModuleReload(prevPropsRef.current, props)
+        && shouldModuleReload(previousPropertiesReference.current, properties)
       ) {
-        loadCountRef.current += 1;
+        loadCountReference.current += 1;
         setStatus('loading');
-        initiateLoad(loadCountRef.current, props);
+        initiateLoad(loadCountReference.current, properties);
       }
 
-      prevPropsRef.current = props;
+      previousPropertiesReference.current = properties;
 
       React.useEffect(() => {
         isMounted.current = true;
-        initiateLoad(0, props);
+        initiateLoad(0, properties);
 
         return () => {
           isMounted.current = false;
@@ -135,7 +135,7 @@ export default function holocronModule({
       }, []);
 
       // eslint-disable-next-line react/jsx-props-no-spreading
-      return <WrappedComponent {...props} moduleLoadStatus={status} />;
+      return <WrappedComponent {...properties} moduleLoadStatus={status} />;
     };
 
     HolocronModuleWrapper.propTypes = {
@@ -153,7 +153,7 @@ export default function holocronModule({
       HolocronModuleWrapper[LOAD_KEY] = load;
     }
 
-    let mapModuleStateToProps = mapStateToProps;
+    let mapModuleStateToProperties = mapStateToProperties;
 
     if (reducer && !name) {
       console.warn(`The Holocron Config in '${getModuleDisplayName(getModuleName(WrappedComponent, name))}' requires a 'name' when passing a 'reducer'.\nThe 'reducer' will not be added to the Redux Store without a 'name'.`);
@@ -171,14 +171,14 @@ export default function holocronModule({
           (moduleState) => moduleState.toJS()
         );
 
-        mapModuleStateToProps = (state, ownProps) => {
+        mapModuleStateToProperties = (state, ownProperties) => {
           const moduleState = getModuleState(state);
-          return { ...mapStateToProps(state, ownProps), moduleState };
+          return { ...mapStateToProperties(state, ownProperties), moduleState };
         };
       }
     }
 
-    const mapDispatchToProps = (dispatch) => {
+    const mapDispatchToProperties = (dispatch) => {
       if (load) {
         return {
           load,
@@ -191,8 +191,8 @@ export default function holocronModule({
     hoistStatics(HolocronModuleWrapper, WrappedComponent);
 
     const DerivedComponent = connect(
-      mapModuleStateToProps,
-      mapDispatchToProps,
+      mapModuleStateToProperties,
+      mapDispatchToProperties,
       mergeProps
     )(HolocronModuleWrapper);
 

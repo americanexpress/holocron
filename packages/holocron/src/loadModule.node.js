@@ -67,11 +67,11 @@ const fetchAsset = async (assetUrl, parseAsJson) => {
 
     try {
       response = await fetch(assetUrl, { agent });
-    } catch (err) {
+    } catch (error) {
       if (tries > maxRetries) {
-        throw err;
+        throw error;
       }
-      console.warn(`Encountered error fetching module at ${assetUrl}: ${err.message}\nRetrying (${tries})...`);
+      console.warn(`Encountered error fetching module at ${assetUrl}: ${error.message}\nRetrying (${tries})...`);
 
       return fetchAssetAttempt(tries + 1);
     }
@@ -107,19 +107,19 @@ const fetchNodeModule = async (url, integrity, context) => {
     }
 
     return requireFromString(moduleString, url);
-  } catch (err) {
+  } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.warn([
         `${context.type} "${context.name}" at "${url}" failed to execute.`,
-        `\t[Error Message]: "${err.message}"`,
+        `\t[Error Message]: "${error.message}"`,
         'Please fix any errors and wait for it to be reloaded.',
       ].join('\n'));
-    } else if (err.shouldBlockModuleReload !== false) {
+    } else if (error.shouldBlockModuleReload !== false) {
       addToModuleBlockList(url);
 
-      console.warn(`${context.type} at ${url} added to blocklist: ${err.message}`);
+      console.warn(`${context.type} at ${url} added to blocklist: ${error.message}`);
     }
-    throw err;
+    throw error;
   }
 };
 
@@ -264,8 +264,8 @@ const fetchModuleConfig = async (baseUrl) => {
 
   try {
     return await fetchAsset(moduleConfigUrl, true);
-  } catch (err) {
-    console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', err);
+  } catch (error) {
+    console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', error);
   }
 
   return null;
@@ -335,13 +335,13 @@ const loadModule = async (
     }
 
     return holocronModule;
-  } catch (e) {
-    console.log(`Failed to load Holocron module at ${url}`, e);
-    console.log(e.stack);
+  } catch (error) {
+    console.log(`Failed to load Holocron module at ${url}`, error);
+    console.log(error.stack);
 
     setModulesRequiredExternals({ moduleName, externals: oldRequiredExternals });
 
-    throw e;
+    throw error;
   }
 };
 

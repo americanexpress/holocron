@@ -17,79 +17,79 @@ import { createRoutes } from '@americanexpress/one-app-router';
 // holocron is a peer dependency
 import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
 
-export const addToRouteProps = (route, newProps) => ({
+export const addToRouteProps = (route, newProperties) => ({
   ...route,
   props: {
     ...route.props,
-    ...newProps,
+    ...newProperties,
   },
 });
 
-export const passChildrenProps = (givenRoutes = [], newProps) => {
-  const routes = typeof givenRoutes === 'function' ? givenRoutes(newProps.store) : givenRoutes;
-  return Array.isArray(routes) ? routes.map((route) => addToRouteProps(route, newProps))
-    : [addToRouteProps(routes, newProps)];
+export const passChildrenProps = (givenRoutes = [], newProperties) => {
+  const routes = typeof givenRoutes === 'function' ? givenRoutes(newProperties.store) : givenRoutes;
+  return Array.isArray(routes) ? routes.map((route) => addToRouteProps(route, newProperties))
+    : [addToRouteProps(routes, newProperties)];
 };
 
 export const getRouteIndex = (
-  routes, props
-) => routes && createRoutes(passChildrenProps(routes, props))[0].indexRoute;
+  routes, properties
+) => routes && createRoutes(passChildrenProps(routes, properties))[0].indexRoute;
 
-export const createModuleRoute = (defaultProps, props) => {
-  const { moduleName, store } = props;
+export const createModuleRoute = (defaultProps, properties) => {
+  const { moduleName, store } = properties;
 
   const capitalizePath = (path) => path[0].toUpperCase() + path.slice(1).toLowerCase();
 
   let moduleRoute = {
     ...defaultProps,
-    ...props,
-    title: props.title || (props.path && capitalizePath(props.path)),
+    ...properties,
+    title: properties.title || (properties.path && capitalizePath(properties.path)),
   };
 
   if (moduleName) {
     moduleRoute = Object.assign(moduleRoute, {
-      getIndexRoute(partialNextState, cb) {
+      getIndexRoute(partialNextState, callback) {
         store.dispatch(loadModule(moduleName))
           .then(
-            ({ childRoutes }) => cb(null, getRouteIndex(childRoutes, { store }))
+            ({ childRoutes }) => callback(null, getRouteIndex(childRoutes, { store }))
           )
-          .catch(cb);
+          .catch(callback);
       },
-      getChildRoutes(location, cb) {
+      getChildRoutes(location, callback) {
         store.dispatch(loadModule(moduleName))
           .then(
-            ({ childRoutes }) => cb(null, passChildrenProps(childRoutes, { store }))
+            ({ childRoutes }) => callback(null, passChildrenProps(childRoutes, { store }))
           )
-          .catch(cb);
+          .catch(callback);
       },
-      getComponent(nextState, cb) {
+      getComponent(nextState, callback) {
         store.dispatch(loadModule(moduleName))
           .then(
-            (module) => cb(null, module)
+            (module) => callback(null, module)
           )
-          .catch(cb);
+          .catch(callback);
       },
     });
   }
   if (moduleName && !moduleRoute.onEnter) {
     moduleRoute = Object.assign(moduleRoute, {
-      onEnter(nextState, replace, cb) {
+      onEnter(nextState, replace, callback) {
         store.dispatch(loadModule(moduleName))
           .then(
             ({ onEnterRouteHook }) => {
               if (!onEnterRouteHook) {
-                return cb();
+                return callback();
               }
               const onEnter = onEnterRouteHook.length === 1
                 ? onEnterRouteHook(store) : onEnterRouteHook;
               if (onEnter.length === 3) {
-                return onEnter(nextState, replace, cb);
+                return onEnter(nextState, replace, callback);
               }
               onEnter(nextState, replace);
-              return cb();
+              return callback();
             }
           )
-          .catch(cb);
+          .catch(callback);
       },
     });
   }

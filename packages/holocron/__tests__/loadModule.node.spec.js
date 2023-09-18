@@ -19,14 +19,14 @@ const mockHttpAgent = jest.fn();
 jest.mock('http', () => ({ Agent: mockHttpAgent }));
 const mockHttpsAgent = jest.fn();
 jest.mock('https', () => ({ Agent: mockHttpsAgent }));
-jest.mock('require-from-string', () => jest.fn((str) => {
-  if (str instanceof Error) {
-    throw str;
+jest.mock('require-from-string', () => jest.fn((string) => {
+  if (string instanceof Error) {
+    throw string;
   }
-  if (typeof str === 'object') {
-    return str;
+  if (typeof string === 'object') {
+    return string;
   }
-  return { str };
+  return { str: string };
 })
 );
 
@@ -354,8 +354,8 @@ describe('loadModule.node', () => {
             integrity: '123',
             url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
           },
-        }).catch((err) => {
-          expect(err).toHaveProperty('message', 'Not Found');
+        }).catch((error) => {
+          expect(error).toHaveProperty('message', 'Not Found');
           expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith(
             'https://example.com/cdn/awesome/1.0.0/awesome.node.js'
           );
@@ -376,8 +376,8 @@ describe('loadModule.node', () => {
             integrity: '123',
             url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
           },
-        }).catch((err) => {
-          expect(err).toHaveProperty('message', 'Server Error');
+        }).catch((error) => {
+          expect(error).toHaveProperty('message', 'Server Error');
           expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith(
             'https://example.com/cdn/awesome/1.0.0/awesome.node.js'
           );
@@ -398,8 +398,8 @@ describe('loadModule.node', () => {
             integrity: '123',
             url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
           },
-        }).catch((err) => {
-          expect(err).toHaveProperty('message', 'Bad Gateway');
+        }).catch((error) => {
+          expect(error).toHaveProperty('message', 'Bad Gateway');
           expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith(
             'https://example.com/cdn/awesome/1.0.0/awesome.node.js'
           );
@@ -417,8 +417,8 @@ describe('loadModule.node', () => {
             integrity: '123',
             url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
           },
-        }).catch((err) => {
-          expect(err).toHaveProperty('message', '404');
+        }).catch((error) => {
+          expect(error).toHaveProperty('message', '404');
           expect(moduleRegistry.addToModuleBlockList).toHaveBeenCalledWith(
             'https://example.com/cdn/awesome/1.0.0/awesome.node.js'
           );
@@ -514,8 +514,8 @@ describe('loadModule.node', () => {
           },
         },
         jest.fn()
-      ).catch((err) => {
-        expect(err).toMatchSnapshot();
+      ).catch((error) => {
+        expect(error).toMatchSnapshot();
         expect(requireFromString).not.toHaveBeenCalled();
       });
     });

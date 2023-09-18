@@ -43,7 +43,7 @@ describe('holocronModule', () => {
   let fakeDispatch;
   let fakeGetState;
   let fakeFetchClient;
-  let fakeProps;
+  let fakeProperties;
   let fakeSetState;
   let fakeInstance;
   let fakeLoad;
@@ -60,7 +60,7 @@ describe('holocronModule', () => {
       )
     );
     fakeSetState = jest.fn();
-    fakeProps = {
+    fakeProperties = {
       dispatch: fakeDispatch,
       load: fakeLoad,
     };
@@ -83,14 +83,14 @@ describe('holocronModule', () => {
     });
 
     it('should call load with props', () => {
-      fakeProps = {
+      fakeProperties = {
         dispatch: jest.fn(),
-        load: jest.fn((arg) => arg),
+        load: jest.fn((argument) => argument),
         myFakeProp: true,
       };
-      executeLoad(fakeProps);
+      executeLoad(fakeProperties);
       expect(warn).toHaveBeenCalled();
-      expect(fakeProps.load).toHaveBeenCalledWith({ myFakeProp: true });
+      expect(fakeProperties.load).toHaveBeenCalledWith({ myFakeProp: true });
     });
   });
 
@@ -101,7 +101,7 @@ describe('holocronModule', () => {
         dispatch: fakeDispatch,
       });
       expect(fakeLoadModuleData.mock.calls).toMatchSnapshot();
-      expect(fakeProps.dispatch).toHaveBeenCalled();
+      expect(fakeProperties.dispatch).toHaveBeenCalled();
     });
   });
 
@@ -111,7 +111,7 @@ describe('holocronModule', () => {
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
-        frozenProps: fakeProps,
+        frozenProps: fakeProperties,
         currentLoadCount: 0,
         componentName: 'FakeComponent',
         hocInstance: { ...fakeInstance },
@@ -124,7 +124,7 @@ describe('holocronModule', () => {
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
-        frozenProps: fakeProps,
+        frozenProps: fakeProperties,
         loadCount: 0,
         componentName: 'FakeComponent',
         hocInstance: {
@@ -144,7 +144,7 @@ describe('holocronModule', () => {
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
-        frozenProps: fakeProps,
+        frozenProps: fakeProperties,
         currentLoadCount: 0,
         componentName: 'FakeComponent',
         hocInstance: { ...fakeInstance },
@@ -160,7 +160,7 @@ describe('holocronModule', () => {
       await executeLoadingFunctions({
         loadModuleData: fakeLoadModuleData,
         WrappedComponent: FakeComponent,
-        frozenProps: fakeProps,
+        frozenProps: fakeProperties,
         currentLoadCount: 0,
         componentName: 'FakeComponent',
         hocInstance: {
@@ -269,20 +269,20 @@ describe('holocronModule', () => {
       load,
     })(() => <div>Mock Module</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
-    const props = { a: 'b', x: { y: 'z' } };
+    const properties = { a: 'b', x: { y: 'z' } };
     mount(
       <Provider store={mockStore}>
-        <Module {...props} />
+        <Module {...properties} />
       </Provider>
     );
     // couldn't use toHaveBeenCalledWith because mapDispatchToProps is used
 
-    const calledProps = load.mock.calls[0][0];
-    const calledPropsWithoutFunctions = _.pickBy(
-      calledProps,
+    const calledProperties = load.mock.calls[0][0];
+    const calledPropertiesWithoutFunctions = _.pickBy(
+      calledProperties,
       (p) => typeof p !== 'function'
     );
-    expect(calledPropsWithoutFunctions).toEqual(props);
+    expect(calledPropertiesWithoutFunctions).toEqual(properties);
     expect(load).toHaveBeenCalledTimes(1);
   });
 
@@ -292,7 +292,7 @@ describe('holocronModule', () => {
       holocronModule({
         name: 'mock-module',
         load,
-        shouldModuleReload: (currProps, nextProps) => currProps.someParam !== nextProps.someParam,
+        shouldModuleReload: (currentProperties, nextProperties) => currentProperties.someParam !== nextProperties.someParam,
       })(() => <div>Mock Module</div>)
     );
     const mockStore = createStore(
@@ -311,12 +311,12 @@ describe('holocronModule', () => {
       newState: { someParam: 'new' },
     });
     // couldn't use toHaveBeenCalledWith because mapDispatchToProps is used
-    const calledProps = load.mock.calls[1][0];
-    const calledPropsWithoutFunctions = _.pickBy(
-      calledProps,
+    const calledProperties = load.mock.calls[1][0];
+    const calledPropertiesWithoutFunctions = _.pickBy(
+      calledProperties,
       (p) => typeof p !== 'function'
     );
-    expect(calledPropsWithoutFunctions).toEqual({ someParam: 'new' });
+    expect(calledPropertiesWithoutFunctions).toEqual({ someParam: 'new' });
     expect(load).toHaveBeenCalledTimes(2);
   });
 
@@ -326,7 +326,7 @@ describe('holocronModule', () => {
       holocronModule({
         name: 'mock-module',
         load,
-        shouldModuleReload: (currProps, nextProps) => currProps.someParam !== nextProps.someParam,
+        shouldModuleReload: (currentProperties, nextProperties) => currentProperties.someParam !== nextProperties.someParam,
       })(() => <div>Mock Module</div>)
     );
     const mockStore = createStore(
@@ -535,19 +535,19 @@ describe('holocronModule', () => {
 
   it('should pass mergeProps to connect if it is specified', () => {
     const reducer = () => fromJS({ x: 3 });
-    const mergeProps = (stateProps, dispatchProps, ownProps) => {
-      const xy = stateProps.moduleState.x * ownProps.y;
+    const mergeProperties = (stateProperties, dispatchProperties, ownProperties) => {
+      const xy = stateProperties.moduleState.x * ownProperties.y;
       return {
-        ...stateProps,
-        ...dispatchProps,
-        ...ownProps,
+        ...stateProperties,
+        ...dispatchProperties,
+        ...ownProperties,
         xy,
       };
     };
     const Module = holocronModule({
       name: 'mock-module',
       reducer,
-      mergeProps,
+      mergeProps: mergeProperties,
     })(({ moduleState: { x }, y, xy }) => (
       <div>
         {x} * {y} = {xy}

@@ -40,9 +40,9 @@ function parseVersion(raw) {
   }
 
   return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
+    major: Number.parseInt(match[1], 10),
+    minor: Number.parseInt(match[2], 10),
+    patch: Number.parseInt(match[3], 10),
     prerelease: match[4],
   };
 }
@@ -56,7 +56,7 @@ function parseRange(raw) {
   // TODO: translate any "~" "^" etc. to ">=" "<=" etc.
   return raw
     // split by any whitespace
-    .split(/[\s\uFEFF\u00A0]+/)
+    .split(/\s+/)
     // split range type and version
     .map(function parseBound(b) {
       const match = /^(>=)(.+)$/.exec(b);

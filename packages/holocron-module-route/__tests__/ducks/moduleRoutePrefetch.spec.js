@@ -4,7 +4,7 @@ import { composeModules } from 'holocron';
 import { moduleRoutePrefetch } from '../../src/ducks/moduleRoutePrefetch';
 
 jest.mock('@americanexpress/one-app-router', () => ({
-  match: jest.fn((_, cb) => cb(null, null, {
+  match: jest.fn((_, callback) => callback(null, null, {
     routes: [
       { moduleName: 'frank' },
       { component: 'not-a-frank' },
@@ -43,13 +43,13 @@ describe('moduleRoutePrefetch', () => {
   });
 
   it('rejects when match returns err', async () => {
-    match.mockImplementationOnce((_, cb) => cb('match error'));
+    match.mockImplementationOnce((_, callback) => callback('match error'));
     const prefetchThunk = moduleRoutePrefetch({ routes: ['fake-route'], location: '/unkown' });
     await expect(prefetchThunk(dispatch)).rejects.toEqual('match error');
   });
 
   it('rejects when unable to match', async () => {
-    match.mockImplementationOnce((_, cb) => cb(null, null, { /* no routes */}));
+    match.mockImplementationOnce((_, callback) => callback(null, null, { /* no routes */}));
     const unableToMatchError = new Error(
       'Unable to prefetch modules for /unkown, ensure location is valid'
     );

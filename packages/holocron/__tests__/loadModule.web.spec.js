@@ -29,12 +29,12 @@ jest
 // eslint-disable-next-line no-underscore-dangle
 window.__holocron_module_bundle_type__ = 'browser';
 
-const eventListenerMock = jest.fn((event, cb) => {
+const eventListenerMock = jest.fn((event, callback) => {
   if (errorWhenLoadingScript && event === 'error') {
-    cb(errorWhenLoadingScript);
+    callback(errorWhenLoadingScript);
   }
   if (!errorWhenLoadingScript && event === 'load') {
-    cb();
+    callback();
   }
 });
 
@@ -116,7 +116,7 @@ describe('loadModule.web', () => {
   it('should reject with a helpful error when module name is not a string', async () => {
     await expect(
       loadModule(
-        NaN,
+        Number.NaN,
         fromJS({
           node: {
             url: 'https://example.com/cdn/my-module/1.0.0/my-module.node.js',
@@ -536,9 +536,9 @@ describe('loadModule.web', () => {
     it('waits for fallback scripts to finish loading before loading module script', async () => {
       let finallyLoadSlowScript;
       const slowMockElement = {
-        addEventListener: (event, cb) => {
+        addEventListener: (event, callback) => {
           if (event === 'load') {
-            finallyLoadSlowScript = cb;
+            finallyLoadSlowScript = callback;
           }
         },
       };

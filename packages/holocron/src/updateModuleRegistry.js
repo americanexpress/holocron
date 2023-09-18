@@ -28,10 +28,10 @@ export function areModuleEntriesEqual(firstModuleEntry, secondModuleEntry) {
   );
 }
 
-function defaultGetModulesToUpdate(curr, next) {
+function defaultGetModulesToUpdate(current, next) {
   return Object
     .keys(next)
-    .filter((moduleName) => !areModuleEntriesEqual(curr[moduleName], next[moduleName]));
+    .filter((moduleName) => !areModuleEntriesEqual(current[moduleName], next[moduleName]));
 }
 
 export default async function updateModuleRegistry({
@@ -45,10 +45,10 @@ export default async function updateModuleRegistry({
   const modulesToUpdate = batchModulesToUpdate(
     getModulesToUpdate(currentModuleMap.modules || {}, nextModuleMap.modules)
   );
-  const flatModulesToUpdate = modulesToUpdate.reduce((acc, batch) => [...acc, ...batch], []);
+  const flatModulesToUpdate = modulesToUpdate.reduce((accumulator, batch) => [...accumulator, ...batch], []);
   const rejectedModules = {};
-  let successfullyLoadedModules = await modulesToUpdate.reduce(async (acc, moduleBatch) => {
-    const previouslyResolvedModules = await acc;
+  let successfullyLoadedModules = await modulesToUpdate.reduce(async (accumulator, moduleBatch) => {
+    const previouslyResolvedModules = await accumulator;
     const newlyResolvedModules = await Promise.allSettled(moduleBatch.map(
       async (moduleName) => {
         try {
@@ -58,21 +58,21 @@ export default async function updateModuleRegistry({
             onModuleLoad
           );
           return addHigherOrderComponent(loadedModule);
-        } catch (e) {
+        } catch (error) {
           const brokenUrl = nextModuleMap.modules[moduleName].node.url;
           if (currentModuleMap.modules && currentModuleMap.modules[moduleName]) {
             const previousUrl = currentModuleMap.modules[moduleName].node.url;
             // eslint-disable-next-line no-console
-            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, e);
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, error);
           } else {
             // eslint-disable-next-line no-console
-            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
+            console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, error);
           }
           rejectedModules[moduleName] = {
             ...nextModuleMap.modules[moduleName],
-            reasonForRejection: e.message,
+            reasonForRejection: error.message,
           };
-          return Promise.reject(e);
+          return Promise.reject(error);
         }
       }
     ));
@@ -82,10 +82,10 @@ export default async function updateModuleRegistry({
     return [...previouslyResolvedModules, ...fulfilledModules];
   }, []);
   const rejectedModuleNames = Object.keys(rejectedModules);
-  const updatedFlatMap = flatModulesToUpdate.filter((mod) => !rejectedModuleNames.includes(mod));
+  const updatedFlatMap = flatModulesToUpdate.filter((module_) => !rejectedModuleNames.includes(module_));
   successfullyLoadedModules = successfullyLoadedModules.reduce(
-    (acc, module, i) => ({
-      ...acc,
+    (accumulator, module, i) => ({
+      ...accumulator,
       [updatedFlatMap[i]]: module,
     }),
     {}
@@ -105,7 +105,7 @@ export default async function updateModuleRegistry({
   });
   resetModuleRegistry(newModules, { ...nextModuleMap, modules: nextModules });
   const loadedModules = updatedFlatMap.reduce(
-    (acc, moduleName) => ({ ...acc, [moduleName]: nextModules[moduleName] }),
+    (accumulator, moduleName) => ({ ...accumulator, [moduleName]: nextModules[moduleName] }),
     {}
   );
 

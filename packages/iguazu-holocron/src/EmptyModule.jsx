@@ -20,6 +20,6 @@ export function isEmpty(Module) {
   return Module === EmptyModule;
 }
 
-export function anyAreEmpty(...args) {
-  return args.some(isEmpty);
+export function anyAreEmpty(...arguments_) {
+  return arguments_.some(isEmpty);
 }

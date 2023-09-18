@@ -47,7 +47,7 @@ describe('createHolocronStore', () => {
   const defaultAppState = 'app state';
   const defaultAppReducer = (state = { app: defaultAppState }) => state;
   const helpers = (function helpers() {
-    const getStateFromSource = (cb) => ({ store, state } = {}) => cb(
+    const getStateFromSource = (callback) => ({ store, state } = {}) => callback(
       state || store ? store.getState() : iMap()
     );
 

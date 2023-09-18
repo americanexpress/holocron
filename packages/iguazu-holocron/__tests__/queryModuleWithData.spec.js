@@ -26,8 +26,8 @@ const getStateSpy = jest.fn();
 
 describe('queryModuleWithData', () => {
   it('should show a loading response when the Module is loading', async () => {
-    const loadDataAsProps = ({ store: { dispatch } }) => ({ someData: () => dispatch({ promise: Promise.resolve('data') }) });
-    const LoadedModule = connectAsync({ loadDataAsProps })(() => null);
+    const loadDataAsProperties = ({ store: { dispatch } }) => ({ someData: () => dispatch({ promise: Promise.resolve('data') }) });
+    const LoadedModule = connectAsync({ loadDataAsProps: loadDataAsProperties })(() => null);
 
     queryModule.mockImplementationOnce(() => ({
       data: EmptyModule,
@@ -43,8 +43,8 @@ describe('queryModuleWithData', () => {
   });
 
   it('should show a loading response when the Module\'s data is loading', async () => {
-    const loadDataAsProps = ({ store: { dispatch } }) => ({ someData: () => dispatch({ promise: Promise.resolve('data') }) });
-    const LoadedModule = connectAsync({ loadDataAsProps })(() => null);
+    const loadDataAsProperties = ({ store: { dispatch } }) => ({ someData: () => dispatch({ promise: Promise.resolve('data') }) });
+    const LoadedModule = connectAsync({ loadDataAsProps: loadDataAsProperties })(() => null);
 
     queryModule.mockImplementationOnce(() => ({
       data: LoadedModule,
@@ -60,10 +60,10 @@ describe('queryModuleWithData', () => {
   });
 
   it('should show a loaded response when the Module and its data is loaded', async () => {
-    const loadDataAsProps = ({ store: { dispatch } }) => ({
+    const loadDataAsProperties = ({ store: { dispatch } }) => ({
       someData: () => dispatch({ data: 'data', status: 'complete', promise: Promise.resolve('data') }),
     });
-    const LoadedModule = connectAsync({ loadDataAsProps })(() => null);
+    const LoadedModule = connectAsync({ loadDataAsProps: loadDataAsProperties })(() => null);
 
     queryModule.mockImplementationOnce(() => ({
       data: LoadedModule,
@@ -98,7 +98,7 @@ describe('queryModuleWithData', () => {
   it('should indicate there was an error if the Module\'s data failed to load', async () => {
     const loadError = new Error('Module\'s data failed to load');
     const dataLoadPromise = Promise.reject(loadError);
-    const loadDataAsProps = ({ store: { dispatch } }) => ({
+    const loadDataAsProperties = ({ store: { dispatch } }) => ({
       someData: () => dispatch({
         data: undefined,
         status: 'complete',
@@ -106,7 +106,7 @@ describe('queryModuleWithData', () => {
         promise: dataLoadPromise,
       }),
     });
-    const LoadedModule = connectAsync({ loadDataAsProps })(() => null);
+    const LoadedModule = connectAsync({ loadDataAsProps: loadDataAsProperties })(() => null);
 
     queryModule.mockImplementationOnce(() => ({
       data: LoadedModule,

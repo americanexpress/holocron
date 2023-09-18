@@ -119,8 +119,8 @@ describe('composeModules', () => {
     const fetchClient = jest.fn();
 
     return thunk(dispatch, getState, { fetchClient })
-      .catch((err) => {
-        expect(err).toBe(error);
+      .catch((error_) => {
+        expect(error_).toBe(error);
         expect(consoleError).toHaveBeenCalledTimes(1);
         expect(consoleError).toHaveBeenCalledWith(
           'Error while attempting to call \'load\' or \'loadModuleData\' inside composeModules for my-submodule.',

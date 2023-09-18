@@ -8,7 +8,7 @@ const holocronProperties = {
   load: function fakeLoad() {},
   shouldModuleReload: function fakeShouldModuleReload() {},
   loadModuleData: function fakeLoadModuleData() {},
-  mergeProps: function fakeMergeProps() {},
+  mergeProps: function fakeMergeProperties() {},
   options: function fakeOptions() {},
 };
 

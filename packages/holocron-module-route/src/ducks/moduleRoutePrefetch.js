@@ -15,13 +15,13 @@
 import { match } from '@americanexpress/one-app-router';
 import { composeModules } from 'holocron';
 
-function matchPromisified(opts) {
+function matchPromisified(options) {
   return new Promise((res, rej) => {
-    match(opts, (err, redirectLocation, renderProps) => {
-      if (err) {
-        return rej(err);
+    match(options, (error, redirectLocation, renderProperties) => {
+      if (error) {
+        return rej(error);
       }
-      return res({ renderProps, redirectLocation });
+      return res({ renderProps: renderProperties, redirectLocation });
     });
   });
 }
@@ -43,11 +43,11 @@ export const moduleRoutePrefetch = ({ routes, location }) => {
     }
 
     const matchedRoutes = renderProps.routes;
-    const modules = matchedRoutes.reduce((acc, currentRoute) => {
+    const modules = matchedRoutes.reduce((accumulator, currentRoute) => {
       if (currentRoute.moduleName) {
-        acc.push({ name: currentRoute.moduleName });
+        accumulator.push({ name: currentRoute.moduleName });
       }
-      return acc;
+      return accumulator;
     }, []);
     return dispatch(composeModules(modules));
   };

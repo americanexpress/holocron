@@ -16,12 +16,12 @@ import { iguazuReduce } from 'iguazu';
 
 import queryModule from './queryModule';
 
-function reduceModuleDataLoad(store, module, ownProps) {
+function reduceModuleDataLoad(store, module, ownProperties) {
   return module.loadDataAsProps
-    ? iguazuReduce(module.loadDataAsProps)({ store, ownProps }) : { status: 'complete' };
+    ? iguazuReduce(module.loadDataAsProps)({ store, ownProps: ownProperties }) : { status: 'complete' };
 }
 
-export default function queryModuleWithData(moduleName, moduleProps) {
+export default function queryModuleWithData(moduleName, moduleProperties) {
   return (dispatch, getState) => {
     const store = { dispatch, getState };
     const moduleBundleLoad = dispatch(queryModule(moduleName));
@@ -35,11 +35,11 @@ export default function queryModuleWithData(moduleName, moduleProps) {
     if (bundleError) { return moduleBundleLoad; }
 
     const promise = bundlePromise.then(
-      (module) => reduceModuleDataLoad(store, module, moduleProps).promise || Promise.resolve()
+      (module) => reduceModuleDataLoad(store, module, moduleProperties).promise || Promise.resolve()
     );
 
     const { status, error } = bundleStatus === 'complete'
-      ? reduceModuleDataLoad(store, data, moduleProps) : { status: 'loading' };
+      ? reduceModuleDataLoad(store, data, moduleProperties) : { status: 'loading' };
 
     return {
       status,

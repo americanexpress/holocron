@@ -17,8 +17,8 @@ import React from 'react';
 import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
 import ModuleRoute from '../src/ModuleRoute';
 import {
-  addToRouteProps,
-  passChildrenProps,
+  addToRouteProps as addToRouteProperties,
+  passChildrenProps as passChildrenProperties,
   getRouteIndex,
   createModuleRoute,
   createModuleRouteFromElement,
@@ -44,9 +44,9 @@ jest.mock('holocron', () => ({
         onEnterRouteHook: jest.fn((nextState, replace) => replace('/test-sync-hook')),
       },
       'async-hook-module': {
-        onEnterRouteHook: (nextState, replace, cb) => {
+        onEnterRouteHook: (nextState, replace, callback) => {
           replace('/test-async-hook');
-          cb('async hook done');
+          callback('async hook done');
         },
       },
     };
@@ -65,35 +65,35 @@ describe('ModuleRouteUtils', () => {
           changed: 'old',
         },
       };
-      const newProps = {
+      const newProperties = {
         changed: 'new',
         new: 'prop',
       };
-      expect(addToRouteProps(route, newProps)).toMatchSnapshot();
+      expect(addToRouteProperties(route, newProperties)).toMatchSnapshot();
     });
   });
 
   describe('passChildrenProps', () => {
     it('should pass props to children', () => {
       const routes = [{}];
-      const newProps = { hello: 'world' };
-      expect(passChildrenProps(routes, newProps)).toMatchSnapshot();
+      const newProperties = { hello: 'world' };
+      expect(passChildrenProperties(routes, newProperties)).toMatchSnapshot();
     });
 
     it('should convert a single route to an array', () => {
-      const routes = passChildrenProps({}, {});
+      const routes = passChildrenProperties({}, {});
       expect(Array.isArray(routes)).toBe(true);
     });
 
     it('should pass the store to a function that creates routes', () => {
       const getState = () => 'Hello world';
       const createRoutes = (store) => ({ props: { state: store.getState() } });
-      const newProps = { store: { getState } };
-      expect(passChildrenProps(createRoutes, newProps)).toMatchSnapshot();
+      const newProperties = { store: { getState } };
+      expect(passChildrenProperties(createRoutes, newProperties)).toMatchSnapshot();
     });
 
     it('should return an empty array if no routes are provided', () => {
-      expect(passChildrenProps(undefined, {})).toMatchSnapshot();
+      expect(passChildrenProperties(undefined, {})).toMatchSnapshot();
     });
   });
 
@@ -121,14 +121,14 @@ describe('ModuleRouteUtils', () => {
     beforeEach(() => dispatch.mockClear());
 
     it('should create a valid module route', () => {
-      const props = { title: 'Test', moduleName: 'test-module' };
-      const moduleRoute = createModuleRoute(defaultProps, props);
+      const properties = { title: 'Test', moduleName: 'test-module' };
+      const moduleRoute = createModuleRoute(defaultProps, properties);
       expect(moduleRoute).toMatchSnapshot();
     });
 
     it('should use the path to generate a title if none exists', () => {
-      const props = { path: 'edit', moduleName: 'edit-module' };
-      const moduleRoute = createModuleRoute(defaultProps, props);
+      const properties = { path: 'edit', moduleName: 'edit-module' };
+      const moduleRoute = createModuleRoute(defaultProps, properties);
       expect(moduleRoute.title).toBe('Edit');
     });
 
@@ -140,8 +140,8 @@ describe('ModuleRouteUtils', () => {
     describe('getIndexRoute', () => {
       it('should get the index route', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
         const callback = jest.fn(() => {
           expect(loadModule).toHaveBeenCalledWith(moduleName);
           expect(callback.mock.calls[0][1]).toBe('index');
@@ -152,8 +152,8 @@ describe('ModuleRouteUtils', () => {
 
       it('passes errors to callback', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const callback = jest.fn((error) => {
           expect(error.message).toEqual('boom');
@@ -168,8 +168,8 @@ describe('ModuleRouteUtils', () => {
     describe('getChildRoutes', () => {
       it('should get the child routes', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
         const callback = jest.fn(() => {
           expect(loadModule).toHaveBeenCalledWith(moduleName);
           expect(callback.mock.calls[0][1]).toMatchSnapshot();
@@ -180,8 +180,8 @@ describe('ModuleRouteUtils', () => {
 
       it('passes errors to callback', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const callback = jest.fn((error) => {
           expect(error.message).toEqual('boom');
@@ -196,8 +196,8 @@ describe('ModuleRouteUtils', () => {
     describe('getComponent', () => {
       it('should get the module', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
         const callback = jest.fn(() => {
           expect(loadModule).toHaveBeenCalledWith(moduleName);
           expect(callback.mock.calls[0][1]).toMatchSnapshot();
@@ -208,8 +208,8 @@ describe('ModuleRouteUtils', () => {
 
       it('passes errors to callback', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const callback = jest.fn((error) => {
           expect(error.message).toEqual('boom');
@@ -224,23 +224,23 @@ describe('ModuleRouteUtils', () => {
     describe('onEnter', () => {
       it('should allow the Module to specify an onEnter hook that takes the store and returns a hook', (done) => {
         const moduleName = 'store-hook-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const replace = jest.fn();
-        function cb(cbMessage) {
-          expect(cbMessage).toBeUndefined();
+        function callback(callbackMessage) {
+          expect(callbackMessage).toBeUndefined();
           expect(store.dispatch).toHaveBeenCalledWith({ type: 'NEXT_STATE', nextState: 'nextState' });
           expect(replace).toHaveBeenCalledWith('/test-store-hook');
           done();
         }
-        moduleRoute.onEnter('nextState', replace, cb);
+        moduleRoute.onEnter('nextState', replace, callback);
       });
 
       it('passes errors to callback', (done) => {
         const moduleName = 'store-hook-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const callback = jest.fn((error) => {
           expect(error.message).toEqual('boom');
@@ -254,50 +254,50 @@ describe('ModuleRouteUtils', () => {
 
       it('should allow the Module to specify a synchronous onEnter hook', (done) => {
         const moduleName = 'sync-hook-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const replace = jest.fn();
-        function cb(cbMessage) {
-          expect(cbMessage).toBeUndefined();
+        function callback(callbackMessage) {
+          expect(callbackMessage).toBeUndefined();
           expect(replace).toHaveBeenCalledWith('/test-sync-hook');
           done();
         }
-        moduleRoute.onEnter('nextState', replace, cb);
+        moduleRoute.onEnter('nextState', replace, callback);
       });
 
       it('should allow the Module to specify an asyncronous hook', (done) => {
         const moduleName = 'async-hook-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const replace = jest.fn();
-        function cb(cbMessage) {
-          expect(cbMessage).toBe('async hook done');
+        function callback(callbackMessage) {
+          expect(callbackMessage).toBe('async hook done');
           expect(replace).toHaveBeenCalledWith('/test-async-hook');
           done();
         }
-        moduleRoute.onEnter('nextState', replace, cb);
+        moduleRoute.onEnter('nextState', replace, callback);
       });
 
       it('should allow the Module to not specify an onEnter hook', (done) => {
         const moduleName = 'test-module';
-        const props = { moduleName, store };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         const replace = jest.fn();
-        function cb() {
+        function callback() {
           // Don't need to assert anything, as long as it reached here everything's good
           done();
         }
-        moduleRoute.onEnter('nextState', replace, cb);
+        moduleRoute.onEnter('nextState', replace, callback);
       });
 
       it('should only use the onEnter hook defined by the Module if there is not one defined directly on the route', () => {
         const moduleName = 'sync-hook-module';
         const onEnter = jest.fn();
-        const props = { moduleName, store, onEnter };
-        const moduleRoute = createModuleRoute(defaultProps, props);
+        const properties = { moduleName, store, onEnter };
+        const moduleRoute = createModuleRoute(defaultProps, properties);
 
         moduleRoute.onEnter('nextState', 'replace', 'cb');
         expect(onEnter).toHaveBeenCalledWith('nextState', 'replace', 'cb');

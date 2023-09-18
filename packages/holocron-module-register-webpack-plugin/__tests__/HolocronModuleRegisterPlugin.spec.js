@@ -52,8 +52,8 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
+    webpack(options, (error, stats) => {
+      if (error) done.fail(error);
       if (stats.hasErrors()) done.fail(stats.toJson().errors);
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.startsWith('(function() {')).toBe(true);
@@ -75,8 +75,8 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
+    webpack(options, (error, stats) => {
+      if (error) done.fail(error);
       if (stats.hasErrors()) done.fail(stats.toJson().errors);
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents).toContain('()=>null');
@@ -98,8 +98,8 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
+    webpack(options, (error, stats) => {
+      if (error) done.fail(error);
       if (stats.hasErrors()) done.fail(stats.toJson().errors);
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.startsWith('(function() {')).toBe(true);
@@ -129,8 +129,8 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
+    webpack(options, (error, stats) => {
+      if (error) done.fail(error);
       if (stats.hasErrors()) done.fail(stats.toJson().errors);
       const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
       expect(fileContents.endsWith(`Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`)).toBe(true);
