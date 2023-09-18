@@ -47,7 +47,9 @@ describe('loadModule.node', () => {
       statusText: fetchStatusText !== undefined ? fetchStatusText : 'OK',
       // no one should expect the Spanish Inquisition default
       text: () => Promise.resolve(fetchText || 'the Spanish Inquisition'),
-      json: () => Promise.resolve(JSON.parse(fetchText || 'the Spanish Inquisition')),
+      json: () => Promise.resolve(
+        JSON.parse(fetchText || 'the Spanish Inquisition')
+      ),
       ok: (fetchStatus || 200) >= 200 && (fetchStatus || 200) < 300,
     }))
   );
@@ -791,7 +793,8 @@ describe('loadModule.node', () => {
         statusText: 'OK',
         json: () => '{ "requiredExternals": [] }',
         ok: true,
-      }));
+      })
+      );
 
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
@@ -843,14 +846,16 @@ describe('loadModule.node', () => {
           ],
         }),
         ok: true,
-      }));
+      })
+      );
 
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      }));
+      })
+      );
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -1070,7 +1075,8 @@ describe('loadModule.node', () => {
             },
           },
         }),
-      }));
+      })
+      );
 
       // load module
       const loadModule = load({
@@ -1202,7 +1208,8 @@ describe('loadModule.node', () => {
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      }));
+      })
+      );
 
       // mock fetch for module code
       mockFetch.mockImplementationOnce(
@@ -1254,6 +1261,44 @@ describe('loadModule.node', () => {
       });
     });
 
+    it('does not load child module when root module does not set getTenantRootModule', async () => {
+      const mockFetch = jest.fn();
+      const fakeModule = {
+        appConfig: {
+          requiredExternals: {
+            'example-dep': '^1.1.1',
+          },
+        },
+      };
+      // does not have moduleConfig file.
+      mockFetch.mockImplementationOnce(() => Promise.resolve({
+        status: 404,
+      })
+      );
+
+      // mock fetch for module
+      mockFetch.mockImplementationOnce(
+        makeFetchMock({
+          fetchText: fakeModule,
+        })
+      );
+
+      const loadModule = load({
+        fetch: mockFetch,
+      });
+
+      await expect(
+        loadModule('awesome', {
+          node: {
+            integrity: '123',
+            url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+          },
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        '"External \'example-dep\' is required by awesome, but is not provided by the root module"'
+      );
+    });
+
     describe('legacy externals api', () => {
       it('allows modules with no required externals', async () => {
         const mockFetch = jest.fn();
@@ -1261,7 +1306,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1299,7 +1345,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1344,7 +1391,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1391,7 +1439,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1415,7 +1464,7 @@ describe('loadModule.node', () => {
             },
           })
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          '"External \'example-dep\' is required by awesome, but is not provided by the root module"'
+          "\"External 'example-dep' is required by awesome, but is not provided by the root module\""
         );
       });
 
@@ -1432,7 +1481,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1465,9 +1515,12 @@ describe('loadModule.node', () => {
         ).resolves.toEqual(fakeModule);
 
         expect(console.warn.mock.calls).toEqual(
-          expect.arrayContaining([[
-            'example-dep@^1.1.1 is required by awesome, but the root module provides 2.0.0',
-          ]]));
+          expect.arrayContaining([
+            [
+              'example-dep@^1.1.1 is required by awesome, but the root module provides 2.0.0',
+            ],
+          ])
+        );
       });
     });
   });
