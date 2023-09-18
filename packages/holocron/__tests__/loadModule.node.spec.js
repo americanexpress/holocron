@@ -1273,15 +1273,13 @@ describe('loadModule.node', () => {
       // does not have moduleConfig file.
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 404,
-      })
-      );
+      }));
 
       // mock fetch for module
       mockFetch.mockImplementationOnce(
         makeFetchMock({
           fetchText: fakeModule,
-        })
-      );
+        }));
 
       const loadModule = load({
         fetch: mockFetch,
@@ -1306,8 +1304,7 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        })
-        );
+        }));
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1345,8 +1342,7 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        })
-        );
+        }));
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1391,8 +1387,7 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        })
-        );
+        }));
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1439,8 +1434,7 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        })
-        );
+        }));
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1481,8 +1475,7 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        })
-        );
+        }));
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
