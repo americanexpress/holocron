@@ -153,14 +153,14 @@ const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
 const validateLegacyRequiredExternals = ({
   moduleName,
   holocronModule,
-  providedExternals = {},
+  providedExternals,
 }) => {
   const { requiredExternals } = holocronModule.appConfig || {};
   if (requiredExternals) {
     const messages = [];
 
     Object.entries(requiredExternals).forEach(([externalName, requestedExternalVersion]) => {
-      const providedExternal = providedExternals[externalName];
+      const providedExternal = providedExternals && providedExternals[externalName];
 
       if (!providedExternal) {
         messages.push(`External '${externalName}' is required by ${moduleName}, but is not provided by the root module`);
@@ -285,6 +285,8 @@ const loadModule = async (
       throw new Error(`module at ${url} previously failed to load, will not attempt to reload.`);
     }
 
+    // TODO: find a reliable way to get root module.
+    // root modules can be built without getTenantRootModule
     const rootModule = global.getTenantRootModule ? global.getTenantRootModule() : null;
 
     // if no root module, module being loaded should be root.
@@ -321,11 +323,14 @@ const loadModule = async (
     });
 
     // validate legacy required externals -- remove in next major
-    if (rootModule && !moduleConfig) {
+    // this handles case where root does not provide getTenantRootModule
+    // but child still has required externals.
+    if (!moduleConfig) {
       validateLegacyRequiredExternals({
         moduleName,
         holocronModule,
-        providedExternals: rootModule.appConfig && rootModule.appConfig.providedExternals,
+        providedExternals:
+          rootModule && rootModule.appConfig && rootModule.appConfig.providedExternals,
       });
     }
 
