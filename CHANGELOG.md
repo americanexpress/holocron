@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha-004.0](https://github.com/americanexpress/holocron/compare/v1.8.2...v2.0.0-alpha-004.0) (2023-09-19)
+
+
+### Features
+
+* **webpack:** alpha support for webpack 5 ([c42759c](https://github.com/americanexpress/holocron/commit/c42759c83ccc70775586ebd3743b12d1a2e70daf))
+
+
+
+
+
 ## [1.8.2](https://github.com/americanexpress/holocron/compare/v1.8.1...v1.8.2) (2023-09-18)
 
 
