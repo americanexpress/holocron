@@ -8,7 +8,8 @@
       "conventionalCommits": true,
       "allowBranch": [
         "main",
-        "chore/release-*"
+        "chore/release-*",
+        "v2.0.0-alpha-*"
       ],
       "message": "chore(release): %v"
     }
