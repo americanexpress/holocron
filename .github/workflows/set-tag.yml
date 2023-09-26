@@ -7,7 +7,7 @@ on:
         description: 'Name of package'
         default: 'holocron'
         required: true
-        type: string
+        type: choice
         options:
         - holocron
         - holocron-module-register-webpack-plugin
