@@ -34,6 +34,6 @@ jobs:
       with:
         node-version: 18
         registry-url: https://registry.npmjs.org/
-    - run: npm dist-tag add ${{ github.event.inputs.name }}@${{ github.event.inputs.version}} ${{ github.event.inputs.tag }}
+    - run: npm dist-tag add "${{ github.event.inputs.name }}@${{ github.event.inputs.version}}" ${{ github.event.inputs.tag }}
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
