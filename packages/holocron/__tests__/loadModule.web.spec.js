@@ -116,7 +116,7 @@ describe('loadModule.web', () => {
   it('should reject with a helpful error when module name is not a string', async () => {
     await expect(
       loadModule(
-        NaN,
+        Number.NaN,
         fromJS({
           node: {
             url: 'https://example.com/cdn/my-module/1.0.0/my-module.node.js',
