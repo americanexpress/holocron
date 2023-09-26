@@ -24,6 +24,7 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-    - run: echo "npm dist-tag add \"${{ github.event.inputs.name }}@${{ github.event.inputs.version}}\" latest"
+        registry-url: https://registry.npmjs.org/
+    - run: npm dist-tag add ${{ github.event.inputs.name }}@${{ github.event.inputs.version}} latest
       env:
-        NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
