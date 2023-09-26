@@ -1,0 +1,29 @@
+name: Set npm Registry Latest Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name of package'
+        default: 'holocron'
+        required: true
+        type: choice
+        options:
+        - holocron
+        - holocron-module-register-webpack-plugin
+        - holocron-module-route
+        - iguazu-holocron
+      version:
+        description: 'version to tag'
+        required: true
+        type: string
+jobs:
+  set-tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - run: echo "npm dist-tag add \"${{ github.event.inputs.name }}@${{ github.event.inputs.version}}\" latest"
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.npm_token}}
