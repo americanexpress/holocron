@@ -18,6 +18,7 @@
 
 const fs = require('fs');
 const path = require('path');
+// FIXME: RANDOMBYTESREQUEST via terser-webpack-plugin may be an open handle
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const crypto = require('crypto');
@@ -39,8 +40,16 @@ const webpackOptions = {
   plugins: [new HolocronModuleRegisterPlugin('some-module')],
 };
 
+function waitForWebpack(options) {
+  return new Promise((resolve, reject) => webpack(options, (error, stats) => {
+    if (error) { return reject(error); }
+    if (stats.hasErrors()) { return reject(stats.toJson().errors); }
+    return resolve(stats);
+  }));
+}
+
 describe('HolocronModuleRegisterPlugin', () => {
-  it('should wrap the contents in an IIFE that registers the module in development', (done) => {
+  it('should wrap the contents in an IIFE that registers the module in development', async () => {
     expect.assertions(3);
 
     const outputFileName = 'webpack-test-output-dev.js';
@@ -52,18 +61,15 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
-      if (stats.hasErrors()) done.fail(stats.toJson().errors);
-      const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-      expect(fileContents.startsWith('(function() {')).toBe(true);
-      expect(fileContents).toContain('const SomeModule = () => null;');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
-      done();
-    });
+    await waitForWebpack(options);
+
+    const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
+    expect(fileContents.startsWith('(function() {')).toBe(true);
+    expect(fileContents).toContain('const SomeModule = () => null;');
+    expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
   });
 
-  it('should wrap the contents in an IIFE that registers the module in production', (done) => {
+  it('should wrap the contents in an IIFE that registers the module in production', async () => {
     expect.assertions(2);
 
     const outputFileName = 'webpack-test-output-prod.js';
@@ -75,17 +81,13 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
-      if (stats.hasErrors()) done.fail(stats.toJson().errors);
-      const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-      expect(fileContents).toContain('()=>null');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModule);')).toBe(true);
-      done();
-    });
+    await waitForWebpack(options);
+    const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
+    expect(fileContents).toContain('()=>null');
+    expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModule);')).toBe(true);
   });
 
-  it('should not wrap the contents of a non-main chunk an IIFE that registers the module', (done) => {
+  it('should not wrap the contents of a non-main chunk an IIFE that registers the module', async () => {
     expect.assertions(5);
 
     const outputFileName = 'webpack-test-output-async.js';
@@ -98,21 +100,18 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
-      if (stats.hasErrors()) done.fail(stats.toJson().errors);
-      const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-      expect(fileContents.startsWith('(function() {')).toBe(true);
-      expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
-      expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
-      const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
-      expect(asyncChunkContents).toContain('() => \'Hello, world\'');
-      expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');
-      done();
-    });
+    await waitForWebpack(options);
+
+    const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
+    expect(fileContents.startsWith('(function() {')).toBe(true);
+    expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
+    expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
+    const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
+    expect(asyncChunkContents).toContain('() => \'Hello, world\'');
+    expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');
   });
 
-  it('should registerModule with provided `moduleName` and `holocronModuleName`', (done) => {
+  it('should registerModule with provided `moduleName` and `holocronModuleName`', async () => {
     expect.assertions(1);
     const outputFileName = 'webpack-test-output-async.js';
     const moduleName = 'some-module';
@@ -129,12 +128,8 @@ describe('HolocronModuleRegisterPlugin', () => {
       },
     });
 
-    webpack(options, (err, stats) => {
-      if (err) done.fail(err);
-      if (stats.hasErrors()) done.fail(stats.toJson().errors);
-      const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-      expect(fileContents.endsWith(`Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`)).toBe(true);
-      done();
-    });
+    await waitForWebpack(options);
+    const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
+    expect(fileContents.endsWith(`Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`)).toBe(true);
   });
 });
