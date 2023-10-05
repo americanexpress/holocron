@@ -24,8 +24,8 @@ const createElementSpy = jest
   .spyOn(document, 'createElement')
   .mockImplementation(() => mockElement);
 jest
-  .spyOn(document, 'getElementsByTagName')
-  .mockImplementation(() => [{ appendChild: () => null }]);
+  .spyOn(document, 'querySelectorAll')
+  .mockImplementation(() => [{ append: () => null }]);
 // eslint-disable-next-line no-underscore-dangle
 window.__holocron_module_bundle_type__ = 'browser';
 
@@ -116,7 +116,7 @@ describe('loadModule.web', () => {
   it('should reject with a helpful error when module name is not a string', async () => {
     await expect(
       loadModule(
-        NaN,
+        Number.NaN,
         fromJS({
           node: {
             url: 'https://example.com/cdn/my-module/1.0.0/my-module.node.js',
@@ -140,10 +140,11 @@ describe('loadModule.web', () => {
   });
 
   it('rejects with error when script errors', async () => {
+    expect.assertions(1);
     errorWhenLoadingScript = new Error('failed to load module');
 
-    try {
-      await loadModule(
+    await expect(
+      loadModule(
         'erroring-module',
         fromJS({
           node: {
@@ -159,10 +160,8 @@ describe('loadModule.web', () => {
             integrity: '344',
           },
         })
-      );
-    } catch (error) {
-      expect(error).toBe(errorWhenLoadingScript.message);
-    }
+      )
+    ).rejects.toBe(errorWhenLoadingScript.message);
   });
 
   it('should resolve with the module on load', async () => {

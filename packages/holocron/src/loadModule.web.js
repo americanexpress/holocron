@@ -20,7 +20,7 @@ const noop = () => { };
 function createScript({ url, integrity, onLoad = noop }) {
   const script = global.document.createElement('script');
   const isProduction = process.env.NODE_ENV === 'production';
-  const head = global.document.getElementsByTagName('head')[0];
+  const head = global.document.querySelectorAll('head')[0];
 
   script.type = 'text/javascript';
   script.async = true;
@@ -48,7 +48,7 @@ function createScript({ url, integrity, onLoad = noop }) {
     });
   });
 
-  head.appendChild(script);
+  head.append(script);
 
   return listener;
 }

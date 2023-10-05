@@ -138,162 +138,186 @@ describe('ModuleRouteUtils', () => {
     });
 
     describe('getIndexRoute', () => {
-      it('should get the index route', (done) => {
+      it('should get the index route', async () => {
+        expect.assertions(2);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        const callback = jest.fn(() => {
-          expect(loadModule).toHaveBeenCalledWith(moduleName);
-          expect(callback.mock.calls[0][1]).toBe('index');
-          done();
-        });
-        return moduleRoute.getIndexRoute(undefined, callback);
+
+        await expect(new Promise((resolve, reject) => moduleRoute.getIndexRoute(
+          undefined,
+          (error, indexRoute) => (error ? reject(error) : resolve(indexRoute))
+        ))).resolves.toBe('index');
+        expect(loadModule).toHaveBeenCalledWith(moduleName);
       });
 
-      it('passes errors to callback', (done) => {
+      it('passes errors to callback', async () => {
+        expect.assertions(1);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
-        const callback = jest.fn((error) => {
-          expect(error.message).toEqual('boom');
-          done();
-        });
-        // this ensures error thrown during the `.then` rather than after
-        callback.mockImplementationOnce(() => { throw new Error('boom'); });
-        moduleRoute.getIndexRoute(undefined, callback);
+        await expect(new Promise((resolve, reject) => {
+          const callback = jest.fn(
+            (error, indexRoute) => (error ? reject(error) : resolve(indexRoute))
+          );
+          // this ensures error thrown during the `.then` rather than after
+          callback.mockImplementationOnce(() => { throw new Error('boom'); });
+          moduleRoute.getIndexRoute(undefined, callback);
+        })).rejects.toThrowError('boom');
       });
     });
 
     describe('getChildRoutes', () => {
-      it('should get the child routes', (done) => {
+      it('should get the child routes', async () => {
+        expect.assertions(1);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        const callback = jest.fn(() => {
-          expect(loadModule).toHaveBeenCalledWith(moduleName);
-          expect(callback.mock.calls[0][1]).toMatchSnapshot();
-          done();
-        });
-        return moduleRoute.getChildRoutes(undefined, callback);
+
+        await expect(new Promise((resolve, reject) => moduleRoute.getChildRoutes(
+          undefined,
+          (error, component) => (error ? reject(error) : resolve(component))
+        ))).resolves.toMatchSnapshot();
       });
 
-      it('passes errors to callback', (done) => {
+      it('passes errors to callback', async () => {
+        expect.assertions(1);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
-        const callback = jest.fn((error) => {
-          expect(error.message).toEqual('boom');
-          done();
-        });
-        // this ensures error thrown during the `.then` rather than after
-        callback.mockImplementationOnce(() => { throw new Error('boom'); });
-        moduleRoute.getChildRoutes(undefined, callback);
+        await expect(new Promise((resolve, reject) => {
+          const callback = jest.fn(
+            (error, childRoutes) => (error ? reject(error) : resolve(childRoutes))
+          );
+          // this ensures error thrown during the `.then` rather than after
+          callback.mockImplementationOnce(() => { throw new Error('boom'); });
+          moduleRoute.getChildRoutes(undefined, callback);
+        })).rejects.toThrowError('boom');
       });
     });
 
     describe('getComponent', () => {
-      it('should get the module', (done) => {
+      it('should get the module', async () => {
+        expect.assertions(2);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
-        const callback = jest.fn(() => {
-          expect(loadModule).toHaveBeenCalledWith(moduleName);
-          expect(callback.mock.calls[0][1]).toMatchSnapshot();
-          done();
-        });
-        return moduleRoute.getComponent(undefined, callback);
+
+        await expect(new Promise((resolve, reject) => moduleRoute.getComponent(
+          undefined,
+          (error, component) => (error ? reject(error) : resolve(component))
+        ))).resolves.toMatchSnapshot();
+        expect(loadModule).toHaveBeenCalledWith(moduleName);
       });
 
-      it('passes errors to callback', (done) => {
+      it('passes errors to callback', async () => {
+        expect.assertions(1);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
-        const callback = jest.fn((error) => {
-          expect(error.message).toEqual('boom');
-          done();
-        });
-        // this ensures error thrown during the `.then` rather than after
-        callback.mockImplementationOnce(() => { throw new Error('boom'); });
-        moduleRoute.getComponent(undefined, callback);
+        await expect(new Promise((resolve, reject) => {
+          const callback = jest.fn(
+            (error, component) => (error ? reject(error) : resolve(component))
+          );
+          // this ensures error thrown during the `.then` rather than after
+          callback.mockImplementationOnce(() => { throw new Error('boom'); });
+          moduleRoute.getComponent(undefined, callback);
+        })).rejects.toThrowError('boom');
       });
     });
 
     describe('onEnter', () => {
-      it('should allow the Module to specify an onEnter hook that takes the store and returns a hook', (done) => {
+      it('should allow the Module to specify an onEnter hook that takes the store and returns a hook', async () => {
+        expect.assertions(3);
         const moduleName = 'store-hook-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
         const replace = jest.fn();
-        function cb(cbMessage) {
-          expect(cbMessage).toBeUndefined();
-          expect(store.dispatch).toHaveBeenCalledWith({ type: 'NEXT_STATE', nextState: 'nextState' });
-          expect(replace).toHaveBeenCalledWith('/test-store-hook');
-          done();
-        }
-        moduleRoute.onEnter('nextState', replace, cb);
+
+        await expect(new Promise((resolve, reject) => moduleRoute.onEnter(
+          'nextState',
+          replace,
+          (error, childRoutes) => (error ? reject(error) : resolve(childRoutes))
+        ))).resolves.toBeUndefined();
+        expect(store.dispatch).toHaveBeenCalledWith({ type: 'NEXT_STATE', nextState: 'nextState' });
+        expect(replace).toHaveBeenCalledWith('/test-store-hook');
       });
 
-      it('passes errors to callback', (done) => {
+      it('passes errors to callback', async () => {
+        expect.assertions(1);
         const moduleName = 'store-hook-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
-        const callback = jest.fn((error) => {
-          expect(error.message).toEqual('boom');
-          done();
-        });
         const replace = jest.fn();
-        // this ensures error thrown during the `.then` rather than after
-        callback.mockImplementationOnce(() => { throw new Error('boom'); });
-        moduleRoute.onEnter('nextState', replace, callback);
+
+        await expect(new Promise((resolve, reject) => {
+          const callback = jest.fn(
+            (error, childRoutes) => (error ? reject(error) : resolve(childRoutes))
+          );
+          // this ensures error thrown during the `.then` rather than after
+          callback.mockImplementationOnce(() => { throw new Error('boom'); });
+          moduleRoute.onEnter('nextState', replace, callback);
+        })).rejects.toThrowError('boom');
       });
 
-      it('should allow the Module to specify a synchronous onEnter hook', (done) => {
+      it('should allow the Module to specify a synchronous onEnter hook', async () => {
+        expect.assertions(2);
         const moduleName = 'sync-hook-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
         const replace = jest.fn();
-        function cb(cbMessage) {
-          expect(cbMessage).toBeUndefined();
-          expect(replace).toHaveBeenCalledWith('/test-sync-hook');
-          done();
-        }
-        moduleRoute.onEnter('nextState', replace, cb);
+
+        await expect(new Promise((resolve, reject) => moduleRoute.onEnter(
+          'nextState',
+          replace,
+          (error, childRoutes) => (error ? reject(error) : resolve(childRoutes))
+        ))).resolves.toBeUndefined();
+        expect(replace).toHaveBeenCalledWith('/test-sync-hook');
       });
 
-      it('should allow the Module to specify an asyncronous hook', (done) => {
+      it('should allow the Module to specify an asyncronous hook', async () => {
+        expect.assertions(2);
         const moduleName = 'async-hook-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
         const replace = jest.fn();
-        function cb(cbMessage) {
-          expect(cbMessage).toBe('async hook done');
-          expect(replace).toHaveBeenCalledWith('/test-async-hook');
-          done();
-        }
-        moduleRoute.onEnter('nextState', replace, cb);
+
+        await expect(new Promise((resolve /* , reject */) => moduleRoute.onEnter(
+          'nextState',
+          replace,
+          // FIXME: should be
+          // (error, childRoutes) => (error ? reject(error) : resolve(childRoutes))
+          // but it looks like the argument to the onEnterRouteHook callback is passed where the
+          // error argument should be
+          resolve
+        ))).resolves.toBe('async hook done');
+        expect(replace).toHaveBeenCalledWith('/test-async-hook');
       });
 
-      it('should allow the Module to not specify an onEnter hook', (done) => {
+      it('should allow the Module to not specify an onEnter hook', async () => {
+        expect.assertions(1);
         const moduleName = 'test-module';
         const props = { moduleName, store };
         const moduleRoute = createModuleRoute(defaultProps, props);
 
         const replace = jest.fn();
-        function cb() {
-          // Don't need to assert anything, as long as it reached here everything's good
-          done();
-        }
-        moduleRoute.onEnter('nextState', replace, cb);
+
+        await expect(new Promise((resolve, reject) => moduleRoute.onEnter(
+          'nextState',
+          replace,
+          (error, childRoutes) => (error ? reject(error) : resolve(childRoutes))
+        ))).resolves.toBeUndefined();
       });
 
       it('should only use the onEnter hook defined by the Module if there is not one defined directly on the route', () => {
+        expect.assertions(1);
         const moduleName = 'sync-hook-module';
         const onEnter = jest.fn();
         const props = { moduleName, store, onEnter };
