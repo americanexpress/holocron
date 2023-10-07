@@ -33,6 +33,13 @@ import { isModuleInBlockList, addToModuleBlockList, registerModuleUsingExternals
  * @param {object} response Http Response object
  */
 const checkStatus = (response) => {
+  log('checkStatus');
+  log('checkStatus, typeof?', typeof response);
+  log('checkStatus, ok?', response.ok);
+  log('checkStatus, status?', response.status);
+  log('checkStatus, statusText?', response.statusText);
+  log('checkStatus, copy?', typeof response.copy);
+  log('checkStatus, deref?', typeof response.deref);
   // TODO: If 404, error could mention old bundler and recommend upgrading
   if (!response.ok) {
     throw new Error(response.statusText || response.status);
@@ -55,9 +62,12 @@ const fetchAsset = async (assetUrl, parseAsJson, maxRetries = 3) => {
   const fetchAssetAttempt = async (tries) => {
     let response;
 
+    log('fetchAsset, attempting to fetch', assetUrl);
     try {
       response = await fetch(assetUrl);
+      log('fetchAsset, got the response');
     } catch (err) {
+      log('fetchAsset catch', err.message);
       if (tries > maxRetries) {
         throw err;
       }
@@ -66,7 +76,9 @@ const fetchAsset = async (assetUrl, parseAsJson, maxRetries = 3) => {
       return fetchAssetAttempt(tries + 1);
     }
 
+    log('fetchAsset, checking the status');
     checkStatus(response);
+    log('fetchAsset, parseAsJSON?', parseAsJson);
     return parseAsJson ? response.json() : response.text();
   };
 
@@ -84,10 +96,23 @@ const fetchAsset = async (assetUrl, parseAsJson, maxRetries = 3) => {
  * @returns Node Module as module
  */
 const fetchNodeModule = async (url, integrity, context) => {
-  // FIXME: check the integrity, supported by `import`?
   try {
-    return await import(url);
+    log('fetchNodeModule!');
+    const moduleString = await fetchAsset(url);
+
+    log('fetchNodeModule, have the moduleString');
+    if (process.env.NODE_ENV === 'production') {
+      const actualSRI = ssri.fromData(
+        moduleString,
+        { algorithms: ['sha256', 'sha384'] }
+      ).toString();
+
+      assert(integrity === actualSRI, `SRI for module at ${url} must match SRI in module map.\n Expected ${integrity}, received ${actualSRI}`);
+    }
+
+    return requireFromString(moduleString, url);
   } catch (err) {
+    log('fetchNodeModule catch', err.message);
     if (process.env.NODE_ENV === 'development') {
       console.warn([
         `${context.type} "${context.name}" at "${url}" failed to execute.`,
@@ -259,6 +284,7 @@ const loadModule = async (
   let moduleConfig;
   const oldRequiredExternals = getRequiredExternalsRegistry()[moduleName];
   clearModulesRequiredExternals(moduleName);
+  log('loadModule!');
   try {
     if (typeof moduleName !== 'string') {
       throw new TypeError('moduleName must be a string');
@@ -294,6 +320,7 @@ const loadModule = async (
       }
     }
 
+    log('loadModule! try');
     const holocronModule = await fetchNodeModule(url, integrity, {
       type: 'Holocron module',
       name: moduleName,
