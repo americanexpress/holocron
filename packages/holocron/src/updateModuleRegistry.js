@@ -16,7 +16,7 @@ import shallowEqual from 'shallowequal';
 import {
   getModules, getModuleMap, resetModuleRegistry, addHigherOrderComponent,
 } from './moduleRegistry';
-import loadModule from './loadModule.node';
+// import loadModule from './loadModule.node';
 
 export function areModuleEntriesEqual(firstModuleEntry, secondModuleEntry) {
   return !!(
@@ -40,6 +40,8 @@ export default async function updateModuleRegistry({
   batchModulesToUpdate = (x) => [x],
   getModulesToUpdate = defaultGetModulesToUpdate,
   listRejectedModules,
+  // breaking change:
+  loadModule,
 }) {
   const currentModuleMap = getModuleMap().toJS();
   const modulesToUpdate = batchModulesToUpdate(
