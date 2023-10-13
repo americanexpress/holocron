@@ -13,7 +13,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### BREAKING CHANGES
 
-* **holocron-module-register-plugin:** This change is breaking as it directely
+* **holocron-module-register-plugin:** This change is breaking as it directly
 interacts with webpacks source structure, which is changed in v5
 
 # [1.8.0](https://github.com/americanexpress/holocron/compare/v1.7.0...v1.8.0) (2023-08-18)
