@@ -27,9 +27,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "Apache-2.0",
-  "dependencies": {
-    "webpack": "^4.29.5",
-    "webpack-sources": "^1.3.0"
+  "peerDependencies": {
+    "webpack": "5.x"
+  },
+  "devDependencies": {
+    "webpack": "^5.88.2",
+    "webpack-merge": "^5.9.0"
   },
   "repository": {
     "type": "git",
@@ -39,8 +42,5 @@
   "homepage": "https://github.com/americanexpress/holocron",
   "bugs": {
     "url": "https://github.com/americanexpress/holocron/issues"
-  },
-  "devDependencies": {
-    "webpack-merge": "^4.2.1"
   }
 }
