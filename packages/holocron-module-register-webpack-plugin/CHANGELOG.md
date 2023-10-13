@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.0.0 (2023-10-13)
+
+
+### Features
+
+* **holocron-module-register-plugin:** move to webpack 5 ([3d20f15](https://github.com/americanexpress/holocron/commit/3d20f15830c3daf23a764566fe0ee7b0d636007d))
+
+
+### BREAKING CHANGES
+
+* **holocron-module-register-plugin:** This change is breaking as it directely
+interacts with webpacks source structure, which is changed in v5
+
 # [1.8.0](https://github.com/americanexpress/holocron/compare/v1.7.0...v1.8.0) (2023-08-18)
 
 **Note:** Version bump only for package holocron-module-register-webpack-plugin
