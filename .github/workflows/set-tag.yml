@@ -12,7 +12,6 @@ on:
         - holocron
         - holocron-module-register-webpack-plugin
         - holocron-module-route
-        - iguazu-holocron
       version:
         description: 'version to tag'
         required: true
