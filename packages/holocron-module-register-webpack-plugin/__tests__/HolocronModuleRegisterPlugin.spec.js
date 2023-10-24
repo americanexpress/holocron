@@ -119,7 +119,7 @@ describe('HolocronModuleRegisterPlugin', () => {
     expect.assertions(1);
     const outputFileName = 'webpack-test-output-async.js';
     const moduleName = 'some-module';
-    const holocronModuleName = `holocronModule-${moduleName}`;
+    const holocronModuleName = 'MockModuleContainerName';
     const webpackOptionsWithPlugins = {
       ...webpackOptions,
       plugins: [new HolocronModuleRegisterPlugin(moduleName, holocronModuleName)],
@@ -134,6 +134,6 @@ describe('HolocronModuleRegisterPlugin', () => {
 
     await waitForWebpack(options);
     const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-    expect(fileContents).toContain('Holocron.registerModule("some-module", holocronModule-some-module);');
+    expect(fileContents).toContain('Holocron.registerModule("some-module", MockModuleContainerName);');
   });
 });
