@@ -12,10 +12,6 @@ holocron-module-register-webpack-plugin:
 holocron-module-route:
   - packages/holocron-module-route/*
 
-# Add 'iguazu-holocron' label to any file changes in the iguazu-holocron package
-iguazu-holocron:
-  - packages/iguazu-holocron/*
-
 # Add 'test' label to any change to *.spec.js files
 test:
   - packages/**/__tests__/**/*.spec.js
