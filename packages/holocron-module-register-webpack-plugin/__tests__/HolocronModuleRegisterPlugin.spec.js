@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 // FIXME: RANDOMBYTESREQUEST via terser-webpack-plugin may be an open handle
 const webpack = require('webpack');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const crypto = require('crypto');
 const HolocronModuleRegisterPlugin = require('../HolocronModuleRegisterPlugin');
 
@@ -34,10 +34,11 @@ const buildPath = path.join(fixturesPath, 'build');
 
 const webpackOptions = {
   entry: path.join(fixturesPath, 'SomeModule.js'),
+  devtool: 'source-map',
   output: {
     path: buildPath,
   },
-  plugins: [new HolocronModuleRegisterPlugin('some-module')],
+  plugins: [new HolocronModuleRegisterPlugin('some-module', 'SomeModule')],
 };
 
 function waitForWebpack(options) {
@@ -64,9 +65,9 @@ describe('HolocronModuleRegisterPlugin', () => {
     await waitForWebpack(options);
 
     const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-    expect(fileContents.startsWith('(function() {')).toBe(true);
+    expect(fileContents.startsWith('/******/ (() => { // webpackBootstrap')).toBe(true);
     expect(fileContents).toContain('const SomeModule = () => null;');
-    expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
+    expect(fileContents).toContain('Holocron.registerModule("some-module", SomeModule);');
   });
 
   it('should wrap the contents in an IIFE that registers the module in production', async () => {
@@ -75,6 +76,7 @@ describe('HolocronModuleRegisterPlugin', () => {
     const outputFileName = 'webpack-test-output-prod.js';
 
     const options = merge(webpackOptions, {
+      devtool: false,
       mode: 'production',
       output: {
         filename: outputFileName,
@@ -84,7 +86,9 @@ describe('HolocronModuleRegisterPlugin', () => {
     await waitForWebpack(options);
     const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
     expect(fileContents).toContain('()=>null');
-    expect(fileContents.endsWith('Holocron.registerModule("some-module",holocronModule);')).toBe(true);
+    // This tests an implementation detail to some extent,
+    // but webpack is being too clever in this instance not to
+    expect(fileContents).toContain('Holocron.registerModule("some-module",(()=>null))})();');
   });
 
   it('should not wrap the contents of a non-main chunk an IIFE that registers the module', async () => {
@@ -103,9 +107,9 @@ describe('HolocronModuleRegisterPlugin', () => {
     await waitForWebpack(options);
 
     const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-    expect(fileContents.startsWith('(function() {')).toBe(true);
+    expect(fileContents.startsWith('/******/ (() => { // webpackBootstrap')).toBe(true);
     expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
-    expect(fileContents.endsWith('Holocron.registerModule("some-module", holocronModule);})();')).toBe(true);
+    expect(fileContents).toContain('Holocron.registerModule("some-module", SomeModule);');
     const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
     expect(asyncChunkContents).toContain('() => \'Hello, world\'');
     expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');
@@ -115,7 +119,7 @@ describe('HolocronModuleRegisterPlugin', () => {
     expect.assertions(1);
     const outputFileName = 'webpack-test-output-async.js';
     const moduleName = 'some-module';
-    const holocronModuleName = `holocronModule-${moduleName}`;
+    const holocronModuleName = 'MockModuleContainerName';
     const webpackOptionsWithPlugins = {
       ...webpackOptions,
       plugins: [new HolocronModuleRegisterPlugin(moduleName, holocronModuleName)],
@@ -130,6 +134,6 @@ describe('HolocronModuleRegisterPlugin', () => {
 
     await waitForWebpack(options);
     const fileContents = fs.readFileSync(path.join(buildPath, outputFileName)).toString();
-    expect(fileContents.endsWith(`Holocron.registerModule("${moduleName}", ${holocronModuleName});})();`)).toBe(true);
+    expect(fileContents).toContain('Holocron.registerModule("some-module", MockModuleContainerName);');
   });
 });
