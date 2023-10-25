@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.1.0 (2023-10-25)
+
+
+### Features
+
+* **holocron-module-register-plugin:** move to webpack 5 ([e2216d4](https://github.com/americanexpress/holocron/commit/e2216d4b1c0baa0ef3147fa7b4c8778e10ef71d8))
+
+
+
+# 1.8.0 (2023-08-18)
+
+
+
+# 1.4.0 (2023-02-15)
+
+
+
+## 1.2.3 (2022-04-13)
+
+
+### Bug Fixes
+
+* **ModuleName:** use correct default for old bundler ([#123](https://github.com/americanexpress/holocron/issues/123)) ([f694c0e](https://github.com/americanexpress/holocron/commit/f694c0ec2f1c89d5491e9e4a2c1bcc5cb65ab8fc))
+
+
+
+## 1.2.2 (2022-04-11)
+
+
+### Bug Fixes
+
+* **lazy-loading:** fixed webpack filename clashing issue ([#104](https://github.com/americanexpress/holocron/issues/104)) ([fa84f13](https://github.com/americanexpress/holocron/commit/fa84f133886a2ae5bf7f185505e86a059e9ab948))
+
+
+
+## 1.2.1 (2022-02-11)
+
+
+
+# 1.2.0 (2021-12-16)
+
+
+
+## 1.1.5 (2021-12-02)
+
+
+### Reverts
+
+* Revert "chore(release): 1.1.3" (#72) ([43e924c](https://github.com/americanexpress/holocron/commit/43e924c05f98d56215dd28fc401216f7abefa197)), closes [#72](https://github.com/americanexpress/holocron/issues/72)
+
+
+
+## 1.1.1 (2020-09-16)
+
+
+### Bug Fixes
+
+* **vulnerability/lerna:** update to fix security vulnerability ([#3](https://github.com/americanexpress/holocron/issues/3)) ([570a0b8](https://github.com/americanexpress/holocron/commit/570a0b80885ac67b0a2a5e039913f7bd53f16afb))
+
+
+
+# 1.0.0 (2019-12-18)
+
+
+### Features
+
+* **all:** initial oss release ([e39a7b0](https://github.com/americanexpress/holocron/commit/e39a7b0035d1e79f51fd2cb449bdc2d431a86490))
+
+
+
+
+
 # 2.0.0 (2023-10-13)
 
 
