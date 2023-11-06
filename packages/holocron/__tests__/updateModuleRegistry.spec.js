@@ -36,6 +36,7 @@ jest.mock('../src/loadModule.node', () => {
     resolveWith,
     time
   ) => new Promise(
+    // eslint-disable-next-line no-promise-executor-return -- mock
     (res) => setTimeout(() => res(resolveWith), time)
   );
 
@@ -484,6 +485,7 @@ describe('updateModuleRegistry', () => {
   });
 
   it('resolves with accepted and rejected modules when detailedResponse is selected', async () => {
+    // eslint-disable-next-line max-len -- arrow function
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
     // occurs first time updateModuleRegistry is called
@@ -572,6 +574,7 @@ describe('updateModuleRegistry', () => {
   });
 
   it('should not throw if any of the modules fail to load', async () => {
+    // eslint-disable-next-line max-len -- arrow function
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
 
@@ -644,6 +647,7 @@ describe('updateModuleRegistry', () => {
     expect(console.error).toHaveBeenCalled();
   });
   it('should not throw if any of the modules fail to load - empty module map', async () => {
+    // eslint-disable-next-line max-len -- arrow function
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
 

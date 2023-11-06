@@ -12,7 +12,7 @@
  * under the License.
  */
 
-/* eslint-disable react/prop-types, import/no-extraneous-dependencies, no-underscore-dangle  */
+/* eslint-disable react/prop-types, import/no-extraneous-dependencies -- disable for tests */
 import React from 'react';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -670,7 +670,7 @@ describe('holocronModule', () => {
         <Module />
       </Provider>
     );
-    expect(render).not.toThrowError();
+    expect(render).not.toThrow();
     expect(render().toJSON()).toMatchSnapshot();
   });
   it('should warn if a reducer is set but no name', () => {
@@ -687,3 +687,4 @@ describe('holocronModule', () => {
     expect(warn.mock.calls).toMatchSnapshot();
   });
 });
+/* eslint-enable react/prop-types, import/no-extraneous-dependencies -- enable */

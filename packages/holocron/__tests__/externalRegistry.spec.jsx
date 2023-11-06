@@ -22,7 +22,7 @@ const noOp = () => {
 describe('externalRegistry', () => {
   beforeEach(() => {
     jest.isolateModules(() => {
-      // eslint-disable-next-line global-require
+      // eslint-disable-next-line global-require -- require for test
       externalRegistry = require('../src/externalRegistry');
     });
   });

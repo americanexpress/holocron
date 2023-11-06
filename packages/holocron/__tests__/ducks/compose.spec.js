@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-conditional-expect -- test conditionally */
 /*
  * Copyright 2019 American Express Travel Related Services Company, Inc.
  *
@@ -41,7 +42,7 @@ describe('composeModules', () => {
     const subModuleB = () => null;
 
     // Disabling global-require rule because it is required for jest mockImplementationOnce
-    const { loadModule } = require('../../src/ducks/load'); // eslint-disable-line global-require
+    const { loadModule } = require('../../src/ducks/load'); // eslint-disable-line global-require -- require for tests
 
     loadModule.mockImplementationOnce(() => Promise.resolve(subModuleA))
       .mockImplementationOnce(() => Promise.resolve(subModuleB));
@@ -61,7 +62,7 @@ describe('composeModules', () => {
     const thunk = composeModules([{ name: 'my-submodule' }]);
 
     // Disabling global-require rule because it is required for jest mockImplementationOnce
-    const { loadModule } = require('../../src/ducks/load'); // eslint-disable-line global-require
+    const { loadModule } = require('../../src/ducks/load'); // eslint-disable-line global-require -- require for tests
 
     const moduleLoadError = new Error('Failed to load Module');
     loadModule.mockImplementationOnce(() => Promise.reject(moduleLoadError));
@@ -82,7 +83,7 @@ describe('composeModules', () => {
     expect.assertions(2);
     const loadModuleData = jest.fn(() => Promise.resolve('loadModuleData resolve'));
     const fakeModule = { holocron: { loadModuleData } };
-    require('../../src/ducks/load').loadModule // eslint-disable-line global-require
+    require('../../src/ducks/load').loadModule // eslint-disable-line global-require -- require for tests
       .mockImplementationOnce(() => Promise.resolve(fakeModule));
 
     const dispatch = (x) => x;
@@ -109,7 +110,7 @@ describe('composeModules', () => {
     const otherPromise = new Promise((resolve) => { resolveOtherPromise = resolve; });
     const otherModule = { holocron: { loadModuleData: () => otherPromise } };
 
-    require('../../src/ducks/load').loadModule // eslint-disable-line global-require
+    require('../../src/ducks/load').loadModule // eslint-disable-line global-require -- require for tests
       .mockImplementationOnce(() => Promise.resolve(otherModule))
       .mockImplementationOnce(() => Promise.resolve(abortingModule));
 
@@ -130,3 +131,4 @@ describe('composeModules', () => {
       });
   });
 });
+/* eslint-enable jest/no-conditional-expect -- test conditionally */

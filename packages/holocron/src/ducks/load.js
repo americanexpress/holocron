@@ -31,7 +31,7 @@ const initialState = iMap({
   failed: iMap(),
   loading: iMap(),
 });
-
+// eslint-disable-next-line default-param-last -- long message
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case REGISTER_MODULE_REDUCER: {
@@ -114,7 +114,7 @@ export function getLoadingPromise(moduleName) {
   return (state) => state.getIn([HOLOCRON_STORE_KEY, 'loading', moduleName]);
 }
 
-/* eslint-disable global-require */
+/* eslint-disable global-require -- require module */
 export function loadModule(moduleName) {
   return (dispatch, getState, { modules, rebuildReducer }) => {
     const state = getState();
@@ -134,6 +134,7 @@ export function loadModule(moduleName) {
     }
 
     if (!moduleData) {
+      // eslint-disable-next-line max-len -- long message
       const moduleLoadError = new Error(`Could not load Module ${moduleName} because it does not exist in the Module Version Map`);
       dispatch(moduleLoadFailed(moduleName, moduleLoadError));
       return Promise.reject(moduleLoadError);
@@ -141,8 +142,10 @@ export function loadModule(moduleName) {
 
     if (modules) {
       const module = getModule(moduleName, modules);
+      // eslint-disable-next-line max-len -- ternary operator
       loadPromise = module ? Promise.resolve(module) : Promise.reject(new Error(`Module ${moduleName} was not preloaded on server`));
     } else {
+      // eslint-disable-next-line import/extensions -- include extension
       loadPromise = require('../loadModule.web.js').default(moduleName, moduleData);
     }
 
@@ -167,4 +170,4 @@ export function loadModule(moduleName) {
       );
   };
 }
-/* eslint-enable global-require */
+/* eslint-enable global-require -- enable */

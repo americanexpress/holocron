@@ -14,12 +14,12 @@
 
 import React from 'react';
 import { ReactReduxContext } from 'react-redux';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies -- only used in tests
 import { mount } from 'enzyme';
 import { fromJS } from 'immutable';
 import RenderModule from '../src/RenderModule';
 
-// eslint-disable-next-line react/prop-types
+// eslint-disable-next-line react/prop-types -- disable for tests
 const MyTestModule = ({ children, ...otherProps }) => (
   <div>
     {JSON.stringify(otherProps, undefined, 2)}

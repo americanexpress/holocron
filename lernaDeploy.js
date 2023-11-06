@@ -14,7 +14,7 @@
 
 const { exec } = require('child_process');
 // This regex was obtained from https://semver.org/ test it out here https://regex101.com/r/vkijKf/1/
-/* eslint-disable-next-line unicorn/no-unsafe-regex */
+/* eslint-disable-next-line unicorn/no-unsafe-regex -- setup for lerna */
 const regex = /^chore\(release\): (0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][\dA-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][\dA-Za-z-]*))*))?(?:\+([\dA-Za-z-]+(?:\.[\dA-Za-z-]+)*))?$/gm;
 const commitMessage = process.argv[2]; // This is the commit message
 if (commitMessage != null && regex.test(commitMessage)) {

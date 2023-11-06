@@ -14,7 +14,7 @@
 
 import React from 'react';
 // eslint erroneously believes enzyme is not a dev dependency
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies -- only used in tests
 import { shallow } from 'enzyme';
 
 import ModuleRoute from '../src/ModuleRoute';

@@ -18,7 +18,7 @@
  */
 
 // ES6 features
-/* eslint-disable prefer-arrow-callback, prefer-template */
+/* eslint-disable prefer-arrow-callback, prefer-template -- disable for this file */
 
 const { exec } = require('child_process');
 
@@ -112,10 +112,10 @@ function satisfies(range, version) {
 function checkEngine(engine, range, using) {
   if (!satisfies(range, using)) {
     // show the reason for failure to the user
-    /* eslint-disable no-console */
+    // eslint-disable no-console -- this is a script
     console.error(engine + ' version must be ' + range + ', found ' + using);
-    /* eslint-enable no-console */
-    /* eslint-disable-next-line unicorn/no-process-exit */
+    // eslint-enable no-console -- enable
+    // eslint-disable-next-line unicorn/no-process-exit -- this is a script
     process.exit(1);
   }
 }
@@ -130,12 +130,13 @@ exec('npm -v', function checkNpmVersion(error, stdout, stderr) {
 
   if (stderr) {
     // show the error from running npm
-    /* eslint-disable no-console */
+    /* eslint-disable no-console -- this is a script */
     console.error(stderr);
-    /* eslint-enable no-console */
-    /* eslint-disable-next-line unicorn/no-process-exit */
+    /* eslint-enable no-console -- enable */
+    // eslint-disable-next-line unicorn/no-process-exit -- this is a script
     process.exit(1);
   }
 
   checkEngine('npm', npmRange, stdout);
 });
+/* eslint-enable prefer-arrow-callback, prefer-template -- disable for this file */
