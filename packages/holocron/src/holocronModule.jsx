@@ -26,7 +26,7 @@ import {
 } from './ducks/constants';
 
 // Execute deprecated load function and provide deprecation message
-export function executeLoad({ dispatch, load, ...restProps } = { }) {
+export function executeLoad({ dispatch, load, ...restProps } = {}) {
   if (load) {
     console.warn('The \'load\' function in holocron has been deprecated. Please use \'loadModuleData\' instead.');
     return dispatch(load(restProps));
@@ -80,6 +80,7 @@ export async function executeLoadingFunctions({
       setStatus('loaded');
     }
   } catch (error) {
+    // eslint-disable-next-line max-len -- long message
     console.error(`Error while attempting to call 'load' or 'loadModuleData' inside Holocron module ${componentName}.`, error);
     if (mounted) {
       setStatus('error');
@@ -134,7 +135,7 @@ export default function holocronModule({
         };
       }, []);
 
-      // eslint-disable-next-line react/jsx-props-no-spreading
+      // eslint-disable-next-line react/jsx-props-no-spreading -- spread props
       return <WrappedComponent {...props} moduleLoadStatus={status} />;
     };
 
@@ -156,6 +157,7 @@ export default function holocronModule({
     let mapModuleStateToProps = mapStateToProps;
 
     if (reducer && !name) {
+      // eslint-disable-next-line max-len, no-console -- long message
       console.warn(`The Holocron Config in '${getModuleDisplayName(getModuleName(WrappedComponent, name))}' requires a 'name' when passing a 'reducer'.\nThe 'reducer' will not be added to the Redux Store without a 'name'.`);
     }
 

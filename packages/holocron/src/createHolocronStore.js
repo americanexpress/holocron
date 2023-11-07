@@ -77,6 +77,7 @@ function createReducer({ appReducer, state, localsForBuildInitialState }) {
 
   const holocronStoreKeys = [HOLOCRON_STORE_KEY, MODULES_STORE_KEY];
 
+  // eslint-disable-next-line default-param-last -- default param is necessary
   return (storeState = iMap(), action) => {
     const holocronState = holocronReducers(
       storeState.filter((_, key) => holocronStoreKeys.includes(key)), action);

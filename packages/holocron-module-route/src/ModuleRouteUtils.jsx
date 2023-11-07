@@ -15,7 +15,7 @@
 import { createRoutesFromReactChildren } from '@americanexpress/one-app-router/lib/RouteUtils';
 import { createRoutes } from '@americanexpress/one-app-router';
 // holocron is a peer dependency
-import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
+import { loadModule } from 'holocron';
 
 export const addToRouteProps = (route, newProps) => ({
   ...route,
@@ -25,6 +25,7 @@ export const addToRouteProps = (route, newProps) => ({
   },
 });
 
+// eslint-disable-next-line default-param-last -- first param needs default
 export const passChildrenProps = (givenRoutes = [], newProps) => {
   const routes = typeof givenRoutes === 'function' ? givenRoutes(newProps.store) : givenRoutes;
   return Array.isArray(routes) ? routes.map((route) => addToRouteProps(route, newProps))

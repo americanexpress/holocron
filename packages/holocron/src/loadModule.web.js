@@ -76,12 +76,12 @@ async function loadModule(moduleName, moduleData) {
   await loadModuleFallbackExternals(moduleName);
   // then load the module script.
   const integrity = moduleData.getIn([
-    // eslint-disable-next-line no-underscore-dangle
+    // eslint-disable-next-line no-underscore-dangle -- holocron api
     window.__holocron_module_bundle_type__,
     'integrity',
   ]);
   const url = moduleData.getIn([
-    // eslint-disable-next-line no-underscore-dangle
+    // eslint-disable-next-line no-underscore-dangle -- holocron api
     window.__holocron_module_bundle_type__,
     'url',
   ]);

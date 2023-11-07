@@ -332,7 +332,8 @@ describe('loadModule', () => {
     );
 
     const loadModuleError = new Error('load failure');
-    require('../../src/loadModule.web').default.mockImplementationOnce(() => Promise.reject(loadModuleError)); // eslint-disable-line global-require
+    // eslint-disable-next-line global-require -- require for test
+    require('../../src/loadModule.web').default.mockImplementationOnce(() => Promise.reject(loadModuleError));
 
     const thunk = loadModule('my-module');
     const dispatch = jest.fn((x) => x);

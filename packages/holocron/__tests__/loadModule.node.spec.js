@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, jest/no-conditional-expect -- disable for tests */
 /*
  * Copyright 2019 American Express Travel Related Services Company, Inc.
  *
@@ -60,11 +60,11 @@ describe('loadModule.node', () => {
 
     global.fetch = fetch || makeFetchMock();
 
-    requireFromString = require('require-from-string'); // eslint-disable-line global-require
+    requireFromString = require('require-from-string'); // eslint-disable-line global-require -- require for tests
 
     requireFromString.mockClear();
 
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require -- require for tests
     moduleRegistry = require('../src/moduleRegistry');
 
     if (moduleToBlockList) {
@@ -75,14 +75,15 @@ describe('loadModule.node', () => {
       global.getTenantRootModule = getTenantRootModule;
     }
 
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require -- require for test
     externalRegistry = require('../src/externalRegistry');
 
-    return require('../src/loadModule.node.js').default; // eslint-disable-line global-require
+    // eslint-disable-next-line import/extensions, global-require -- require for tests
+    return require('../src/loadModule.node.js').default;
   }
 
   function getSHA(content = 'the Spanish Inquisition') {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require -- require for test
     return require('ssri')
       .fromData(content, { algorithms: ['sha256', 'sha384'] })
       .toString();
@@ -91,8 +92,8 @@ describe('loadModule.node', () => {
   beforeAll(() => {
     jest.spyOn(console, 'log');
     jest.spyOn(console, 'warn');
-    console.log.mockImplementation(() => {});
-    console.warn.mockImplementation(() => {});
+    console.log.mockImplementation(() => { });
+    console.warn.mockImplementation(() => { });
   });
 
   beforeEach(() => {
@@ -741,7 +742,7 @@ describe('loadModule.node', () => {
         moduleUrl
       );
     });
-
+    // eslint-disable-next-line max-len -- long test name
     it(`does not add \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
       expect.assertions(4);
 
@@ -1518,3 +1519,4 @@ describe('loadModule.node', () => {
     });
   });
 });
+/* eslint-enable no-console, jest/no-conditional-expect -- disable for tests */

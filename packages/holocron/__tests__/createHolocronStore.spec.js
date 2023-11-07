@@ -20,7 +20,7 @@ import createHolocronStore from '../src/createHolocronStore';
 
 const mockReducerKey = REDUCER_KEY;
 jest.mock('../src/moduleRegistry', () => {
-  // eslint-disable-next-line global-require
+  // eslint-disable-next-line global-require -- require for tests
   const immutable = require('immutable');
 
   const createModuleReducer = (moduleName) => {

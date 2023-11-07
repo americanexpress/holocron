@@ -32,14 +32,14 @@ export default function RenderModule({ children, moduleName, props }) {
   const propsWithChildren = typeof children !== 'undefined' ? { children, ...props } : props;
 
   // propsWithChildren is computed and passed down to this prop
-  // eslint-disable-next-line react/jsx-props-no-spreading
+  // eslint-disable-next-line react/jsx-props-no-spreading -- spread props
   return <Module {...propsWithChildren} />;
 }
 
 RenderModule.propTypes = {
   moduleName: PropTypes.string.isRequired,
   // we're simply passing props through, the shape will be different for every module
-  props: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  props: PropTypes.object, // eslint-disable-line react/forbid-prop-types -- above comment
   children: PropTypes.node,
 };
 

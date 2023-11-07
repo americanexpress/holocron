@@ -62,10 +62,10 @@ export default async function updateModuleRegistry({
           const brokenUrl = nextModuleMap.modules[moduleName].node.url;
           if (currentModuleMap.modules && currentModuleMap.modules[moduleName]) {
             const previousUrl = currentModuleMap.modules[moduleName].node.url;
-            // eslint-disable-next-line no-console
+            // eslint-disable-next-line no-console, max-len -- console necissary for error logging
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Reverting back to ${previousUrl}`, e);
           } else {
-            // eslint-disable-next-line no-console
+            // eslint-disable-next-line no-console, max-len -- console necissary for error logging
             console.error(`There was an error loading module ${moduleName} at ${brokenUrl}. Ignoring ${moduleName} until next module map poll.`, e);
           }
           rejectedModules[moduleName] = {

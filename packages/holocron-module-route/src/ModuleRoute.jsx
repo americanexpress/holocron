@@ -12,7 +12,7 @@
  * under the License.
  */
 
-/* eslint-disable react/prefer-stateless-function */
+/* eslint-disable react/prefer-stateless-function --  extend component */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModuleRouteFromElement } from './ModuleRouteUtils';
@@ -29,12 +29,12 @@ class ModuleRoute extends Component {
 ModuleRoute.createRouteFromReactElement = createModuleRouteFromElement;
 ModuleRoute.propTypes = {
   // these are not used directly, but are used by createModuleRouteFromElement
-  /* eslint-disable react/no-unused-prop-types */
+  /* eslint-disable react/no-unused-prop-types -- comment above */
   moduleName: PropTypes.string,
   path: PropTypes.string,
   title: PropTypes.string,
   hasChildRoutes: PropTypes.bool,
-  /* eslint-enable react/no-unused-prop-types */
+  /* eslint-enable react/no-unused-prop-types -- enable rule */
 };
 ModuleRoute.defaultProps = {
   moduleName: undefined,
@@ -45,3 +45,4 @@ ModuleRoute.defaultProps = {
 ModuleRoute.displayName = 'ModuleRoute';
 
 export default ModuleRoute;
+/* eslint-enable react/prefer-stateless-function --  extend component */

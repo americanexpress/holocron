@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return -- disable for tests */
 /*
  * Copyright 2019 American Express Travel Related Services Company, Inc.
  *
@@ -14,7 +15,7 @@
 
 import React from 'react';
 // holocron is a peer dependency, I would add it to devDeps, but it is immediately mocked
-import { loadModule } from 'holocron'; // eslint-disable-line import/no-unresolved,import/extensions
+import { loadModule } from 'holocron';
 import ModuleRoute from '../src/ModuleRoute';
 import {
   addToRouteProps,
@@ -164,7 +165,7 @@ describe('ModuleRouteUtils', () => {
           // this ensures error thrown during the `.then` rather than after
           callback.mockImplementationOnce(() => { throw new Error('boom'); });
           moduleRoute.getIndexRoute(undefined, callback);
-        })).rejects.toThrowError('boom');
+        })).rejects.toThrow('boom');
       });
     });
 
@@ -194,7 +195,7 @@ describe('ModuleRouteUtils', () => {
           // this ensures error thrown during the `.then` rather than after
           callback.mockImplementationOnce(() => { throw new Error('boom'); });
           moduleRoute.getChildRoutes(undefined, callback);
-        })).rejects.toThrowError('boom');
+        })).rejects.toThrow('boom');
       });
     });
 
@@ -225,7 +226,7 @@ describe('ModuleRouteUtils', () => {
           // this ensures error thrown during the `.then` rather than after
           callback.mockImplementationOnce(() => { throw new Error('boom'); });
           moduleRoute.getComponent(undefined, callback);
-        })).rejects.toThrowError('boom');
+        })).rejects.toThrow('boom');
       });
     });
 
@@ -262,7 +263,7 @@ describe('ModuleRouteUtils', () => {
           // this ensures error thrown during the `.then` rather than after
           callback.mockImplementationOnce(() => { throw new Error('boom'); });
           moduleRoute.onEnter('nextState', replace, callback);
-        })).rejects.toThrowError('boom');
+        })).rejects.toThrow('boom');
       });
 
       it('should allow the Module to specify a synchronous onEnter hook', async () => {
@@ -342,7 +343,7 @@ describe('ModuleRouteUtils', () => {
 
     it('should not add childRoutes if the only children are not valid elements', () => {
       const route = (
-        // eslint-disable-next-line react/self-closing-comp
+
         <ModuleRoute path="/" moduleName="parent-module">
           {[]}
         </ModuleRoute>
@@ -352,3 +353,4 @@ describe('ModuleRouteUtils', () => {
     });
   });
 });
+/* eslint-enable no-promise-executor-return -- enable */

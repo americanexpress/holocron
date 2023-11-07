@@ -42,6 +42,7 @@ const webpackOptions = {
 };
 
 function waitForWebpack(options) {
+  // eslint-disable-next-line no-promise-executor-return -- webpack callback
   return new Promise((resolve, reject) => webpack(options, (error, stats) => {
     if (error) { return reject(error); }
     if (stats.hasErrors()) { return reject(stats.toJson().errors); }
@@ -110,6 +111,7 @@ describe('HolocronModuleRegisterPlugin', () => {
     expect(fileContents.startsWith('/******/ (() => { // webpackBootstrap')).toBe(true);
     expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
     expect(fileContents).toContain('Holocron.registerModule("some-module", SomeModule);');
+    // eslint-disable-next-line max-len -- long assignment
     const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
     expect(asyncChunkContents).toContain('() => \'Hello, world\'');
     expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');

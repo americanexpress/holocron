@@ -26,7 +26,7 @@ const createElementSpy = jest
 jest
   .spyOn(document, 'querySelectorAll')
   .mockImplementation(() => [{ append: () => null }]);
-// eslint-disable-next-line no-underscore-dangle
+// eslint-disable-next-line no-underscore-dangle -- holocron api
 window.__holocron_module_bundle_type__ = 'browser';
 
 const eventListenerMock = jest.fn((event, cb) => {
