@@ -92,8 +92,8 @@ describe('loadModule.node', () => {
   beforeAll(() => {
     jest.spyOn(console, 'log');
     jest.spyOn(console, 'warn');
-    console.log.mockImplementation(() => { });
-    console.warn.mockImplementation(() => { });
+    console.log.mockImplementation(() => {});
+    console.warn.mockImplementation(() => {});
   });
 
   beforeEach(() => {
@@ -788,14 +788,13 @@ describe('loadModule.node', () => {
         environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }],
       };
       const moduleString = { onModuleLoadConfig };
-
+      // mock fetching module-config.json
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        json: () => '{ "requiredExternals": [] }',
+        json: () => '{ "requiredExternals": {} }',
         ok: true,
-      })
-      );
+      }));
 
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
@@ -834,7 +833,7 @@ describe('loadModule.node', () => {
         environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }],
       };
       const moduleString = { onModuleLoadConfig };
-
+      // mock fetching module-config.json
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
@@ -843,20 +842,21 @@ describe('loadModule.node', () => {
             {
               name: 'lodash',
               version: '1.0.0',
+              browserIntegrity: '123-browser',
+              nodeIntegrity: '123-node',
             },
           ],
         }),
         ok: true,
-      })
-      );
+      }));
 
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      })
-      );
+      }));
+
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -921,8 +921,7 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      })
-      );
+      }));
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -972,8 +971,7 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      })
-      );
+      }));
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -1028,8 +1026,7 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      })
-      );
+      }));
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -1070,14 +1067,14 @@ describe('loadModule.node', () => {
           requiredExternals: {
             'my-dep': {
               name: 'my-dep',
-              integrity: '1234',
+              browserIntegrity: '1234-browser',
+              nodeIntegrity: '1234-node',
               version: '1.0.1',
               semanticRange: '^1.0.0',
             },
           },
         }),
-      })
-      );
+      }));
 
       // load module
       const loadModule = load({
@@ -1108,7 +1105,8 @@ describe('loadModule.node', () => {
         'my-module': {
           'my-dep': {
             name: 'my-dep',
-            integrity: '1234',
+            browserIntegrity: '1234-browser',
+            nodeIntegrity: '1234-node',
             version: '1.0.1',
             semanticRange: '^1.0.0',
           },
@@ -1125,22 +1123,21 @@ describe('loadModule.node', () => {
           requiredExternals: {
             myDep: {
               name: 'my-dep',
-              integrity: '1234',
+              browserIntegrity: '1234-browser',
+              nodeIntegrity: '1234-node',
               version: '1.0.1',
               semanticRange: '^1.0.0',
             },
           },
         }),
         ok: true,
-      })
-      );
+      }));
 
       mockFetch.mockImplementation(() => Promise.resolve({
         ok: true,
         status: 200,
         text: () => JSON.stringify({}),
-      })
-      );
+      }));
 
       const loadModule = load({
         fetch: mockFetch,
@@ -1197,7 +1194,8 @@ describe('loadModule.node', () => {
                 semanticRange: '^1.0.0',
                 name: 'lodash',
                 version: '1.2.3',
-                integrity: '12345',
+                browserIntegrity: '1234-browser',
+                nodeIntegrity: '1234-node',
               },
             },
           }),
@@ -1209,8 +1207,7 @@ describe('loadModule.node', () => {
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      })
-      );
+      }));
 
       // mock fetch for module code
       mockFetch.mockImplementationOnce(
@@ -1245,8 +1242,9 @@ describe('loadModule.node', () => {
         Object {
           "awesome": Object {
             "lodash": Object {
-              "integrity": "12345",
+              "browserIntegrity": "1234-browser",
               "name": "lodash",
+              "nodeIntegrity": "1234-node",
               "semanticRange": "^1.0.0",
               "version": "1.2.3",
             },
@@ -1280,7 +1278,8 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(
         makeFetchMock({
           fetchText: fakeModule,
-        }));
+        })
+      );
 
       const loadModule = load({
         fetch: mockFetch,
@@ -1294,7 +1293,7 @@ describe('loadModule.node', () => {
           },
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        '"External \'example-dep\' is required by awesome, but is not provided by the root module"'
+        "\"External 'example-dep' is required by awesome, but is not provided by the root module\""
       );
     });
 
@@ -1305,7 +1304,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1343,7 +1343,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1388,7 +1389,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1435,7 +1437,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(
@@ -1476,7 +1479,8 @@ describe('loadModule.node', () => {
         // does not have moduleConfig file.
         mockFetch.mockImplementationOnce(() => Promise.resolve({
           status: 404,
-        }));
+        })
+        );
 
         // mock fetch for module
         mockFetch.mockImplementationOnce(

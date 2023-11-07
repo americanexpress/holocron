@@ -98,7 +98,7 @@ const fetchNodeModule = async (url, integrity, context) => {
   try {
     const moduleString = await fetchAsset(url);
 
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV !== 'development') {
       const actualSRI = ssri.fromData(
         moduleString,
         { algorithms: ['sha256', 'sha384'] }
@@ -125,7 +125,7 @@ const fetchNodeModule = async (url, integrity, context) => {
 };
 
 /**
- * Loads Fallback Externals for a module
+ * Loads Fallback Externals server bundle for a module
  * @param {string} baseUrl path to the assets
  * @param {string} moduleName module name
  */
@@ -133,8 +133,8 @@ const loadModuleFallbackExternals = async (baseUrl, moduleName) => {
   const fallbacks = getUnregisteredRequiredExternals(moduleName);
 
   await Promise.all(
-    fallbacks.map(async ({ name, version, integrity }) => {
-      const fallbackDependency = await fetchNodeModule(`${baseUrl}${name}.node.js`, integrity, {
+    fallbacks.map(async ({ name, version, nodeIntegrity }) => {
+      const fallbackDependency = await fetchNodeModule(`${baseUrl}${name}.node.js`, nodeIntegrity, {
         type: 'External Fallback',
         name,
       });
@@ -212,9 +212,9 @@ const validateRequiredExternals = ({
     const providedExternal = providedExternals[externalName];
     const requiredExternal = requiredExternals[externalName];
     const {
-      version, name, integrity, semanticRange,
+      version, name, nodeIntegrity, browserIntegrity, semanticRange,
     } = requiredExternal;
-    const fallbackExternalAvailable = !!name && !!version;
+    const fallbackExternalAvailable = !!name && !!version && !!nodeIntegrity && !!browserIntegrity;
     const fallbackBlockedByRootModule = !!providedExternal && !providedExternal.fallbackEnabled;
 
     if (!providedExternal) {
@@ -242,7 +242,8 @@ const validateRequiredExternals = ({
         name,
         version,
         semanticRange,
-        integrity,
+        nodeIntegrity,
+        browserIntegrity,
       };
     }
   });
@@ -296,7 +297,7 @@ const loadModule = async (
     // root modules can be built without getTenantRootModule
     const rootModule = global.getTenantRootModule ? global.getTenantRootModule() : null;
 
-    // if no root module, module being loaded should be root.
+    // if no root module, module being loaded should be rootModule
     if (rootModule) {
       const {
         providedExternals: rootProvidedExternals,
