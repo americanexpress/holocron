@@ -39,7 +39,8 @@ let registeredExternals = iMap();
  *         name: {string}[name of external],
  *         version: {string}[version of external fallback],
  *         semanticRange: {string}[range of expected external],
- *         integrity: {string}[hash value of module code]
+ *         browserIntegrity: {string}[hash value of external fallback browser code]
+ *         nodeIntegrity: {string}[hash value of external fallback server code]
  *      }
  *    }
  * }
@@ -47,7 +48,10 @@ let registeredExternals = iMap();
  * @param {string} registry.[moduleName].[externalName].name external name
  * @param {string} registry.[moduleName].[externalName].version external version
  * @param {string} registry.[moduleName].[externalName].semanticRange accepted semantic range
- * @param {string} registry.[moduleName].[externalName].integrity hash value of fallback external
+ * @param {string} registry.[moduleName].[externalName].browserIntegrity hash value of
+ * fallback external browser code
+ * @param {string} registry.[moduleName].[externalName].nodeIntegrity hash value of
+ * fallback external server code
  */
 let requiredModuleExternals = iMap();
 
@@ -115,8 +119,11 @@ function clearModulesRequiredExternals(moduleName) {
  * @param {string} externals.[externalName].name external name
  * @param {string} externals.[externalName].version external version
  * @param {string} externals.[externalName].semanticRange semantic range module will accept
- * @param {string} externals.[externalName].integrity hash value of fallback external
- */
+ * @param {string} externals.[externalName].nodeIntegrity hash value of
+ * fallback external browser code
+ * @param {string} externals.[externalName].browserIntegrity hash value of
+ * fallback external server code
+*/
 function setModulesRequiredExternals({ moduleName, externals }) {
   if (externals) {
     requiredModuleExternals = requiredModuleExternals.set(moduleName, fromJS(externals));
