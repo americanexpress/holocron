@@ -57,9 +57,9 @@ function loadModuleFallbackExternals(moduleName) {
   const fallbacks = getUnregisteredRequiredExternals(moduleName);
   const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
 
-  return Promise.all(fallbacks.map(({ name, integrity }) => createScript({
+  return Promise.all(fallbacks.map(({ name, browserIntegrity }) => createScript({
     url: `${baseUrl}${name}.browser.js`,
-    integrity,
+    integrity: browserIntegrity,
   })));
 }
 
