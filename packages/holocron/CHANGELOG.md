@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.1](https://github.com/americanexpress/holocron/compare/holocron@1.9.0...holocron@1.9.1) (2023-11-08)
+
+
+### Bug Fixes
+
+* **externals:** use browser and node integrity values ([#162](https://github.com/americanexpress/holocron/issues/162)) ([5a836b9](https://github.com/americanexpress/holocron/commit/5a836b94123c22df090da96a91628eb8e91a0cdd))
+
+
+
+
+
 # 1.9.0 (2023-10-25)
 
 
