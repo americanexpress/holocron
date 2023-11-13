@@ -1,23 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`holocronModule executeLoadModuleData should call loadModuleData with correct args 1`] = `
-Array [
-  Array [
-    Object {
+[
+  [
+    {
       "fetchClient": [MockFunction],
-      "module": Object {
+      "module": {
         "displayName": "FakeComponent",
       },
-      "ownProps": Object {},
-      "store": Object {
+      "ownProps": {},
+      "store": {
         "dispatch": [MockFunction] {
-          "calls": Array [
-            Array [
+          "calls": [
+            [
               [Function],
             ],
           ],
-          "results": Array [
-            Object {
+          "results": [
+            {
               "type": "return",
               "value": Promise {},
             },
@@ -66,8 +66,8 @@ exports[`holocronModule should provide the module state as a plain JS prop if a 
 `;
 
 exports[`holocronModule should warn if a reducer is set but no name 1`] = `
-Array [
-  Array [
+[
+  [
     "The Holocron Config in 'HolocronModule(undefined)' requires a 'name' when passing a 'reducer'.
 The 'reducer' will not be added to the Redux Store without a 'name'.",
   ],

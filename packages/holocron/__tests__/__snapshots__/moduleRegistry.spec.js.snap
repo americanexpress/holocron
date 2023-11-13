@@ -11,7 +11,7 @@ exports[`moduleRegistry should maintain a block list 2`] = `"https://example.com
 
 exports[`moduleRegistry should register modules 1`] = `
 Immutable.Map {
-  "good-module": Object {
+  "good-module": {
     "$$typeof": Symbol(react.memo),
     "WrappedComponent": [Function],
     "compare": null,
@@ -22,7 +22,7 @@ Immutable.Map {
 `;
 
 exports[`moduleRegistry should register modules 2`] = `
-Object {
+{
   "$$typeof": Symbol(react.memo),
   "WrappedComponent": [Function],
   "compare": null,
