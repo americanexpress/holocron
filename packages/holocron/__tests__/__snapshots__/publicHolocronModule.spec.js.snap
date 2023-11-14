@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`publicHolocronModule should add holocron config properties to component 1`] = `
-Object {
+{
   "displayName": "FakeComponent",
-  "holocron": Object {
+  "holocron": {
     "load": [Function],
     "loadModuleData": [Function],
     "mergeProps": [Function],
@@ -17,9 +17,9 @@ Object {
 `;
 
 exports[`publicHolocronModule should attach empty holocron config to component without args 1`] = `
-Object {
+{
   "displayName": "FakeComponent",
-  "holocron": Object {},
+  "holocron": {},
   "name": "FakeComponent",
 }
 `;

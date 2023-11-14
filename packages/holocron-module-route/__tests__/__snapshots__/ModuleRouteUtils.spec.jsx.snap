@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ModuleRouteUtils addToRouteProps should add props and replace old props with new ones 1`] = `
-Object {
-  "props": Object {
+{
+  "props": {
     "changed": "new",
     "new": "prop",
     "unchanged": "value",
@@ -12,21 +12,21 @@ Object {
 `;
 
 exports[`ModuleRouteUtils createModuleRoute getChildRoutes should get the child routes 1`] = `
-Array [
-  Object {
+[
+  {
     "indexRoute": "index",
     "moduleName": "another-module",
     "path": "another",
-    "props": Object {
-      "store": Object {
+    "props": {
+      "store": {
         "dispatch": [MockFunction] {
-          "calls": Array [
-            Array [
+          "calls": [
+            [
               Promise {},
             ],
           ],
-          "results": Array [
-            Object {
+          "results": [
+            {
               "type": "return",
               "value": Promise {},
             },
@@ -39,9 +39,9 @@ Array [
 `;
 
 exports[`ModuleRouteUtils createModuleRoute getComponent should get the module 1`] = `
-Object {
-  "childRoutes": Array [
-    Object {
+{
+  "childRoutes": [
+    {
       "indexRoute": "index",
       "moduleName": "another-module",
       "path": "another",
@@ -51,7 +51,7 @@ Object {
 `;
 
 exports[`ModuleRouteUtils createModuleRoute should create a valid module route 1`] = `
-Object {
+{
   "default": "value",
   "getChildRoutes": [Function],
   "getComponent": [Function],
@@ -64,7 +64,7 @@ Object {
 `;
 
 exports[`ModuleRouteUtils createModuleRoute should not add moduleRoute props if no moduleName is present 1`] = `
-Object {
+{
   "default": "value",
   "hello": "world",
   "title": "test",
@@ -72,9 +72,9 @@ Object {
 `;
 
 exports[`ModuleRouteUtils createModuleRouteFromElement should convert a jsx ModuleRoute to a valid module route 1`] = `
-Object {
-  "childRoutes": Array [
-    Object {
+{
+  "childRoutes": [
+    {
       "getChildRoutes": [Function],
       "getComponent": [Function],
       "getIndexRoute": [Function],
@@ -98,7 +98,7 @@ Object {
 `;
 
 exports[`ModuleRouteUtils createModuleRouteFromElement should not add childRoutes if the only children are not valid elements 1`] = `
-Object {
+{
   "getChildRoutes": [Function],
   "getComponent": [Function],
   "getIndexRoute": [Function],
@@ -111,9 +111,9 @@ Object {
 `;
 
 exports[`ModuleRouteUtils passChildrenProps should pass props to children 1`] = `
-Array [
-  Object {
-    "props": Object {
+[
+  {
+    "props": {
       "hello": "world",
     },
   },
@@ -121,11 +121,11 @@ Array [
 `;
 
 exports[`ModuleRouteUtils passChildrenProps should pass the store to a function that creates routes 1`] = `
-Array [
-  Object {
-    "props": Object {
+[
+  {
+    "props": {
       "state": "Hello world",
-      "store": Object {
+      "store": {
         "getState": [Function],
       },
     },
@@ -133,4 +133,4 @@ Array [
 ]
 `;
 
-exports[`ModuleRouteUtils passChildrenProps should return an empty array if no routes are provided 1`] = `Array []`;
+exports[`ModuleRouteUtils passChildrenProps should return an empty array if no routes are provided 1`] = `[]`;

@@ -18,8 +18,8 @@ Retrying (3)..."
 `;
 
 exports[`loadModule.node loading a module retries 4`] = `
-"Holocron module \\"awesome\\" at \\"https://example.com/cdn/awesome/1.0.0/awesome.node.js\\" failed to execute.
-	[Error Message]: \\"test error, like a socket disconnect\\"
+"Holocron module "awesome" at "https://example.com/cdn/awesome/1.0.0/awesome.node.js" failed to execute.
+	[Error Message]: "test error, like a socket disconnect"
 Please fix any errors and wait for it to be reloaded."
 `;
 

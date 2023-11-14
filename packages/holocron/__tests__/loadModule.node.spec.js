@@ -794,7 +794,8 @@ describe('loadModule.node', () => {
         statusText: 'OK',
         json: () => '{ "requiredExternals": {} }',
         ok: true,
-      }));
+      })
+      );
 
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
@@ -848,14 +849,16 @@ describe('loadModule.node', () => {
           ],
         }),
         ok: true,
-      }));
+      })
+      );
 
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      }));
+      })
+      );
 
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
@@ -921,7 +924,8 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      }));
+      })
+      );
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -971,7 +975,8 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      }));
+      })
+      );
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -1026,7 +1031,8 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      }));
+      })
+      );
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
       );
@@ -1074,7 +1080,8 @@ describe('loadModule.node', () => {
             },
           },
         }),
-      }));
+      })
+      );
 
       // load module
       const loadModule = load({
@@ -1131,13 +1138,15 @@ describe('loadModule.node', () => {
           },
         }),
         ok: true,
-      }));
+      })
+      );
 
       mockFetch.mockImplementation(() => Promise.resolve({
         ok: true,
         status: 200,
         text: () => JSON.stringify({}),
-      }));
+      })
+      );
 
       const loadModule = load({
         fetch: mockFetch,
@@ -1207,7 +1216,8 @@ describe('loadModule.node', () => {
         statusText: 'OK',
         text: () => 'external fallback code',
         ok: true,
-      }));
+      })
+      );
 
       // mock fetch for module code
       mockFetch.mockImplementationOnce(
@@ -1239,9 +1249,9 @@ describe('loadModule.node', () => {
 
       expect(externalRegistry.getRequiredExternalsRegistry())
         .toMatchInlineSnapshot(`
-        Object {
-          "awesome": Object {
-            "lodash": Object {
+        {
+          "awesome": {
+            "lodash": {
               "browserIntegrity": "1234-browser",
               "name": "lodash",
               "nodeIntegrity": "1234-node",
@@ -1272,7 +1282,8 @@ describe('loadModule.node', () => {
       // does not have moduleConfig file.
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 404,
-      }));
+      })
+      );
 
       // mock fetch for module
       mockFetch.mockImplementationOnce(

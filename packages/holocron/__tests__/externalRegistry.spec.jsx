@@ -60,23 +60,23 @@ describe('externalRegistry', () => {
 
     expect(externalRegistry.getRequiredExternalsRegistry())
       .toMatchInlineSnapshot(`
-      Object {
-        "child-module-a": Object {
-          "that-dep": Object {
+      {
+        "child-module-a": {
+          "that-dep": {
             "integrity": "12345hash",
             "name": "that-dep",
             "semanticRange": "^2.2.0",
             "version": "2.3.1",
           },
-          "this-version": Object {
+          "this-version": {
             "integrity": "12345hash",
             "name": "this-version",
             "semanticRange": "^1.2.0",
             "version": "1.2.3",
           },
         },
-        "child-module-b": Object {
-          "this-version": Object {
+        "child-module-b": {
+          "this-version": {
             "integrity": "123456hash",
             "name": "this-version",
             "semanticRange": "^1.2.0",
@@ -118,15 +118,15 @@ describe('externalRegistry', () => {
 
       expect(externalRegistry.getRequiredExternals(moduleName))
         .toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "integrity": "12345hash",
             "moduleName": "child-module-a",
             "name": "some-dep",
             "semanticRange": "^1.2.0",
             "version": "1.2.3",
           },
-          Object {
+          {
             "integrity": "123456hash",
             "moduleName": "child-module-a",
             "name": "that-dep",
@@ -139,7 +139,10 @@ describe('externalRegistry', () => {
 
     it('returns empty array when no externals are provided', () => {
       const moduleName = 'child-module-a';
-      externalRegistry.setModulesRequiredExternals({ moduleName, externals: undefined });
+      externalRegistry.setModulesRequiredExternals({
+        moduleName,
+        externals: undefined,
+      });
       expect(externalRegistry.getRequiredExternals(moduleName)).toEqual([]);
     });
   });
@@ -150,7 +153,7 @@ describe('externalRegistry', () => {
 
       expect(
         externalRegistry.getUnregisteredRequiredExternals(moduleName)
-      ).toMatchInlineSnapshot('Array []');
+      ).toMatchInlineSnapshot('[]');
 
       externalRegistry.setModulesRequiredExternals({
         moduleName,
@@ -178,8 +181,8 @@ describe('externalRegistry', () => {
 
       expect(externalRegistry.getUnregisteredRequiredExternals(moduleName))
         .toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "integrity": "123456hash",
             "moduleName": "child-module-a",
             "name": "that-dep",
@@ -192,7 +195,7 @@ describe('externalRegistry', () => {
       externalRegistry.registerExternal({ name: 'that-dep', version: '1.2.4' });
       expect(
         externalRegistry.getUnregisteredRequiredExternals(moduleName)
-      ).toMatchInlineSnapshot('Array []');
+      ).toMatchInlineSnapshot('[]');
     });
 
     it('does not accidentally match different registered version', () => {
@@ -217,8 +220,8 @@ describe('externalRegistry', () => {
 
       expect(externalRegistry.getUnregisteredRequiredExternals(moduleName))
         .toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "integrity": "12345hash",
             "moduleName": "child-module-a",
             "name": "some-dep",
@@ -250,12 +253,12 @@ describe('externalRegistry', () => {
     });
 
     expect(externalRegistry.getRegisteredExternals()).toMatchInlineSnapshot(`
-      Object {
-        "some-dep": Object {
+      {
+        "some-dep": {
           "1.2.3": [Function],
           "2.0.0": [Function],
         },
-        "that-dep": Object {
+        "that-dep": {
           "0.0.1-alpha.0.1": [Function],
         },
       }
@@ -364,9 +367,9 @@ describe('externalRegistry', () => {
       externalRegistry.clearModulesRequiredExternals('child-module-a');
       expect(externalRegistry.getRequiredExternalsRegistry())
         .toMatchInlineSnapshot(`
-        Object {
-          "child-module-b": Object {
-            "this-version": Object {
+        {
+          "child-module-b": {
+            "this-version": {
               "integrity": "123456hash",
               "name": "this-version",
               "semanticRange": "^1.2.0",

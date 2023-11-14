@@ -18,17 +18,17 @@ Immutable.Map {
 `;
 
 exports[`updateModuleRegistry should resolve with the new versions of the changed modules 1`] = `
-Object {
-  "another-module": Object {
-    "browser": Object {
+{
+  "another-module": {
+    "browser": {
       "integrity": "7764",
       "url": "https://example.com/cdn/another-module/2.5.6/another-module.browser.js",
     },
-    "legacyBrowser": Object {
+    "legacyBrowser": {
       "integrity": "34566",
       "url": "https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js",
     },
-    "node": Object {
+    "node": {
       "integrity": "4556",
       "url": "https://example.com/cdn/another-module/2.5.6/another-module.node.js",
     },
@@ -37,17 +37,17 @@ Object {
 `;
 
 exports[`updateModuleRegistry should resolve with the new versions of the changed modules if the current module registry is empty 1`] = `
-Object {
-  "another-module": Object {
-    "browser": Object {
+{
+  "another-module": {
+    "browser": {
       "integrity": "7764",
       "url": "https://example.com/cdn/another-module/2.5.6/another-module.browser.js",
     },
-    "legacyBrowser": Object {
+    "legacyBrowser": {
       "integrity": "34566",
       "url": "https://example.com/cdn/another-module/2.5.6/another-module.legacy.browser.js",
     },
-    "node": Object {
+    "node": {
       "integrity": "4556",
       "url": "https://example.com/cdn/another-module/2.5.6/another-module.node.js",
     },
@@ -107,8 +107,8 @@ Immutable.Map {
 `;
 
 exports[`updateModuleRegistry should update the modules in the registry: modules 1`] = `
-Object {
-  "another-module": Object {
+{
+  "another-module": {
     "$$typeof": Symbol(react.memo),
     "WrappedComponent": [Function],
     "compare": null,
