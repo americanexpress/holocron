@@ -209,6 +209,7 @@ const validateRequiredExternals = ({
   const moduleExternals = {};
 
   Object.keys(requiredExternals).forEach((externalName) => {
+    let failedExternalMessage;
     const providedExternal = providedExternals[externalName];
     const requiredExternal = requiredExternals[externalName];
     const {
@@ -219,7 +220,7 @@ const validateRequiredExternals = ({
 
     if (!providedExternal) {
       // eslint-disable-next-line max-len -- long message
-      messages.push(`External '${externalName}' is required by ${moduleName}, but is not provided by the root module`);
+      failedExternalMessage = `External '${externalName}' is required by ${moduleName}, but is not provided by the root module`;
       if (!enableUnlistedExternalFallbacks) {
         moduleCanBeSafelyLoaded = false;
       }
@@ -230,14 +231,14 @@ const validateRequiredExternals = ({
       })
     ) {
       // eslint-disable-next-line max-len -- long message
-      messages.push(`${externalName}@${semanticRange} is required by ${moduleName}, but the root module provides ${providedExternal.version}`);
+      failedExternalMessage = `${externalName}@${semanticRange} is required by ${moduleName}, but the root module provides ${providedExternal.version}`;
 
       if (fallbackBlockedByRootModule) {
         moduleCanBeSafelyLoaded = false;
       }
     }
 
-    if (fallbackExternalAvailable) {
+    if (fallbackExternalAvailable && failedExternalMessage) {
       moduleExternals[name] = {
         name,
         version,
@@ -246,11 +247,13 @@ const validateRequiredExternals = ({
         browserIntegrity,
       };
     }
+
+    if (failedExternalMessage) messages.push(failedExternalMessage);
   });
 
   if (messages.length > 0) {
     if (moduleCanBeSafelyLoaded || process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS === 'true') {
-      // eslint-disable-next-line no-console -- console necissary for error logging
+      // eslint-disable-next-line no-console -- console necessary for error logging
       console.warn(messages.join('\n'));
     } else {
       // eslint-disable-next-line unicorn/error-message -- not empty string
@@ -272,8 +275,8 @@ const fetchModuleConfig = async (baseUrl) => {
 
   try {
     return await fetchAsset(moduleConfigUrl, true);
-  } catch (err) {
-    console.warn('Module Config failed to fetch and parse, external fallbacks will be ignored.', err);
+  } catch {
+    // swallow error
   }
 
   return null;

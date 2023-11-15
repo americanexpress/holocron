@@ -839,26 +839,17 @@ describe('loadModule.node', () => {
         status: 200,
         statusText: 'OK',
         json: () => ({
-          requiredExternals: [
-            {
-              name: 'lodash',
+          requiredExternals: {
+            lodash: {
               version: '1.0.0',
+              semanticRange: '^1.0.0',
               browserIntegrity: '123-browser',
               nodeIntegrity: '123-node',
             },
-          ],
+          },
         }),
         ok: true,
-      })
-      );
-
-      mockFetch.mockImplementationOnce(() => Promise.resolve({
-        status: 200,
-        statusText: 'OK',
-        text: () => 'external fallback code',
-        ok: true,
-      })
-      );
+      }));
 
       mockFetch.mockImplementationOnce(
         makeFetchMock({ fetchText: moduleString })
@@ -874,7 +865,7 @@ describe('loadModule.node', () => {
                 module: '1234',
               },
             },
-            enableUnlistedExternalFallbacks: true,
+            enableUnlistedExternalFallbacks: false,
           },
         }),
       });
@@ -896,13 +887,7 @@ describe('loadModule.node', () => {
         module: { onModuleLoadConfig },
         moduleName: 'awesome',
       });
-      expect(externalRegistry.getRegisteredExternals()).toEqual({
-        lodash: {
-          '1.0.0': {
-            str: 'external fallback code',
-          },
-        },
-      });
+      expect(externalRegistry.getRegisteredExternals()).toEqual({});
     });
 
     it('throws an error when an external is required but the root module does not provide it', async () => {
@@ -1187,7 +1172,7 @@ describe('loadModule.node', () => {
       });
     });
 
-    it('loads fallback external when enabled and semantic version mismatch', async () => {
+    it('only loads fallback for external when enabled and has semantic version mismatch', async () => {
       const mockFetch = jest.fn();
       const onModuleLoadConfig = {
         environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }],
@@ -1206,6 +1191,13 @@ describe('loadModule.node', () => {
                 browserIntegrity: '1234-browser',
                 nodeIntegrity: '1234-node',
               },
+              mydash: {
+                semanticRange: '^1.0.0',
+                name: 'mydash',
+                version: '1.2.3',
+                browserIntegrity: '1234-browser',
+                nodeIntegrity: '1234-node',
+              },
             },
           }),
         })
@@ -1214,10 +1206,9 @@ describe('loadModule.node', () => {
       mockFetch.mockImplementationOnce(() => Promise.resolve({
         status: 200,
         statusText: 'OK',
-        text: () => 'external fallback code',
+        text: () => 'lodash external fallback code',
         ok: true,
-      })
-      );
+      }));
 
       // mock fetch for module code
       mockFetch.mockImplementationOnce(
@@ -1231,6 +1222,11 @@ describe('loadModule.node', () => {
             providedExternals: {
               lodash: {
                 version: '2.0.0',
+                fallbackEnabled: true,
+                module: '1234',
+              },
+              mydash: {
+                version: '1.2.3',
                 fallbackEnabled: true,
                 module: '1234',
               },
@@ -1264,10 +1260,65 @@ describe('loadModule.node', () => {
       expect(externalRegistry.getRegisteredExternals()).toEqual({
         lodash: {
           '1.2.3': {
-            str: 'external fallback code',
+            str: 'lodash external fallback code',
           },
         },
       });
+    });
+
+    it('does not load fallback when not required', async () => {
+      const mockFetch = jest.fn();
+      const onModuleLoadConfig = {
+        environmentVariables: [{ name: 'COOL_API_URL', validate: jest.fn() }],
+      };
+      const moduleString = { onModuleLoadConfig };
+
+      // mock fetching moduleConfig file
+      mockFetch.mockImplementationOnce(
+        makeFetchMock({
+          fetchText: JSON.stringify({
+            requiredExternals: {
+              mydash: {
+                semanticRange: '^1.0.0',
+                name: 'mydash',
+                version: '1.2.3',
+                browserIntegrity: '1234-browser',
+                nodeIntegrity: '1234-node',
+              },
+            },
+          }),
+        })
+      );
+      // mock fetch for module code
+      mockFetch.mockImplementationOnce(
+        makeFetchMock({ fetchText: moduleString })
+      );
+
+      const loadModule = load({
+        fetch: mockFetch,
+        getTenantRootModule: () => ({
+          appConfig: {
+            providedExternals: {
+              mydash: {
+                version: '1.2.3',
+                fallbackEnabled: true,
+                module: '1234',
+              },
+            },
+            enableUnlistedExternalFallbacks: false,
+          },
+        }),
+      });
+
+      await loadModule('awesome', {
+        node: {
+          integrity: '123',
+          url: 'https://example.com/cdn/awesome/1.0.0/awesome.node.js',
+        },
+      });
+
+      expect(externalRegistry.getRequiredExternalsRegistry()).toEqual({});
+      expect(externalRegistry.getRegisteredExternals()).toEqual({});
     });
 
     it('does not load child module when root module does not set getTenantRootModule', async () => {
