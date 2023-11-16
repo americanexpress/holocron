@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.2](https://github.com/americanexpress/holocron/compare/holocron@1.9.1...holocron@1.9.2) (2023-11-16)
+
+
+### Bug Fixes
+
+* **loadModule:** only register required fallbacks ([#165](https://github.com/americanexpress/holocron/issues/165)) ([5170769](https://github.com/americanexpress/holocron/commit/5170769bf3f3b3ae7e69e68ebb198c70cb2dd16c))
+
+
+
+
+
 ## [1.9.1](https://github.com/americanexpress/holocron/compare/holocron@1.9.0...holocron@1.9.1) (2023-11-08)
 
 
