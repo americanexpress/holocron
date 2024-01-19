@@ -53,7 +53,6 @@ export function composeModules(moduleConfigs) {
           return Promise.resolve();
         })
         .catch((error) => {
-          // eslint-disable-next-line max-len -- long message
           console.error(`Error while attempting to call 'load' or 'loadModuleData' inside composeModules for ${name}.`, error);
           if (error.abortComposeModules) throw error;
           return error;

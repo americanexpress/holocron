@@ -13,11 +13,11 @@
  */
 
 import React from 'react';
-// eslint erroneously believes enzyme is not a dev dependency
-// eslint-disable-next-line import/no-extraneous-dependencies -- only used in tests
-import { shallow } from 'enzyme';
 
 import ModuleRoute from '../src/ModuleRoute';
+// eslint erroneously believes '@testing-library/react' is not a dev dependency
+// eslint-disable-next-line import/no-extraneous-dependencies -- only used in tests
+const { render } = require('@testing-library/react');
 
 describe('ModuleRoute', () => {
   console.error = jest.fn();
@@ -25,12 +25,12 @@ describe('ModuleRoute', () => {
   beforeEach(() => console.error.mockClear());
 
   it('should log an error when render is attempted', () => {
-    shallow(<ModuleRoute />);
+    render(<ModuleRoute />);
     expect(console.error).toHaveBeenCalled();
   });
 
   it('should render null', () => {
-    expect(shallow(<ModuleRoute />)).toMatchSnapshot();
+    expect(render(<ModuleRoute />).asFragment()).toMatchInlineSnapshot('<DocumentFragment />');
   });
 
   it('should have a createModuleRouteFromElement method', () => {
