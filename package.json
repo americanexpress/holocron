@@ -10,8 +10,8 @@
     "url": "https://github.com/americanexpress/holocron.git"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.12.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "scripts": {
     "preinstall": "node scripts/check-versions.js",
