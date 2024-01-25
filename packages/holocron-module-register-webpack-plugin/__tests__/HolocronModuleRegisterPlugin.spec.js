@@ -111,8 +111,10 @@ describe('HolocronModuleRegisterPlugin', () => {
     expect(fileContents.startsWith('/******/ (() => { // webpackBootstrap')).toBe(true);
     expect(fileContents).toContain('const ModuleWithAsyncImport = () =>');
     expect(fileContents).toContain('Holocron.registerModule("some-module", SomeModule);');
-    // eslint-disable-next-line max-len -- long assignment
-    const asyncChunkContents = fs.readFileSync(path.join(buildPath, `async-import.${outputFileName}`)).toString();
+
+    const asyncChunkContents = fs.readFileSync(path.join(
+      buildPath, `async-import.${outputFileName}`)
+    ).toString();
     expect(asyncChunkContents).toContain('() => \'Hello, world\'');
     expect(asyncChunkContents).not.toContain('Holocron.registerModule("some-module"');
   });
