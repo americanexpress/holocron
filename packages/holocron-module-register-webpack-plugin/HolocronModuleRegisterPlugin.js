@@ -34,7 +34,7 @@ HolocronModuleRegisterPlugin.prototype.apply = function apply(compiler) {
             // descend into the source and inject the registration within the iife
             // The last two symbols are always the closing of the iife, then a `;`
             // Therefore, insert the registration immediately before the iife closes
-            // eslint-disable-next-line no-underscore-dangle, max-len -- webpack
+            // eslint-disable-next-line no-underscore-dangle -- webpack
             source._source._children.splice(-2, 0, `;Holocron.registerModule("${moduleName}", ${holocronModuleName});`);
           });
       });

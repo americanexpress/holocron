@@ -134,7 +134,6 @@ export function loadModule(moduleName) {
     }
 
     if (!moduleData) {
-      // eslint-disable-next-line max-len -- long message
       const moduleLoadError = new Error(`Could not load Module ${moduleName} because it does not exist in the Module Version Map`);
       dispatch(moduleLoadFailed(moduleName, moduleLoadError));
       return Promise.reject(moduleLoadError);
@@ -142,7 +141,7 @@ export function loadModule(moduleName) {
 
     if (modules) {
       const module = getModule(moduleName, modules);
-      // eslint-disable-next-line max-len -- ternary operator
+
       loadPromise = module ? Promise.resolve(module) : Promise.reject(new Error(`Module ${moduleName} was not preloaded on server`));
     } else {
       // eslint-disable-next-line import/extensions -- include extension

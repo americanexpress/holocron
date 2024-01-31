@@ -15,7 +15,6 @@ Immutable.Map {
     "$$typeof": Symbol(react.memo),
     "WrappedComponent": [Function],
     "compare": null,
-    "displayName": "Connect(HolocronModule(GoodModule))",
     "type": [Function],
   },
 }
@@ -26,7 +25,6 @@ exports[`moduleRegistry should register modules 2`] = `
   "$$typeof": Symbol(react.memo),
   "WrappedComponent": [Function],
   "compare": null,
-  "displayName": "Connect(HolocronModule(GoodModule))",
   "type": [Function],
 }
 `;

@@ -43,7 +43,7 @@
   "devDependencies": {
     "babel-loader": "^8.0.5",
     "holocron": "^1.9.2",
-    "react": "^16.13.1",
+    "react": "^18.2.0",
     "rimraf": "^2.5.4"
   },
   "repository": {
