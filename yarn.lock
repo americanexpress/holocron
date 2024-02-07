@@ -24,10 +24,10 @@
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-"@americanexpress/vitruvius@^2.0.0":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@americanexpress/vitruvius/-/vitruvius-2.0.2.tgz#7325ba00e3c57b0993973787ae50b0f7c72c3c38"
-  integrity sha512-OkFP1gPusPtI7W4swdmyuRX+f4APkN40YAddriNIguejicREZeGOaQkDsnFijSgBRLvXCQFsn5gz0ui4NIVJ3w==
+"@americanexpress/vitruvius@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@americanexpress/vitruvius/-/vitruvius-3.0.1.tgz#3a9fb4b59894ba993c01d3fcb293efbe8d964545"
+  integrity sha512-2jYK9UcigUDqoBbtB6oKYaXyaY0/xTke0B8QoPgBU7MoySXcf6sz85zYAGyQFu0qdEc6qiFiWn0Xg7gCPXcQyA==
 
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
