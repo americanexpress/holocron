@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.0](https://github.com/americanexpress/holocron/compare/holocron@1.9.2...holocron@2.0.0-alpha.0) (2024-02-15)
+
+
+### Features
+
+* **redux:** update redux and redux adjacent libraries ([#169](https://github.com/americanexpress/holocron/issues/169)) ([deb459e](https://github.com/americanexpress/holocron/commit/deb459edbb143a67242e8bb8389437b3d823d3ba))
+
+
+### BREAKING CHANGES
+
+* **redux:** major version updates to redux@5, react-redux@9, redux-thunk@3
+
+
+
+
+
 ## [1.9.2](https://github.com/americanexpress/holocron/compare/holocron@1.9.1...holocron@1.9.2) (2023-11-16)
 
 
