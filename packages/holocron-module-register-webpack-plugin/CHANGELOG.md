@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.0](https://github.com/americanexpress/holocron/compare/holocron-module-register-webpack-plugin@2.1.1...holocron-module-register-webpack-plugin@3.0.0-alpha.0) (2024-02-15)
+
+**Note:** Version bump only for package holocron-module-register-webpack-plugin
+
+
+
+
+
 ## [2.1.1](https://github.com/americanexpress/holocron/compare/holocron-module-register-webpack-plugin@2.1.0...holocron-module-register-webpack-plugin@2.1.1) (2023-11-08)
 
 **Note:** Version bump only for package holocron-module-register-webpack-plugin
