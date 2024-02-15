@@ -21,6 +21,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.PA_TOKEN }}
+          ref: next
       - name: Node Install
         uses: actions/setup-node@v1
         with:
