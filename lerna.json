@@ -8,6 +8,7 @@
       "conventionalCommits": true,
       "allowBranch": [
         "main",
+        "next",
         "chore/release-*"
       ],
       "message": "chore(release): %v"
