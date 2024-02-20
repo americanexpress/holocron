@@ -30,14 +30,12 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@americanexpress/vitruvius": "^2.0.0",
+    "@americanexpress/vitruvius": "^3.0.1",
     "hoist-non-react-statics": "^3.3.0",
     "immutable": "^4.0.0-rc.12",
     "prop-types": "^15.5.10",
-    "react-redux": "^7.1.1",
-    "redux": "^4.0.4",
     "redux-immutable": "^4.0.0",
-    "redux-thunk": "^2.1.0",
+    "redux-thunk": "^3.1.0",
     "require-from-string": "^1.2.1",
     "reselect": "^4.0.0",
     "semver": "^7.3.8",
@@ -45,6 +43,8 @@
     "ssri": "^7.0.1"
   },
   "devDependencies": {
+    "redux": "^4.0.4",
+    "react-redux": "^7.1.1",
     "@babel/polyfill": "^7.2.5",
     "nodemon": "^1.10.2",
     "react": "^16.11.0",
@@ -62,6 +62,8 @@
   },
   "peerDependencies": {
     "react": ">=16.11.0",
-    "react-dom": ">=16.11.0"
+    "react-dom": ">=16.11.0",
+    "redux": ">=5.0.1",
+    "react-redux": ">=9.1.0"
   }
 }

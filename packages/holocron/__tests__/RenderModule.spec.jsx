@@ -14,15 +14,18 @@
 
 import React from 'react';
 import { ReactReduxContext } from 'react-redux';
+
+// eslint erroneously believes '@testing-library/react' is not a dev dependency
 // eslint-disable-next-line import/no-extraneous-dependencies -- only used in tests
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { fromJS } from 'immutable';
 import RenderModule from '../src/RenderModule';
 
 // eslint-disable-next-line react/prop-types -- disable for tests
 const MyTestModule = ({ children, ...otherProps }) => (
   <div>
-    {JSON.stringify(otherProps, undefined, 2)}
+    <h1>My test module</h1>
+    <p>Other Props: {JSON.stringify(otherProps)}</p>
     {children}
   </div>
 );
@@ -37,7 +40,8 @@ const store = {
         'my-test-module': true,
       },
     },
-  })),
+  })
+  ),
 };
 
 describe('RenderModule', () => {
@@ -48,13 +52,23 @@ describe('RenderModule', () => {
   it('should warn and render null when it cannot find a module in registry', () => {
     expect.assertions(2);
 
-    const tree = mount(
+    const { asFragment } = render(
       <ReactReduxContext.Provider value={{ store }}>
-        <RenderModule moduleName="not-in-module-map" />
+        <div id="module-wrapper">
+          <RenderModule moduleName="not-in-module-map" />
+        </div>
       </ReactReduxContext.Provider>
     );
-    expect(consoleWarn.mock.calls).toMatchSnapshot();
-    expect(tree).toMatchSnapshot();
+    expect(consoleWarn.mock.calls[0][0]).toMatchInlineSnapshot(
+      '"Module not-in-module-map was not found in the holocron module registry"'
+    );
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          id="module-wrapper"
+        />
+      </DocumentFragment>
+    `);
   });
 
   it('should warn and render null when module is not loaded', () => {
@@ -62,49 +76,98 @@ describe('RenderModule', () => {
       holocron: {
         loaded: {},
       },
-    }));
+    })
+    );
     expect.assertions(2);
 
-    const tree = mount(
+    const { asFragment } = render(
       <ReactReduxContext.Provider value={{ store }}>
-        <RenderModule moduleName="not-in-module-map" />
+        <div id="module-wrapper">
+          <RenderModule moduleName="not-in-module-map" />
+        </div>
       </ReactReduxContext.Provider>
     );
-    expect(consoleWarn.mock.calls).toMatchSnapshot();
-    expect(tree).toMatchSnapshot();
+    expect(consoleWarn.mock.calls[0][0]).toMatchInlineSnapshot(
+      '"Module not-in-module-map was not found in the holocron module registry"'
+    );
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          id="module-wrapper"
+        />
+      </DocumentFragment>
+    `);
   });
 
   it('should render a module', () => {
     expect.assertions(1);
 
-    const tree = mount(
+    const { asFragment } = render(
       <ReactReduxContext.Provider value={{ store }}>
         <RenderModule moduleName="my-test-module" />
       </ReactReduxContext.Provider>
     );
-    expect(tree).toMatchSnapshot();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          <h1>
+            My test module
+          </h1>
+          <p>
+            Other Props: {}
+          </p>
+        </div>
+      </DocumentFragment>
+    `);
   });
 
   it('should pass props to the module', () => {
     expect.assertions(1);
 
     const props = { hello: 'world', foo: 'bar' };
-    const tree = mount(
+    const { asFragment } = render(
       <ReactReduxContext.Provider value={{ store }}>
         <RenderModule moduleName="my-test-module" props={props} />
       </ReactReduxContext.Provider>
     );
-    expect(tree).toMatchSnapshot();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          <h1>
+            My test module
+          </h1>
+          <p>
+            Other Props: {"hello":"world","foo":"bar"}
+          </p>
+        </div>
+      </DocumentFragment>
+    `);
   });
 
   it('should pass children to the module', () => {
     expect.assertions(1);
 
-    const tree = mount(
+    const { asFragment } = render(
       <ReactReduxContext.Provider value={{ store }}>
-        <RenderModule moduleName="my-test-module"><h1>Hello, world</h1></RenderModule>
+        <RenderModule moduleName="my-test-module">
+          <h1>Hello, world</h1>
+        </RenderModule>
       </ReactReduxContext.Provider>
     );
-    expect(tree).toMatchSnapshot();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          <h1>
+            My test module
+          </h1>
+          <p>
+            Other Props: {}
+          </p>
+          <h1>
+            Hello, world
+          </h1>
+        </div>
+      </DocumentFragment>
+    `);
   });
 });
