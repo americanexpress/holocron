@@ -431,10 +431,6 @@ describe('holocronModule', () => {
     expect(screen.getByRole('status')).toHaveTextContent('error');
   });
 
-  it('should not try to setStatus if it is not mounted', () => {
-    // TODO: actually test this when we update jest and start using enzyme and we can unmount
-  });
-
   it('should gracefully handle load not returning a Promise', () => {
     const load = jest.fn(() => () => 'not a promise');
     const Module = holocronModule({
