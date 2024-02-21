@@ -1,6 +1,6 @@
 {
   "name": "holocron",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "main": "index.js",
   "module": "src/index.js",
   "keywords": [
@@ -43,12 +43,12 @@
     "ssri": "^7.0.1"
   },
   "devDependencies": {
-    "redux": "^4.0.4",
-    "react-redux": "^7.1.1",
     "@babel/polyfill": "^7.2.5",
     "nodemon": "^1.10.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
     "rimraf": "^2.5.4"
   },
   "repository": {
@@ -63,7 +63,7 @@
   "peerDependencies": {
     "react": ">=16.11.0",
     "react-dom": ">=16.11.0",
-    "redux": ">=4.0.4",
-    "react-redux": ">=7.1.1"
+    "react-redux": ">=7.1.1",
+    "redux": ">=4.0.4"
   }
 }
