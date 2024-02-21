@@ -742,7 +742,7 @@ describe('loadModule.node', () => {
         moduleUrl
       );
     });
-    // eslint-disable-next-line max-len -- long test name
+
     it(`does not add \`${moduleName}\` to block list if \`shouldBlockModuleReload\` is 'true' and in development`, async () => {
       expect.assertions(4);
 

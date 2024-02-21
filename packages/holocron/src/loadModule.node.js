@@ -71,7 +71,7 @@ const fetchAsset = async (assetUrl, parseAsJson) => {
       if (tries > maxRetries) {
         throw err;
       }
-      // eslint-disable-next-line max-len, no-console -- long message
+      // eslint-disable-next-line no-console -- long message
       console.warn(`Encountered error fetching module at ${assetUrl}: ${err.message}\nRetrying (${tries})...`);
 
       return fetchAssetAttempt(tries + 1);
@@ -103,7 +103,7 @@ const fetchNodeModule = async (url, integrity, context) => {
         moduleString,
         { algorithms: ['sha256', 'sha384'] }
       ).toString();
-      // eslint-disable-next-line max-len -- long message
+
       assert(integrity === actualSRI, `SRI for module at ${url} must match SRI in module map.\n Expected ${integrity}, received ${actualSRI}`);
     }
 
@@ -164,13 +164,11 @@ const validateLegacyRequiredExternals = ({
       const providedExternal = providedExternals && providedExternals[externalName];
 
       if (!providedExternal) {
-        // eslint-disable-next-line max-len -- long message
         messages.push(`External '${externalName}' is required by ${moduleName}, but is not provided by the root module`);
       } else if (!validateExternal({
         providedVersion: providedExternal.version,
         requestedRange: requestedExternalVersion,
       })) {
-        // eslint-disable-next-line max-len -- long message
         const failedExternalMessage = `${externalName}@${requestedExternalVersion} is required by ${moduleName}, but the root module provides ${providedExternal.version}`;
         if (process.env.ONE_DANGEROUSLY_ACCEPT_BREAKING_EXTERNALS) {
           // eslint-disable-next-line no-console -- console necissary for warning
@@ -219,7 +217,6 @@ const validateRequiredExternals = ({
     const fallbackBlockedByRootModule = !!providedExternal && !providedExternal.fallbackEnabled;
 
     if (!providedExternal) {
-      // eslint-disable-next-line max-len -- long message
       failedExternalMessage = `External '${externalName}' is required by ${moduleName}, but is not provided by the root module`;
       if (!enableUnlistedExternalFallbacks) {
         moduleCanBeSafelyLoaded = false;
@@ -230,7 +227,6 @@ const validateRequiredExternals = ({
         requestedRange: semanticRange,
       })
     ) {
-      // eslint-disable-next-line max-len -- long message
       failedExternalMessage = `${externalName}@${semanticRange} is required by ${moduleName}, but the root module provides ${providedExternal.version}`;
 
       if (fallbackBlockedByRootModule) {

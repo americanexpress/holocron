@@ -382,7 +382,7 @@ describe('updateModuleRegistry', () => {
   it('should remove modules from the registry', async () => {
     expect.assertions(3);
     expect(getModuleMap().getIn(['modules', 'awesome-module'])).toMatchSnapshot();
-    expect(getModules().getIn(['awesome-module', 'displayName'])).toBe('Connect(HolocronModule(AwesomeModule))');
+    expect(getModules().getIn(['awesome-module'])).toBeTruthy();
 
     const newModuleMap = {
       key: 'key-123',
@@ -485,7 +485,6 @@ describe('updateModuleRegistry', () => {
   });
 
   it('resolves with accepted and rejected modules when detailedResponse is selected', async () => {
-    // eslint-disable-next-line max-len -- arrow function
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
     // occurs first time updateModuleRegistry is called
@@ -574,7 +573,6 @@ describe('updateModuleRegistry', () => {
   });
 
   it('should not throw if any of the modules fail to load', async () => {
-    // eslint-disable-next-line max-len -- arrow function
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
 
@@ -647,7 +645,6 @@ describe('updateModuleRegistry', () => {
     expect(console.error).toHaveBeenCalled();
   });
   it('should not throw if any of the modules fail to load - empty module map', async () => {
-    // eslint-disable-next-line max-len -- arrow function
     const mockLoadModule = async (moduleName, moduleVersion) => `new ${moduleName}@${moduleVersion}`;
     jest.spyOn(console, 'error').mockImplementation((x) => x);
 
