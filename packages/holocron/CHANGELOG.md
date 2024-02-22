@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.1](https://github.com/americanexpress/holocron/compare/holocron@1.10.0...holocron@1.10.1) (2024-02-22)
+
+
+### Bug Fixes
+
+* **holocron:** redux-thunk peer dep breaking ([#174](https://github.com/americanexpress/holocron/issues/174)) ([ec22bf2](https://github.com/americanexpress/holocron/commit/ec22bf2d61313dd587605cf6fd93155111ca1f84))
+
+
+
+
+
 # [1.10.0](https://github.com/americanexpress/holocron/compare/holocron@1.9.2...holocron@1.10.0) (2024-02-21)
 
 
