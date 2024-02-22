@@ -1,6 +1,6 @@
 {
   "name": "holocron",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "main": "index.js",
   "module": "src/index.js",
   "keywords": [
@@ -34,10 +34,10 @@
     "hoist-non-react-statics": "^3.3.0",
     "immutable": "^4.0.0-rc.12",
     "prop-types": "^15.5.10",
+    "react-redux": "^7.1.1",
     "redux": "^4.0.4",
     "redux-immutable": "^4.0.0",
     "redux-thunk": "^2.1.0",
-    "react-redux": "^7.1.1",
     "require-from-string": "^1.2.1",
     "reselect": "^4.0.0",
     "semver": "^7.3.8",
