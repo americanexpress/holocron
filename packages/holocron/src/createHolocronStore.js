@@ -14,7 +14,7 @@
 
 import { createStore, compose } from 'redux';
 import immutableCombineReducers from '@americanexpress/vitruvius/immutable';
-import { withExtraArgument } from 'redux-thunk';
+import thunk from 'redux-thunk';
 import { Map as iMap, Set as iSet, isImmutable } from 'immutable';
 
 import holocronReducer from './ducks/load';
@@ -116,7 +116,7 @@ const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) 
     getState: store.getState,
     dispatch: (action) => dispatch(action),
   };
-  dispatch = withExtraArgument({
+  dispatch = thunk.withExtraArgument({
     ...extraThunkArguments,
     rebuildReducer,
     modules: store.modules,
