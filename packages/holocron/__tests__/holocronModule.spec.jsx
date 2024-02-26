@@ -15,7 +15,7 @@
 /* eslint-disable react/prop-types, import/no-extraneous-dependencies -- disable for tests */
 import React from 'react';
 import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { thunk, withExtraArgument } from 'redux-thunk';
 import { combineReducers as immutableCombineReducers } from 'redux-immutable';
 import { Provider, connect } from 'react-redux';
 import { fromJS } from 'immutable';
@@ -399,7 +399,7 @@ describe('holocronModule', () => {
     })(TestComponent);
     const mockStore = createStore(
       (state) => state,
-      applyMiddleware(thunk.withExtraArgument({ fetchClient: jest.fn() }))
+      applyMiddleware(withExtraArgument({ fetchClient: jest.fn() }))
     );
 
     render(
