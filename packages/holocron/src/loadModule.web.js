@@ -53,20 +53,30 @@ function createAndInjectScriptTag({ url, integrity, onLoad = noop }) {
   return listener;
 }
 
-function loadModuleFallbackExternals(moduleName, fallbacks) {
+const loadingFallbacks = new Map();
+
+async function loadModuleFallbackExternals(moduleName, fallbacks) {
   const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
 
-  return Promise.all(fallbacks.map(({ name, browserIntegrity }) => createAndInjectScriptTag({
-    url: `${baseUrl}${name}.browser.js`,
-    integrity: browserIntegrity,
-  })));
+  await Promise.all(fallbacks.map(async ({ name, browserIntegrity }) => {
+    if (loadingFallbacks.has(browserIntegrity)) {
+      // Note: resolves the existing promise rather than creating a new one
+      //       to avoid loading duplicate fallbacks.
+      await loadingFallbacks.get(browserIntegrity);
+    } else {
+      const fallbackPromise = createAndInjectScriptTag({
+        url: `${baseUrl}${name}.browser.js`,
+        integrity: browserIntegrity,
+      });
+
+      loadingFallbacks.set(browserIntegrity, fallbackPromise);
+
+      await fallbackPromise;
+
+      loadingFallbacks.delete(browserIntegrity);
+    }
+  }));
 }
-
-const sleep = async (ms = 20) => new Promise((resolve) => {
-  setTimeout(resolve, ms);
-});
-
-let moduleWithFallbacksIsLoading = false;
 
 async function loadModule(moduleName, moduleData) {
   if (typeof moduleName !== 'string') {
@@ -79,22 +89,8 @@ async function loadModule(moduleName, moduleData) {
 
   const fallbacks = getUnregisteredRequiredExternals(moduleName);
 
-  /*
-  This delays the load of the module by 20ms to allow the previous module
-  to finish loading externals fallbacks.
-  */
-  if (fallbacks.length > 0 && moduleWithFallbacksIsLoading) {
-    await sleep();
-
-    return loadModule(moduleName, moduleData);
-  }
-
   if (fallbacks.length > 0) {
-    moduleWithFallbacksIsLoading = true;
-
     await loadModuleFallbackExternals(moduleName, fallbacks);
-
-    moduleWithFallbacksIsLoading = false;
   }
 
   // then load the module script.
