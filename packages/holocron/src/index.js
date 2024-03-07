@@ -42,6 +42,11 @@ import {
   getRequiredExternalsRegistry,
   setRequiredExternalsRegistry,
 } from './externalRegistry';
+import {
+  ReactStreamingContext,
+  ModuleContext,
+  useAsyncModuleData,
+} from './reactStreaming';
 
 // Public API
 export {
@@ -69,4 +74,8 @@ export {
   setRequiredExternalsRegistry,
   clearModulesUsingExternals,
   getModulesUsingExternals,
+  // Streaming
+  ReactStreamingContext,
+  ModuleContext,
+  useAsyncModuleData,
 };
