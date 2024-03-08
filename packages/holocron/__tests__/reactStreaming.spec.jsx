@@ -17,7 +17,8 @@ describe('reactStreaming', () => {
     const Providers = ({ moduleName, promise, key }) => ({ children }) => (
       // eslint-disable-next-line react/jsx-no-constructed-context-values -- test component
       <ReactStreamingContext.Provider value={{ [moduleName]: { [key]: promise } }}>
-        <ModuleContext.Provider value={moduleName}>
+        {/* eslint-disable-next-line react/jsx-no-constructed-context-values -- test component */}
+        <ModuleContext.Provider value={{ moduleName }}>
           {children}
         </ModuleContext.Provider>
       </ReactStreamingContext.Provider>

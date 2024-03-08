@@ -5,7 +5,7 @@ const ReactStreamingContext = createContext({});
 const ModuleContext = createContext();
 
 const useAsyncModuleData = (key) => {
-  const moduleName = useContext(ModuleContext);
+  const { moduleName } = useContext(ModuleContext);
   const streamContext = useContext(ReactStreamingContext);
   const streamedPromise = streamContext[moduleName]?.[key];
   if (
