@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.2](https://github.com/americanexpress/holocron/compare/holocron@1.10.1...holocron@1.10.2) (2024-02-22)
+
+
+### Bug Fixes
+
+* **holocron:** revert redux react-redux peer deps ([#175](https://github.com/americanexpress/holocron/issues/175)) ([fca187c](https://github.com/americanexpress/holocron/commit/fca187cf7e0306699dc699b67357c751f6a12a5b))
+
+
+
+
+
+## [1.10.1](https://github.com/americanexpress/holocron/compare/holocron@1.10.0...holocron@1.10.1) (2024-02-22)
+
+
+### Bug Fixes
+
+* **holocron:** redux-thunk peer dep breaking ([#174](https://github.com/americanexpress/holocron/issues/174)) ([ec22bf2](https://github.com/americanexpress/holocron/commit/ec22bf2d61313dd587605cf6fd93155111ca1f84))
+
+
+
+
+
+# [1.10.0](https://github.com/americanexpress/holocron/compare/holocron@1.9.2...holocron@1.10.0) (2024-02-21)
+
+
+### Features
+
+* prepare for react 18 and redux 5 ([#172](https://github.com/americanexpress/holocron/issues/172)) ([19d0755](https://github.com/americanexpress/holocron/commit/19d075578e129e2c1affccc9c3da18e815c3f5fa))
+
+
+
+
+
 ## [1.9.2](https://github.com/americanexpress/holocron/compare/holocron@1.9.1...holocron@1.9.2) (2023-11-16)
 
 

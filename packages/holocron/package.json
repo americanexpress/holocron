@@ -1,6 +1,6 @@
 {
   "name": "holocron",
-  "version": "1.9.2",
+  "version": "1.10.2",
   "main": "index.js",
   "module": "src/index.js",
   "keywords": [
@@ -30,7 +30,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@americanexpress/vitruvius": "^2.0.0",
+    "@americanexpress/vitruvius": "^3.0.1",
     "hoist-non-react-statics": "^3.3.0",
     "immutable": "^4.0.0-rc.12",
     "prop-types": "^15.5.10",

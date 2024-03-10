@@ -19,9 +19,8 @@ import thunk from 'redux-thunk';
 import { combineReducers as immutableCombineReducers } from 'redux-immutable';
 import { Provider, connect } from 'react-redux';
 import { fromJS } from 'immutable';
-import renderer from 'react-test-renderer';
 import _ from 'lodash';
-import { mount } from 'enzyme';
+import { render, screen, act } from '@testing-library/react';
 
 import holocronModule, {
   executeLoad,
@@ -55,9 +54,9 @@ describe('holocronModule', () => {
     fakeLoadModuleData = jest.fn(async () => undefined);
     fakeFetchClient = jest.fn();
     fakeGetState = jest.fn();
-    fakeDispatch = jest.fn(
-      (func) => func(fakeDispatch, fakeGetState, { fetchClient: fakeFetchClient }
-      )
+    fakeDispatch = jest.fn((func) => func(fakeDispatch, fakeGetState, {
+      fetchClient: fakeFetchClient,
+    })
     );
     fakeSetState = jest.fn();
     fakeProps = {
@@ -74,7 +73,10 @@ describe('holocronModule', () => {
     global.BROWSER = false;
   });
   const TestComponent = ({ moduleLoadStatus }) => (
-    <div>Mock Module - {moduleLoadStatus}</div>
+    <div>
+      <h1>Mock Module</h1>
+      <p role="status">{moduleLoadStatus}</p>
+    </div>
   );
 
   describe('executeLoad', () => {
@@ -179,9 +181,11 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { key: 'value' } } })
     );
-    const tree = renderer.create(<MyModuleComponent store={mockStore} />);
+    const renderedModule = render(
+      <MyModuleComponent store={mockStore} />
+    ).asFragment();
 
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(renderedModule).toMatchSnapshot();
   });
 
   it('should provide the module state as a plain JS prop if a reducer is provided', () => {
@@ -194,12 +198,11 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { key: 'value' } } })
     );
-    const component = renderer.create(<Module store={mockStore} />);
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
+    const component = render(<Module store={mockStore} />).asFragment();
+    expect(component).toMatchSnapshot();
   });
 
-  it('should provide state configured by mapStateToProps when a reducer is proveded', () => {
+  it('should provide state configured by mapStateToProps when a reducer is provided', () => {
     const reducer = (state) => state;
     const Module = holocronModule({
       name: 'mock-module',
@@ -210,12 +213,11 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { key: 'value' } } })
     );
-    const component = renderer.create(<Module store={mockStore} />);
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
+    const component = render(<Module store={mockStore} />).asFragment();
+    expect(component).toMatchSnapshot();
   });
 
-  it('should provide state configured by mapStateToProps when a reducer is NOT proveded', () => {
+  it('should provide state configured by mapStateToProps when a reducer is NOT provided', () => {
     const Module = holocronModule({
       name: 'mock-module',
       mapStateToProps: () => ({ mapStateToPropsProp: 'mapStateToPropsProp' }),
@@ -224,9 +226,8 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { key: 'value' } } })
     );
-    const component = renderer.create(<Module store={mockStore} />);
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
+    const component = render(<Module store={mockStore} />).asFragment();
+    expect(component).toMatchSnapshot();
   });
 
   it('should not rerender if module state has not changed', () => {
@@ -254,7 +255,7 @@ describe('holocronModule', () => {
         modules: { 'mock-module': { key: 'value' } },
       })
     );
-    renderer.create(<Module store={mockStore} />);
+    render(<Module store={mockStore} />);
     mockStore.dispatch({
       type: 'MOCK_ACTION_TYPE',
       newState: { someParam: 'new' },
@@ -270,13 +271,12 @@ describe('holocronModule', () => {
     })(() => <div>Mock Module</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
     const props = { a: 'b', x: { y: 'z' } };
-    mount(
+    render(
       <Provider store={mockStore}>
         <Module {...props} />
       </Provider>
     );
     // couldn't use toHaveBeenCalledWith because mapDispatchToProps is used
-
     const calledProps = load.mock.calls[0][0];
     const calledPropsWithoutFunctions = _.pickBy(
       calledProps,
@@ -300,15 +300,17 @@ describe('holocronModule', () => {
       { someParam: 'initial' },
       applyMiddleware(thunk)
     );
-    mount(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
     );
     expect(load).toHaveBeenCalledTimes(1);
-    mockStore.dispatch({
-      type: 'MOCK_ACTION_TYPE',
-      newState: { someParam: 'new' },
+    act(() => {
+      mockStore.dispatch({
+        type: 'MOCK_ACTION_TYPE',
+        newState: { someParam: 'new' },
+      });
     });
     // couldn't use toHaveBeenCalledWith because mapDispatchToProps is used
     const calledProps = load.mock.calls[1][0];
@@ -333,7 +335,7 @@ describe('holocronModule', () => {
       (state, action) => (action.type === 'MOCK_ACTION_TYPE' ? action.newState : state),
       { someParam: 'initial' }
     );
-    mount(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -359,7 +361,7 @@ describe('holocronModule', () => {
       (state, action) => (action.type === 'MOCK_ACTION_TYPE' ? action.newState : state),
       { someParam: 'initial' }
     );
-    mount(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -379,15 +381,13 @@ describe('holocronModule', () => {
     })(TestComponent);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
 
-    const wrapper = mount(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
     );
 
-    expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual(
-      'loading'
-    );
+    expect(screen.getByRole('status')).toHaveTextContent('loading');
   });
 
   it('should pass the moduleLoadStatus prop as loaded when loaded', async () => {
@@ -402,7 +402,7 @@ describe('holocronModule', () => {
       applyMiddleware(thunk.withExtraArgument({ fetchClient: jest.fn() }))
     );
 
-    const wrapper = mount(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
@@ -410,11 +410,7 @@ describe('holocronModule', () => {
 
     // Wait one cycle of the event loop since we can't retrieve a promise from initiateLoad
     await sleep(1);
-
-    wrapper.update();
-    expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual(
-      'loaded'
-    );
+    expect(screen.getByRole('status')).toHaveTextContent('loaded');
   });
 
   it('should pass the moduleLoadStatus prop as error when it failed to load', async () => {
@@ -426,21 +422,13 @@ describe('holocronModule', () => {
     })(TestComponent);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
 
-    const wrapper = mount(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
     );
     await sleep(1);
-    wrapper.update();
-    expect(wrapper.find(TestComponent).prop('moduleLoadStatus')).toEqual(
-      'error'
-    );
-    wrapper.unmount();
-  });
-
-  it('should not try to setStatus if it is not mounted', () => {
-    // TODO: actually test this when we update jest and start using enzyme and we can unmount
+    expect(screen.getByRole('status')).toHaveTextContent('error');
   });
 
   it('should gracefully handle load not returning a Promise', () => {
@@ -450,12 +438,20 @@ describe('holocronModule', () => {
       load,
     })(({ moduleLoadStatus }) => <div>Mock Module - {moduleLoadStatus}</div>);
     const mockStore = createStore((state) => state, applyMiddleware(thunk));
-    renderer.create(
+    const renderedModule = render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
-    );
-    // Don't need to expect anything, it passes if no errors are thrown
+    ).asFragment();
+
+    // It passes if no errors are thrown
+    expect(renderedModule).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          Mock Module - loading
+        </div>
+      </DocumentFragment>
+    `);
   });
 
   it('should have a helpful display name', () => {
@@ -557,13 +553,12 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { x: 3 } } })
     );
-    const component = renderer.create(
+    const component = render(
       <Provider store={mockStore}>
         <Module y={4} />
       </Provider>
-    );
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
+    ).asFragment();
+    expect(component).toMatchSnapshot();
   });
 
   it('should pass the moduleState to the module by default, if a reducer and name are specified', () => {
@@ -580,18 +575,17 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { mockKey: 'mockValue' } } })
     );
-    const component = renderer.create(
+    const component = render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
-    );
-    const tree = component.toJSON();
-    expect(tree).toMatchInlineSnapshot(`
-      <div>
-        {"mockKey":"mockValue"}
-        |
-        object
-      </div>
+    ).asFragment();
+    expect(component).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          {"mockKey":"mockValue"}|object
+        </div>
+      </DocumentFragment>
     `);
   });
 
@@ -612,17 +606,17 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { mockKey: 'mockValue' } } })
     );
-    const component = renderer.create(
+    const component = render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
-    );
-    const tree = component.toJSON();
-    expect(tree).toMatchInlineSnapshot(`
-      <div>
-        |
-        undefined
-      </div>
+    ).asFragment();
+    expect(component).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          |undefined
+        </div>
+      </DocumentFragment>
     `);
   });
 
@@ -643,18 +637,17 @@ describe('holocronModule', () => {
       (state) => state,
       fromJS({ modules: { 'mock-module': { mockKey: 'mockValue' } } })
     );
-    const component = renderer.create(
+    const component = render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
-    );
-    const tree = component.toJSON();
-    expect(tree).toMatchInlineSnapshot(`
-      <div>
-        {"mockKey":"mockValue"}
-        |
-        object
-      </div>
+    ).asFragment();
+    expect(component).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div>
+          {"mockKey":"mockValue"}|object
+        </div>
+      </DocumentFragment>
     `);
   });
 
@@ -665,21 +658,22 @@ describe('holocronModule', () => {
       reducer,
     })(({ moduleState }) => <div>Mock Module {moduleState.x}</div>);
     const mockStore = createStore((state) => state, fromJS({ modules: {} }));
-    const render = () => renderer.create(
+    const renderComponent = () => render(
       <Provider store={mockStore}>
         <Module />
       </Provider>
-    );
-    expect(render).not.toThrow();
-    expect(render().toJSON()).toMatchSnapshot();
+    ).asFragment();
+    expect(renderComponent).not.toThrow();
+    expect(renderComponent()).toMatchSnapshot();
   });
+
   it('should warn if a reducer is set but no name', () => {
     const reducer = () => {};
     const Module = holocronModule({
       reducer,
     })(() => <div>Mock Module</div>);
     const mockStore = createStore((state) => state, fromJS({}));
-    renderer.create(
+    render(
       <Provider store={mockStore}>
         <Module />
       </Provider>

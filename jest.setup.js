@@ -12,5 +12,11 @@
  * under the License.
  */
 
+const { TextEncoder, TextDecoder } = require('util');
+
 require('core-js/stable');
 require('regenerator-runtime/runtime');
+
+// Issue with Jest this could be moved to amex-jest-preset-react
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;

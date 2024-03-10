@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/americanexpress/holocron/compare/holocron-module-register-webpack-plugin@2.1.1...holocron-module-register-webpack-plugin@2.2.0) (2024-02-21)
+
+
+### Features
+
+* prepare for react 18 and redux 5 ([#172](https://github.com/americanexpress/holocron/issues/172)) ([19d0755](https://github.com/americanexpress/holocron/commit/19d075578e129e2c1affccc9c3da18e815c3f5fa))
+
+
+
+
+
 ## [2.1.1](https://github.com/americanexpress/holocron/compare/holocron-module-register-webpack-plugin@2.1.0...holocron-module-register-webpack-plugin@2.1.1) (2023-11-08)
 
 **Note:** Version bump only for package holocron-module-register-webpack-plugin
