@@ -565,8 +565,8 @@ describe('loadModule.web', () => {
               integrity: '321',
             },
           })
-        )
-      ])
+        ),
+      ]);
 
       expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.browser.js');
       expect(mockElementSecond.src).toBe(
