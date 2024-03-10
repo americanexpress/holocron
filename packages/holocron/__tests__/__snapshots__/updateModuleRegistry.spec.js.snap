@@ -121,6 +121,7 @@ exports[`updateModuleRegistry should update the modules in the registry: modules
     "compare": null,
     "WrappedComponent": [Function],
     "displayName": "Connect(HolocronModule(AwesomeModule))",
+    Symbol(Symbol.hasInstance): [Function],
   },
   "module-three": Immutable.Map {
     "$$typeof": Symbol(react.memo),
@@ -128,6 +129,7 @@ exports[`updateModuleRegistry should update the modules in the registry: modules
     "compare": null,
     "WrappedComponent": [Function],
     "displayName": "Connect(HolocronModule(ModuleThree))",
+    Symbol(Symbol.hasInstance): [Function],
   },
 }
 `;
