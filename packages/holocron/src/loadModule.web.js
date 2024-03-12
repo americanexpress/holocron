@@ -58,22 +58,24 @@ const loadingFallbacks = new Map();
 async function loadModuleFallbackExternals(moduleName, fallbacks) {
   const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
 
-  await Promise.all(fallbacks.map(async ({ name, browserIntegrity }) => {
-    if (loadingFallbacks.has(browserIntegrity)) {
+  await Promise.all(fallbacks.map(async ({ name, version, browserIntegrity }) => {
+    const key = [name, version].join('__');
+
+    if (loadingFallbacks.has(key)) {
       // Note: resolves the existing promise rather than creating a new one
       //       to avoid loading duplicate fallbacks.
-      await loadingFallbacks.get(browserIntegrity);
+      await loadingFallbacks.get(key);
     } else {
       const fallbackPromise = createAndInjectScriptTag({
         url: `${baseUrl}${name}.browser.js`,
         integrity: browserIntegrity,
       });
 
-      loadingFallbacks.set(browserIntegrity, fallbackPromise);
+      loadingFallbacks.set(key, fallbackPromise);
 
       await fallbackPromise;
 
-      loadingFallbacks.delete(browserIntegrity);
+      loadingFallbacks.delete(key);
     }
   }));
 }

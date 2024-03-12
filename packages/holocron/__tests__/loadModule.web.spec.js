@@ -466,6 +466,7 @@ describe('loadModule.web', () => {
     let mockElementFirst;
     let mockElementSecond;
     let mockElementThird;
+    let mockElementForth;
 
     beforeAll(() => {
       const externals = {
@@ -493,6 +494,7 @@ describe('loadModule.web', () => {
       mockElementFirst = { addEventListener: eventListenerMock };
       mockElementSecond = { addEventListener: eventListenerMock };
       mockElementThird = { addEventListener: eventListenerMock };
+      mockElementForth = { addEventListener: eventListenerMock };
 
       resetModuleRegistry(
         {
@@ -523,7 +525,8 @@ describe('loadModule.web', () => {
     it('creates scripts for modules externals', async () => {
       createElementSpy
         .mockImplementationOnce(() => mockElementFirst)
-        .mockImplementationOnce(() => mockElementSecond);
+        .mockImplementationOnce(() => mockElementSecond)
+        .mockImplementationOnce(() => mockElementThird);
 
       await loadModule(
         'my-module',
@@ -537,6 +540,9 @@ describe('loadModule.web', () => {
 
       expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.browser.js');
       expect(mockElementSecond.src).toBe(
+        'https://example.com/cdn/my-module/1.0.0/that-dep.browser.js'
+      );
+      expect(mockElementThird.src).toBe(
         'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
       );
     });
@@ -545,7 +551,8 @@ describe('loadModule.web', () => {
       createElementSpy
         .mockImplementationOnce(() => mockElementFirst)
         .mockImplementationOnce(() => mockElementSecond)
-        .mockImplementationOnce(() => mockElementThird);
+        .mockImplementationOnce(() => mockElementThird)
+        .mockImplementationOnce(() => mockElementForth);
 
       await Promise.all([
         loadModule(
@@ -570,9 +577,12 @@ describe('loadModule.web', () => {
 
       expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.browser.js');
       expect(mockElementSecond.src).toBe(
-        'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
+        'https://example.com/cdn/my-module/1.0.0/that-dep.browser.js'
       );
       expect(mockElementThird.src).toBe(
+        'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
+      );
+      expect(mockElementForth.src).toBe(
         'https://example.com/cdn/my-module-2/1.0.0/my-module-2.browser.js'
       );
     });
