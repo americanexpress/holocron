@@ -585,6 +585,7 @@ describe('loadModule.web', () => {
       expect(mockElementForth.src).toBe(
         'https://example.com/cdn/my-module-2/1.0.0/my-module-2.browser.js'
       );
+      expect(createElementSpy).toHaveBeenCalledTimes(4);
     });
   });
 });
