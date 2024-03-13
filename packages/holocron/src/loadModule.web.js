@@ -62,7 +62,7 @@ async function loadModuleFallbackExternals(moduleName, fallbacks) {
     const key = [name, version].join('__');
 
     if (loadingFallbacks.has(key)) {
-      // Note: resolves the existing promise rather than creating a new one
+      // Note: awaits the existing promise rather than creating a new one
       //       to avoid loading duplicate fallbacks.
       await loadingFallbacks.get(key);
     } else {
