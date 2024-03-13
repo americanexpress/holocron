@@ -466,23 +466,27 @@ describe('loadModule.web', () => {
     let mockElementFirst;
     let mockElementSecond;
     let mockElementThird;
+    let mockElementForth;
 
     beforeAll(() => {
-      setRequiredExternalsRegistry({
-        'my-module': {
-          'this-dep': {
-            filename: 'this-dep.js',
-            semanticRange: '^2.2.0',
-            integrity: '321',
-            version: '2.3.1',
-          },
-          'that-dep': {
-            filename: 'that-dep.js',
-            semanticRange: '^2.2.0',
-            integrity: '123',
-            version: '2.3.1',
-          },
+      const externals = {
+        'this-dep': {
+          filename: 'this-dep.js',
+          semanticRange: '^2.2.0',
+          integrity: '321',
+          version: '2.3.1',
         },
+        'that-dep': {
+          filename: 'that-dep.js',
+          semanticRange: '^2.2.0',
+          integrity: '123',
+          version: '2.3.1',
+        },
+      };
+
+      setRequiredExternalsRegistry({
+        'my-module': externals,
+        'my-module-2': externals,
       });
     });
 
@@ -490,10 +494,12 @@ describe('loadModule.web', () => {
       mockElementFirst = { addEventListener: eventListenerMock };
       mockElementSecond = { addEventListener: eventListenerMock };
       mockElementThird = { addEventListener: eventListenerMock };
+      mockElementForth = { addEventListener: eventListenerMock };
 
       resetModuleRegistry(
         {
           'my-module': () => 'hello',
+          'my-module-2': () => 'hello 2',
         },
         {
           modules: {
@@ -502,6 +508,13 @@ describe('loadModule.web', () => {
               browser: {
                 url: 'https://example.com/cdn/my-module/1.0.0/my-module.browser.js',
                 integrity: '234',
+              },
+            },
+            'my-module-2': {
+              baseUrl: 'https://example.com/cdn/my-module-2/1.0.0/',
+              browser: {
+                url: 'https://example.com/cdn/my-module-2/1.0.0/my-module-2.browser.js',
+                integrity: '321',
               },
             },
           },
@@ -526,44 +539,53 @@ describe('loadModule.web', () => {
       );
 
       expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.browser.js');
-      expect(mockElementSecond.src).toBe('https://example.com/cdn/my-module/1.0.0/that-dep.browser.js');
+      expect(mockElementSecond.src).toBe(
+        'https://example.com/cdn/my-module/1.0.0/that-dep.browser.js'
+      );
       expect(mockElementThird.src).toBe(
         'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
       );
     });
 
-    it('waits for fallback scripts to finish loading before loading module script', async () => {
-      let finallyLoadSlowScript;
-      const slowMockElement = {
-        addEventListener: (event, cb) => {
-          if (event === 'load') {
-            finallyLoadSlowScript = cb;
-          }
-        },
-      };
+    it('loads only a single external', async () => {
       createElementSpy
         .mockImplementationOnce(() => mockElementFirst)
-        .mockImplementationOnce(() => slowMockElement)
-        .mockImplementationOnce(() => mockElementThird);
+        .mockImplementationOnce(() => mockElementSecond)
+        .mockImplementationOnce(() => mockElementThird)
+        .mockImplementationOnce(() => mockElementForth);
 
-      const loadModulePromise = loadModule(
-        'my-module',
-        fromJS({
-          browser: {
-            url: 'https://example.com/cdn/my-module/1.0.0/my-module.browser.js',
-            integrity: '234',
-          },
-        })
+      await Promise.all([
+        loadModule(
+          'my-module',
+          fromJS({
+            browser: {
+              url: 'https://example.com/cdn/my-module/1.0.0/my-module.browser.js',
+              integrity: '234',
+            },
+          })
+        ),
+        loadModule(
+          'my-module-2',
+          fromJS({
+            browser: {
+              url: 'https://example.com/cdn/my-module-2/1.0.0/my-module-2.browser.js',
+              integrity: '321',
+            },
+          })
+        ),
+      ]);
+
+      expect(mockElementFirst.src).toBe('https://example.com/cdn/my-module/1.0.0/this-dep.browser.js');
+      expect(mockElementSecond.src).toBe(
+        'https://example.com/cdn/my-module/1.0.0/that-dep.browser.js'
       );
-
-      expect(createElementSpy).toHaveBeenCalledTimes(2);
-      expect(mockElementThird.src).toBeUndefined();
-      finallyLoadSlowScript();
-      await loadModulePromise;
-      expect(createElementSpy).toHaveBeenCalledTimes(3);
       expect(mockElementThird.src).toBe(
         'https://example.com/cdn/my-module/1.0.0/my-module.browser.js'
       );
+      expect(mockElementForth.src).toBe(
+        'https://example.com/cdn/my-module-2/1.0.0/my-module-2.browser.js'
+      );
+      expect(createElementSpy).toHaveBeenCalledTimes(4);
     });
   });
 });

@@ -17,7 +17,7 @@ import { getUnregisteredRequiredExternals } from './externalRegistry';
 
 const noop = () => { };
 
-function createScript({ url, integrity, onLoad = noop }) {
+function createAndInjectScriptTag({ url, integrity, onLoad = noop }) {
   const script = global.document.createElement('script');
   const isProduction = process.env.NODE_ENV === 'production';
   const head = global.document.querySelectorAll('head')[0];
@@ -53,14 +53,31 @@ function createScript({ url, integrity, onLoad = noop }) {
   return listener;
 }
 
-function loadModuleFallbackExternals(moduleName) {
-  const fallbacks = getUnregisteredRequiredExternals(moduleName);
+const loadingFallbacks = new Map();
+
+async function loadModuleFallbackExternals(moduleName, fallbacks) {
   const baseUrl = getModuleMap().getIn(['modules', moduleName, 'baseUrl']);
 
-  return Promise.all(fallbacks.map(({ name, browserIntegrity }) => createScript({
-    url: `${baseUrl}${name}.browser.js`,
-    integrity: browserIntegrity,
-  })));
+  await Promise.all(fallbacks.map(async ({ name, version, browserIntegrity }) => {
+    const key = [name, version].join('__');
+
+    if (loadingFallbacks.has(key)) {
+      // Note: awaits the existing promise rather than creating a new one
+      //       to avoid loading duplicate fallbacks.
+      await loadingFallbacks.get(key);
+    } else {
+      const fallbackPromise = createAndInjectScriptTag({
+        url: `${baseUrl}${name}.browser.js`,
+        integrity: browserIntegrity,
+      });
+
+      loadingFallbacks.set(key, fallbackPromise);
+
+      await fallbackPromise;
+
+      loadingFallbacks.delete(key);
+    }
+  }));
 }
 
 async function loadModule(moduleName, moduleData) {
@@ -71,9 +88,13 @@ async function loadModule(moduleName, moduleData) {
   if (typeof moduleData !== 'object') {
     throw new TypeError('loadModule: moduleData must be an object');
   }
-  // first load all module fallbacks.
-  // possible race condition if two modules require the same fallback and version.
-  await loadModuleFallbackExternals(moduleName);
+
+  const fallbacks = getUnregisteredRequiredExternals(moduleName);
+
+  if (fallbacks.length > 0) {
+    await loadModuleFallbackExternals(moduleName, fallbacks);
+  }
+
   // then load the module script.
   const integrity = moduleData.getIn([
     // eslint-disable-next-line no-underscore-dangle -- holocron api
@@ -86,7 +107,7 @@ async function loadModule(moduleName, moduleData) {
     'url',
   ]);
 
-  return createScript({
+  return createAndInjectScriptTag({
     url,
     integrity,
     onLoad: () => getModule(moduleName),
