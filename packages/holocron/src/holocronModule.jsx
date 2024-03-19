@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import hoistStatics from 'hoist-non-react-statics';
 
+import { ModuleContext } from './reactStreaming';
 import {
   LOAD_KEY,
   REDUCER_KEY,
@@ -134,8 +135,13 @@ export default function holocronModule({
         };
       }, []);
 
-      // eslint-disable-next-line react/jsx-props-no-spreading -- spread props
-      return <WrappedComponent {...props} moduleLoadStatus={status} />;
+      return (
+        // eslint-disable-next-line react/jsx-no-constructed-context-values -- name is static
+        <ModuleContext.Provider value={{ moduleName: name }}>
+          {/* eslint-disable-next-line react/jsx-props-no-spreading -- props are unknown  */}
+          <WrappedComponent {...props} moduleLoadStatus={status} />
+        </ModuleContext.Provider>
+      );
     };
 
     HolocronModuleWrapper.propTypes = {

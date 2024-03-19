@@ -52,13 +52,13 @@ Creates the [Redux] store with Holocron compatibility.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `reducer` | `(state, action) => newState` | `true` | The [Redux reducer] for your application |
-| `initialState` | `Immutable.Map` | `false` | The initial state of your [Redux] store |
-| `enhancer` | `Function` | `false` | A [Redux enhancer] |
-| `localsForBuildInitialState` | `Object` | `false` | Value to pass to [vitruvius]'s `buildInitialState` |
-| `extraThunkArguments` | `Object` | `false` | Additional arguments to be passed to [Redux thunks] |
+| name                         | type                          | required | value                                               |
+|------------------------------|-------------------------------|----------|-----------------------------------------------------|
+| `reducer`                    | `(state, action) => newState` | `true`   | The [Redux reducer] for your application            |
+| `initialState`               | `Immutable.Map`               | `false`  | The initial state of your [Redux] store             |
+| `enhancer`                   | `Function`                    | `false`  | A [Redux enhancer]                                  |
+| `localsForBuildInitialState` | `Object`                      | `false`  | Value to pass to [vitruvius]'s `buildInitialState`  |
+| `extraThunkArguments`        | `Object`                      | `false`  | Additional arguments to be passed to [Redux thunks] |
 
 ##### Usage
 
@@ -108,10 +108,10 @@ The optional `holocron` object set to the parent React Component inside a Holocr
 
 ###### options object
 
-| name                   | type       | default | required | value                                                                                                                                |
-|------------------------|------------|---------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `ssr` *☠️ Deprecated*  | `Boolean`  | falsy   | `false`  | enable the (deprecated) load function to be called on the server                                                                     |
-| `provideModuleState`   | `Boolean`  | truthy  | `false`  | if specified as `false` the module will not be passed `moduleState` as a prop. This will be the default to falsy in future versions. |
+| name                  | type      | default | required | value                                                                                                                                |
+|-----------------------|-----------|---------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `ssr` *☠️ Deprecated* | `Boolean` | falsy   | `false`  | enable the (deprecated) load function to be called on the server                                                                     |
+| `provideModuleState`  | `Boolean` | truthy  | `false`  | if specified as `false` the module will not be passed `moduleState` as a prop. This will be the default to falsy in future versions. |
 
 #### Usage
 
@@ -161,10 +161,10 @@ export default HelloWorld;
 
 The Holocron Module parent React Components will be provided several props automatically.
 
-| prop name | type | value |
-|---|---|---|
-| `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
-| `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
+| prop name          | type     | value                                                                       |
+|--------------------|----------|-----------------------------------------------------------------------------|
+| `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function  |
+| `moduleState`      | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
 <!--ONE-DOCS-ID end-->
 
@@ -180,11 +180,11 @@ A React component for rendering a Holocron module.
 
 ##### Props
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `PropTypes.string` | `true` | The name of the Holocron module to be rendered |
-| `props` | `PropTypes.object` | `false` | Props to pass the rendered Holocron module |
-| `children` | `PropTypes.node` | `false` | Childen passed to the rendered Holocron module |
+| name         | type               | required | value                                          |
+|--------------|--------------------|----------|------------------------------------------------|
+| `moduleName` | `PropTypes.string` | `true`   | The name of the Holocron module to be rendered |
+| `props`      | `PropTypes.object` | `false`  | Props to pass the rendered Holocron module     |
+| `children`   | `PropTypes.node`   | `false`  | Childen passed to the rendered Holocron module |
 
 ##### Usage
 
@@ -222,9 +222,9 @@ An action creator that loads Holocron modules and their data.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleConfigs` | `[{ name, props }]` | `true` | An array of objects containing module names and their props |
+| name            | type                | required | value                                                       |
+|-----------------|---------------------|----------|-------------------------------------------------------------|
+| `moduleConfigs` | `[{ name, props }]` | `true`   | An array of objects containing module names and their props |
 
 ##### Usage
 
@@ -249,9 +249,9 @@ An action creator that fetches a Holocron module.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module being fetched |
+| name         | type     | required | value                                         |
+|--------------|----------|----------|-----------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the Holocron module being fetched |
 
 ##### Usage
 
@@ -274,16 +274,16 @@ A [higher order component (HOC)] for registering a load function and/or reducer 
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `name` | `String` | `true` | The name of your Holocron module |
-| `reducer` | `(state, action) => newState` | `false` | The Redux reducer to register when your module is loaded. *Requires a `name`* |
-| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false` | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
-| `loadModuleData` | `({ store, fetchClient, ownProps, module }) => Promise` | `false` | A function that fetches data required by your module |
-| `shouldModuleReload` | `(oldProps, newProps) => Boolean` | `false` | A function to determine if your `loadModuleData` and or `load` function should be called again |
-| `mergeProps` | `(stateProps, dispatchProps, ownProps) => Object` | `false` | Passed down to Redux connect |
-| `mapStateToProps` | `(state, ownProps) => Object` | `false` | Passed down to Redux connect. This enables `shouldModuleReload` to have access to state. |
-| `options` | `Object` | `false` | Additional options |
+| name                   | type                                                                           | required | value                                                                                                 |
+|------------------------|--------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------|
+| `name`                 | `String`                                                                       | `true`   | The name of your Holocron module                                                                      |
+| `reducer`              | `(state, action) => newState`                                                  | `false`  | The Redux reducer to register when your module is loaded. *Requires a `name`*                         |
+| `load` *☠️ Deprecated* | `(props) => Promise` or `(props) => (dispatch, getState, ...extra) => Promise` | `false`  | A deprecated function that fetches data required by your module. Please use `loadModuleData` instead. |
+| `loadModuleData`       | `({ store, fetchClient, ownProps, module }) => Promise`                        | `false`  | A function that fetches data required by your module                                                  |
+| `shouldModuleReload`   | `(oldProps, newProps) => Boolean`                                              | `false`  | A function to determine if your `loadModuleData` and or `load` function should be called again        |
+| `mergeProps`           | `(stateProps, dispatchProps, ownProps) => Object`                              | `false`  | Passed down to Redux connect                                                                          |
+| `mapStateToProps`      | `(state, ownProps) => Object`                                                  | `false`  | Passed down to Redux connect. This enables `shouldModuleReload` to have access to state.              |
+| `options`              | `Object`                                                                       | `false`  | Additional options                                                                                    |
 
 ##### Usage
 
@@ -320,10 +320,10 @@ export default holocronModule({
 
 Components using this HOC will be provided several props.
 
-| prop name | type | value |
-|---|---|---|
-| `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function |
-| `moduleState` | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
+| prop name          | type     | value                                                                       |
+|--------------------|----------|-----------------------------------------------------------------------------|
+| `moduleLoadStatus` | `String` | One of `"loading"`, `"loaded"`, or `"error"`, based on the `load` function  |
+| `moduleState`      | `Object` | The state of the registered reducer after [`.toJS()`] has been called on it |
 
 <!--ONE-DOCS-ID end-->
 
@@ -341,10 +341,10 @@ Adds a Holocron module to the registry
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of your Holocron module |
-| `module` | `Function` | `true` | The Holocron module itself (a React component) |
+| name         | type       | required | value                                          |
+|--------------|------------|----------|------------------------------------------------|
+| `moduleName` | `String`   | `true`   | The name of your Holocron module               |
+| `module`     | `Function` | `true`   | The Holocron module itself (a React component) |
 
 <!--ONE-DOCS-ID end-->
 
@@ -356,10 +356,10 @@ Retrives a Holocron module from the registry
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module being requested |
-| `altModules` | `Immutable.Map` | `false` | An alternative set of modules to the registry |
+| name         | type            | required | value                                           |
+|--------------|-----------------|----------|-------------------------------------------------|
+| `moduleName` | `String`        | `true`   | The name of the Holocron module being requested |
+| `altModules` | `Immutable.Map` | `false`  | An alternative set of modules to the registry   |
 
 ##### Usage
 
@@ -420,7 +420,7 @@ Sets the module map
 ##### Arguments
 
 | name           | type            | required | value                                          |
-| -------------- | --------------- | -------- | ---------------------------------------------- |
+|----------------|-----------------|----------|------------------------------------------------|
 | `newModuleMap` | `Immutable.Map` | `true`   | The new module map to replace the existing one |
 
 ##### Usage
@@ -445,10 +445,10 @@ Used to register an external dependency.
 `registerExternal` takes the following named arguments:
 
 | name      | type     | required | value                                        |
-| --------- | -------- | -------- | -------------------------------------------- |
+|-----------|----------|----------|----------------------------------------------|
 | `name`    | `String` | `true`   | The name of the external being registered    |
 | `version` | `String` | `true`   | The version of the external being registered |
-| `module`    | `any`    | `true`   | The external to be registered                |
+| `module`  | `any`    | `true`   | The external to be registered                |
 
 
 ##### Usage
@@ -472,7 +472,7 @@ Retrieve the external from registry.
 `getExternal` takes the following named arguments:
 
 | name      | type     | required | value                       |
-| --------- | -------- | -------- | --------------------------- |
+|-----------|----------|----------|-----------------------------|
 | `name`    | `String` | `true`   | Name of the external wanted |
 | `version` | `String` | `true`   | Version of the external     |
 
@@ -488,7 +488,7 @@ Return all the required externals for Holocron module.
 
 ##### Arguments
 | name         | type     | required | value                   |
-| ------------ | -------- | -------- | ----------------------- |
+|--------------|----------|----------|-------------------------|
 | `moduleName` | `String` | `true`   | Name of Holocron module |
 
 
@@ -537,7 +537,7 @@ Set the contents for the externals registry
 
 ##### Arguments
 | name               | type     | required | value                           |
-| ------------------ | -------- | -------- | ------------------------------- |
+|--------------------|----------|----------|---------------------------------|
 | `externalRegistry` | `Object` | `true`   | Data for the externals registry |
 
 ##### Usage
@@ -570,9 +570,9 @@ A selector to determine if a Holocron module has been loaded.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module that may be loaded |
+| name         | type     | required | value                                              |
+|--------------|----------|----------|----------------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the Holocron module that may be loaded |
 
 ##### Usage
 
@@ -594,9 +594,9 @@ A selector to determine if a Holocron module failed to load.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module that may have failed to load |
+| name         | type     | required | value                                                        |
+|--------------|----------|----------|--------------------------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the Holocron module that may have failed to load |
 
 ##### Usage
 
@@ -618,9 +618,9 @@ A selector to return the error of a Holocron module that failed to load.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module whose load error will be returned |
+| name         | type     | required | value                                                             |
+|--------------|----------|----------|-------------------------------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the Holocron module whose load error will be returned |
 
 ##### Usage
 
@@ -642,9 +642,9 @@ A selector to determine if a module is loading.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module that may be loading |
+| name         | type     | required | value                                               |
+|--------------|----------|----------|-----------------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the Holocron module that may be loading |
 
 ##### Usage
 
@@ -666,9 +666,9 @@ A selector to return the promise from a Holocron module being loaded.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the Holocron module whose loading promise will be returned |
+| name         | type     | required | value                                                                  |
+|--------------|----------|----------|------------------------------------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the Holocron module whose loading promise will be returned |
 
 ##### Usage
 
@@ -697,13 +697,13 @@ Updates the module registry with a new module map.
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleMap` | `Object` | `true` | The new module map |
-| `onModuleLoad` | `Function` | `false` | The function to call on every module that is loaded |
-| `batchModulesToUpdate` | `modules => Array` | `false` | A function that returns an array of arrays of batches of modules to load |
-| `getModulesToUpdate` | `Function` | `false` | A function that returns an array of which modules should be updated |
-| `listRejectedModules` | `Boolean` | `false` | This changes the response shape to be an object containing both `loadedModules` and `rejectedModules` |
+| name                   | type               | required | value                                                                                                 |
+|------------------------|--------------------|----------|-------------------------------------------------------------------------------------------------------|
+| `moduleMap`            | `Object`           | `true`   | The new module map                                                                                    |
+| `onModuleLoad`         | `Function`         | `false`  | The function to call on every module that is loaded                                                   |
+| `batchModulesToUpdate` | `modules => Array` | `false`  | A function that returns an array of arrays of batches of modules to load                              |
+| `getModulesToUpdate`   | `Function`         | `false`  | A function that returns an array of which modules should be updated                                   |
+| `listRejectedModules`  | `Boolean`          | `false`  | This changes the response shape to be an object containing both `loadedModules` and `rejectedModules` |
 
 
 ##### Usage
@@ -737,10 +737,10 @@ Compares two module map entries to see if they are equal. This is intended for u
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `firstModuleEntry` | `Object` | `false` | A module map entry |
-| `secondModuleEntry` | `Object` | `false` | Another module map entry |
+| name                | type     | required | value                    |
+|---------------------|----------|----------|--------------------------|
+| `firstModuleEntry`  | `Object` | `false`  | A module map entry       |
+| `secondModuleEntry` | `Object` | `false`  | Another module map entry |
 
 ##### Usage
 
@@ -771,10 +771,10 @@ This function can allow a browser to refetch a module directly, without requirin
 
 ##### Arguments
 
-| name | type | required | value |
-|---|---|---|---|
-| `moduleName` | `String` | `true` | The name of the module to try to reload |
-| `moduleData` | `Object` | `true` | The URLs and integrity values for all the module |
+| name         | type     | required | value                                            |
+|--------------|----------|----------|--------------------------------------------------|
+| `moduleName` | `String` | `true`   | The name of the module to try to reload          |
+| `moduleData` | `Object` | `true`   | The URLs and integrity values for all the module |
 
 
 ##### Usage
@@ -799,6 +799,34 @@ export const MyComponent = (props) => {
 };
 
 ```
+
+### Hooks
+
+#### `useAsyncModuleData`
+
+Used to retrieve data that is returned by `loadAsyncModuleData`. This hook is intended to be used for SSR Streaming. Any component that uses this hook should be wrapped with a [Suspense Boundary](https://react.dev/reference/react/Suspense).
+
+##### Arguments
+
+| name  | type     | required | value                                                  |
+|-------|----------|----------|--------------------------------------------------------|
+| `key` | `String` | `true`   | The key matching the return from `loadAsyncModuleData` |
+
+##### Usage
+  
+```js
+const MyComponent = () => {
+  const data = useAsyncModuleData('my-module');
+  return <div>{data}</div>;
+};
+
+const MyWrapper = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <MyComponent />
+  </Suspense>
+);
+```
+
 
 <!--ONE-DOCS-ID end-->
 
