@@ -12,7 +12,7 @@
  * under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -104,6 +104,7 @@ export default function holocronModule({
       const isMounted = useRef(false);
       const loadCountRef = useRef(0);
       const prevPropsRef = useRef({});
+      const moduleContextValue = useMemo(() => ({ moduleName: name }), []);
 
       const initiateLoad = (currentLoadCount, frozenProps) => executeLoadingFunctions({
         loadModuleData,
@@ -136,8 +137,7 @@ export default function holocronModule({
       }, []);
 
       return (
-        // eslint-disable-next-line react/jsx-no-constructed-context-values -- name is static
-        <ModuleContext.Provider value={{ moduleName: name }}>
+        <ModuleContext.Provider value={moduleContextValue}>
           {/* eslint-disable-next-line react/jsx-props-no-spreading -- props are unknown  */}
           <WrappedComponent {...props} moduleLoadStatus={status} />
         </ModuleContext.Provider>
