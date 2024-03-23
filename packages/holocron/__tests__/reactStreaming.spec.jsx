@@ -13,15 +13,20 @@ describe('reactStreaming', () => {
   });
 
   describe('useAsyncModuleData', () => {
-    // eslint-disable-next-line react/display-name, react/prop-types -- test component
+    /* eslint-disable
+      react/display-name,
+      react/prop-types,
+      react/jsx-no-constructed-context-values -- test component */
     const Providers = ({ moduleName, promise, key }) => ({ children }) => (
-      // eslint-disable-next-line react/jsx-no-constructed-context-values -- test component
       <ReactStreamingContext.Provider value={{ [moduleName]: { [key]: promise } }}>
-        {/* eslint-disable-next-line react/jsx-no-constructed-context-values -- test component */}
         <ModuleContext.Provider value={{ moduleName }}>
           {children}
         </ModuleContext.Provider>
       </ReactStreamingContext.Provider>
+    /* eslint-enable
+      react/display-name,
+      react/prop-types,
+      react/jsx-no-constructed-context-values -- test component */
     );
     it('should throw a promise if the data is not yet resolved', () => {
       const key = 'test';
