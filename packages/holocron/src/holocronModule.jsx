@@ -12,19 +12,22 @@
  * under the License.
  */
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, {
+  useState, useRef, useMemo, createContext,
+} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import hoistStatics from 'hoist-non-react-statics';
 
-import { ModuleContext } from './reactStreaming';
 import {
   LOAD_KEY,
   REDUCER_KEY,
   MODULES_STORE_KEY,
   INIT_MODULE_STATE,
 } from './ducks/constants';
+
+export const ModuleContext = createContext();
 
 // Execute deprecated load function and provide deprecation message
 export function executeLoad({ dispatch, load, ...restProps } = {}) {

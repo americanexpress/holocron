@@ -26,10 +26,9 @@ import holocronModule, {
   executeLoad,
   executeLoadModuleData,
   executeLoadingFunctions,
+  ModuleContext,
 } from '../src/holocronModule';
 import { REDUCER_KEY, LOAD_KEY } from '../src/ducks/constants';
-
-import { ModuleContext } from '../src/reactStreaming';
 
 const sleep = (ms) => new Promise((resolve) => {
   setTimeout(resolve, ms);

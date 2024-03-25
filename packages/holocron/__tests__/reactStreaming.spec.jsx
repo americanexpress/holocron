@@ -1,15 +1,12 @@
 import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies -- monorepo, this is at the root
 import { renderHook } from '@testing-library/react';
-import { useAsyncModuleData, ReactStreamingContext, ModuleContext } from '../src/reactStreaming';
+import { useAsyncModuleData, ReactStreamingContext } from '../src/reactStreaming';
+import { ModuleContext } from '../src/holocronModule';
 
 describe('reactStreaming', () => {
   it('exports ReactStreamingContext', () => {
     expect(ReactStreamingContext).toBeDefined();
-  });
-
-  it('exports ModuleContext', () => {
-    expect(ModuleContext).toBeDefined();
   });
 
   describe('useAsyncModuleData', () => {

@@ -33,6 +33,7 @@ import {
 import { composeModules } from './ducks/compose';
 import RenderModule from './RenderModule';
 import holocronModule from './publicHolocronModule';
+import { ModuleContext } from './holocronModule';
 import forceLoadModule from './loadModule.web';
 import {
   registerExternal,
@@ -44,7 +45,6 @@ import {
 } from './externalRegistry';
 import {
   ReactStreamingContext,
-  ModuleContext,
   useAsyncModuleData,
 } from './reactStreaming';
 
@@ -65,6 +65,7 @@ export {
   getLoadingPromise,
   RenderModule,
   holocronModule,
+  ModuleContext,
   forceLoadModule,
   registerExternal,
   getExternal,
@@ -76,6 +77,5 @@ export {
   getModulesUsingExternals,
   // Streaming
   ReactStreamingContext,
-  ModuleContext,
   useAsyncModuleData,
 };

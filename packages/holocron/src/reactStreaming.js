@@ -1,8 +1,7 @@
 import { createContext, useContext } from 'react';
+import { ModuleContext } from './holocronModule';
 
 const ReactStreamingContext = createContext({});
-
-const ModuleContext = createContext();
 
 const useAsyncModuleData = (key) => {
   const { moduleName } = useContext(ModuleContext);
@@ -36,4 +35,4 @@ const useAsyncModuleData = (key) => {
   return undefined;
 };
 
-export { ReactStreamingContext, ModuleContext, useAsyncModuleData };
+export { ReactStreamingContext, useAsyncModuleData };
