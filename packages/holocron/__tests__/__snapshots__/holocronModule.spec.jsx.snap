@@ -79,6 +79,14 @@ The 'reducer' will not be added to the Redux Store without a 'name'.",
 ]
 `;
 
+exports[`holocronModule should wrap module with ModuleContext 1`] = `
+<DocumentFragment>
+  <div>
+    test-module
+  </div>
+</DocumentFragment>
+`;
+
 exports[`holocronModule should wrap module with no arguments 1`] = `
 <DocumentFragment>
   <div>

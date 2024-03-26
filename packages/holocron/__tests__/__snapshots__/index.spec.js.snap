@@ -1,7 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+// eslint-disable-next-line jest/no-large-snapshots -- this one is ok to be a bit large
 exports[`public API should not have anything removed 1`] = `
 {
+  "ModuleContext": {
+    "$$typeof": Symbol(react.context),
+    "Consumer": {
+      "$$typeof": Symbol(react.context),
+      "_context": [Circular],
+    },
+    "Provider": {
+      "$$typeof": Symbol(react.provider),
+      "_context": [Circular],
+    },
+    "_currentRenderer": null,
+    "_currentRenderer2": null,
+    "_currentValue": undefined,
+    "_currentValue2": undefined,
+    "_defaultValue": null,
+    "_globalName": null,
+    "_threadCount": 0,
+  },
+  "ReactStreamingContext": {
+    "$$typeof": Symbol(react.context),
+    "Consumer": {
+      "$$typeof": Symbol(react.context),
+      "_context": [Circular],
+    },
+    "Provider": {
+      "$$typeof": Symbol(react.provider),
+      "_context": [Circular],
+    },
+    "_currentRenderer": null,
+    "_currentRenderer2": null,
+    "_currentValue": {},
+    "_currentValue2": {},
+    "_defaultValue": null,
+    "_globalName": null,
+    "_threadCount": 0,
+  },
   "RenderModule": [Function],
   "clearModulesUsingExternals": [Function],
   "composeModules": [Function],
@@ -26,5 +63,6 @@ exports[`public API should not have anything removed 1`] = `
   "registerModule": [Function],
   "setModuleMap": [Function],
   "setRequiredExternalsRegistry": [Function],
+  "useAsyncModuleData": [Function],
 }
 `;

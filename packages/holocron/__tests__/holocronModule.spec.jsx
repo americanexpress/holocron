@@ -26,6 +26,7 @@ import holocronModule, {
   executeLoad,
   executeLoadModuleData,
   executeLoadingFunctions,
+  ModuleContext,
 } from '../src/holocronModule';
 import { REDUCER_KEY, LOAD_KEY } from '../src/ducks/constants';
 
@@ -177,6 +178,21 @@ describe('holocronModule', () => {
 
   it('should wrap module with no arguments', () => {
     const MyModuleComponent = holocronModule()(() => <div>Mock Module</div>);
+    const mockStore = createStore(
+      (state) => state,
+      fromJS({ modules: { 'mock-module': { key: 'value' } } })
+    );
+    const renderedModule = render(
+      <MyModuleComponent store={mockStore} />
+    ).asFragment();
+
+    expect(renderedModule).toMatchSnapshot();
+  });
+  it('should wrap module with ModuleContext', () => {
+    const MyModuleComponent = holocronModule({ name: 'test-module' })(() => {
+      const { moduleName } = React.useContext(ModuleContext);
+      return <div>{moduleName}</div>;
+    });
     const mockStore = createStore(
       (state) => state,
       fromJS({ modules: { 'mock-module': { key: 'value' } } })

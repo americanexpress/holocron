@@ -12,7 +12,9 @@
  * under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import React, {
+  useState, useRef, useMemo, createContext,
+} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -24,6 +26,8 @@ import {
   MODULES_STORE_KEY,
   INIT_MODULE_STATE,
 } from './ducks/constants';
+
+export const ModuleContext = createContext();
 
 // Execute deprecated load function and provide deprecation message
 export function executeLoad({ dispatch, load, ...restProps } = {}) {
@@ -103,6 +107,7 @@ export default function holocronModule({
       const isMounted = useRef(false);
       const loadCountRef = useRef(0);
       const prevPropsRef = useRef({});
+      const moduleContextValue = useMemo(() => ({ moduleName: name }), []);
 
       const initiateLoad = (currentLoadCount, frozenProps) => executeLoadingFunctions({
         loadModuleData,
@@ -134,8 +139,12 @@ export default function holocronModule({
         };
       }, []);
 
-      // eslint-disable-next-line react/jsx-props-no-spreading -- spread props
-      return <WrappedComponent {...props} moduleLoadStatus={status} />;
+      return (
+        <ModuleContext.Provider value={moduleContextValue}>
+          {/* eslint-disable-next-line react/jsx-props-no-spreading -- props are unknown  */}
+          <WrappedComponent {...props} moduleLoadStatus={status} />
+        </ModuleContext.Provider>
+      );
     };
 
     HolocronModuleWrapper.propTypes = {
