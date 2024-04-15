@@ -9,9 +9,7 @@ import { useDispatch } from 'react-redux';
  *   instead dispatching the below thunks, or using the provided hooks
  */
 class PromiseStore {
-  constructor() {
-    this.promises = {};
-  }
+  #promises = new Map();
 
   /**
    * @param {string} domain The domain of the promise, should be the module name
@@ -21,10 +19,10 @@ class PromiseStore {
    * @returns {void}
    */
   store = (domain, key, promise) => {
-    if (!this.promises[domain]) {
-      this.promises[domain] = {};
+    if (!this.#promises[domain]) {
+      this.#promises[domain] = new Map();
     }
-    this.promises[domain][key] = promise;
+    this.#promises[domain][key] = promise;
   };
 
   /**
@@ -33,7 +31,7 @@ class PromiseStore {
    * @param {string} key The key of the promise
    * @returns {Promise<any> | undefined}
    */
-  get = (domain, key) => this.promises?.[domain]?.[key];
+  get = (domain, key) => this.#promises?.[domain]?.[key];
 }
 
 export default PromiseStore;
