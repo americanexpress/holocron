@@ -22,6 +22,7 @@ import { getModule, getModules } from './moduleRegistry';
 import {
   HOLOCRON_STORE_KEY, MODULES_STORE_KEY, REDUCER_KEY, MODULE_REDUCER_ADDED,
 } from './ducks/constants';
+import PromiseStore from './promiseStore';
 
 function immutableCombineReducersWithNewModules(moduleReducerMap, newModuleState) {
   if (Object.keys(moduleReducerMap).length === 0) {
@@ -116,10 +117,14 @@ const holocronEnhancer = (localsForBuildInitialState, extraThunkArguments = {}) 
     getState: store.getState,
     dispatch: (action) => dispatch(action),
   };
+
+  const promiseStore = new PromiseStore();
+
   dispatch = thunk.withExtraArgument({
     ...extraThunkArguments,
     rebuildReducer,
     modules: store.modules,
+    promiseStore,
   })(middlewareAPI)(store.dispatch);
 
   return {

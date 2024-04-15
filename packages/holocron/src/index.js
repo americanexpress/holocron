@@ -43,6 +43,12 @@ import {
   setRequiredExternalsRegistry,
 } from './externalRegistry';
 
+import {
+  getStoredPromise,
+  storePromise,
+  useStoredPromise,
+} from './promiseStore';
+
 // Public API
 export {
   createHolocronStore,
@@ -69,4 +75,7 @@ export {
   setRequiredExternalsRegistry,
   clearModulesUsingExternals,
   getModulesUsingExternals,
+  getStoredPromise,
+  storePromise,
+  useStoredPromise,
 };
