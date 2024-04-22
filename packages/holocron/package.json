@@ -1,6 +1,6 @@
 {
   "name": "holocron",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "main": "index.js",
   "module": "src/index.js",
   "keywords": [

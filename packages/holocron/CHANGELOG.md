@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.3](https://github.com/americanexpress/holocron/compare/holocron@1.10.2...holocron@1.10.3) (2024-04-22)
+
+
+### Bug Fixes
+
+* client side load module race condition ([3183bbb](https://github.com/americanexpress/holocron/commit/3183bbbd53343e08fb5e817ea20ab8de80c31a16))
+
+
+
+
+
 ## [1.10.2](https://github.com/americanexpress/holocron/compare/holocron@1.10.1...holocron@1.10.2) (2024-02-22)
 
 

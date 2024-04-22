@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.3](https://github.com/americanexpress/holocron/compare/holocron-module-route@1.10.2...holocron-module-route@1.10.3) (2024-04-22)
+
+**Note:** Version bump only for package holocron-module-route
+
+
+
+
+
 ## [1.10.2](https://github.com/americanexpress/holocron/compare/holocron-module-route@1.10.1...holocron-module-route@1.10.2) (2024-02-22)
 
 **Note:** Version bump only for package holocron-module-route
